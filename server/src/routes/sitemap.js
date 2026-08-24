@@ -23,7 +23,7 @@ const INSTRUCTIONS_PATH = path.join(
 
 router.get("/sitemap.xml", (req, res) => {
 
-  const baseUrl = "https://boykovgroup.ru";
+  const baseUrl = "https://boykovdocs.ru";
 
 
   const urls = [];

@@ -11,7 +11,7 @@ res.send(`
 User-agent: *
 Allow: /
 
-Sitemap: https://boykovgroup.ru/sitemap.xml
+Sitemap: https://boykovdocs.ru/sitemap.xml
 `);
 
 });

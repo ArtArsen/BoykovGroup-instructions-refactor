@@ -215,7 +215,7 @@ function getSiteUrl(req) {
 }
 
 function getInstructionUrl(req, instruction) {
-  return `${getSiteUrl(req)}/instructions/${encodeURIComponent(instruction.id)}`;
+  return `${getSiteUrl(req)}/instrukciya-po-ohrane-truda/${encodeURIComponent(instruction.id)}`;
 }
 
 function getDateModified(instruction) {
@@ -307,7 +307,7 @@ function renderSearchBar(query = "") {
   return `
     <form
       class="SearchBar_wrapper seo-search-form"
-      action="/instructions/"
+      action="/instrukcii-po-ohrane-truda"
       method="get"
       role="search"
     >
@@ -439,7 +439,7 @@ function renderInstructionCards(instructions) {
           <div class="InstructionButton_card">
             <a
               class="InstructionButton_clickArea"
-              href="/instructions/${encodeURIComponent(instruction.id)}"
+              href="/instrukciya-po-ohrane-truda/${encodeURIComponent(instruction.id)}"
             >
               <span class="InstructionButton_index" aria-hidden="true"></span>
 
@@ -538,7 +538,7 @@ function renderHtmlHead({
 
 function renderInstructionsCatalogPage(req, instructions, query = "") {
   const siteUrl = getSiteUrl(req);
-  const canonical = `${siteUrl}/instructions/`;
+  const canonical = `${siteUrl}/instrukcii-po-ohrane-truda`;
   const hasQuery = Boolean(String(query || "").trim());
 
   const pageTitle = hasQuery
@@ -687,7 +687,7 @@ function renderInstructionPage(req, instruction) {
             "@type": "ListItem",
             position: 2,
             name: "нструкции по охране труда",
-            item: `${siteUrl}/instructions/`,
+            item: `${siteUrl}/instrukcii-po-ohrane-truda`,
           },
           {
             "@type": "ListItem",
@@ -726,7 +726,7 @@ ${renderHtmlHead({
         <article class="InstructionModal_modal">
           <a
             class="InstructionModal_close"
-            href="/instructions/"
+            href="/instrukcii-po-ohrane-truda"
             aria-label="Закрыть и вернуться к списку инструкций"
           >×</a>
 
@@ -770,7 +770,7 @@ function renderNotFoundPage(req) {
         <article class="InstructionModal_modal">
           <a
             class="InstructionModal_close"
-            href="/instructions/"
+            href="/instrukcii-po-ohrane-truda"
             aria-label="Вернуться к списку инструкций"
           >×</a>
 
@@ -804,7 +804,7 @@ for (const [urlPath, filePath] of PUBLIC_ASSETS) {
   });
 }
 
-router.get("/instructions/", (req, res, next) => {
+router.get("/instrukcii-po-ohrane-truda", (req, res, next) => {
   try {
     const query = String(req.query.q || "").trim();
     const instructions = getIndexableInstructions(query);
@@ -819,7 +819,7 @@ router.get("/instructions/", (req, res, next) => {
   }
 });
 
-router.get("/instructions/:id", (req, res, next) => {
+router.get("/instrukciya-po-ohrane-truda/:id", (req, res, next) => {
   try {
     const instruction = instructionsRepository.getById(req.params.id);
 
@@ -868,7 +868,7 @@ router.get("/sitemap.xml", (req, res, next) => {
     <loc>${escapeXml(`${getSiteUrl(req)}/`)}</loc>
   </url>
   <url>
-    <loc>${escapeXml(`${getSiteUrl(req)}/instructions/`)}</loc>
+    <loc>${escapeXml(`${getSiteUrl(req)}/instrukcii-po-ohrane-truda`)}</loc>
   </url>
 ${urls}
 </urlset>`;

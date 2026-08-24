@@ -1,224 +1,945 @@
-import path from "node:path";
 import { Router } from "express";
 import multer from "multer";
-import { nanoid } from "nanoid";
-import { instructionsRepository } from "../services/instructionsRepository.js";
-import { searchInstructions } from "../services/searchService.js";
-import { generateInstructionWithYandexGpt, isYandexGptConfigured } from "../services/yandexGptService.js";
-import { runScheduledGeneration } from "../services/scheduledGenerationService.js";
-import { extractTextFromUpload, splitIntoParagraphs } from "../services/documentTextExtractor.js";
-import { slugify } from "../utils/slug.js";
-import { requireAdmin } from "../middleware/auth.js";
-import { runExclusive } from "../services/generationLock.js";
 
-export const instructionsRouter = Router();
+import {
+  addToQueue
+} from "../services/importQueue.js";
 
-const MAX_UPLOAD_SIZE_BYTES = 15 * 1024 * 1024; // 15 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_UPLOAD_SIZE_BYTES },
-});
+import {
+  processImportFile
+} from "../services/importWorker.js";
 
-instructionsRouter.get("/", (req, res) => {
-  const q = typeof req.query.q === "string" ? req.query.q : "";
-  const page = Number.parseInt(req.query.page, 10) || 1;
-  const pageSize = Number.parseInt(req.query.pageSize, 10) || 6;
+import {
+  saveImportFile
+} from "../services/importFileStorage.js";
 
-  const result = searchInstructions(q, { page, pageSize });
-  res.json(result);
-});
+import {
+  createImport,
+  updateImportFile,
+  updateImport,
+  getImportProgress,
+  getAllImports
+} from "../services/importHistoryService.js";
 
-instructionsRouter.get("/:id", (req, res) => {
-  const instruction = instructionsRepository.getById(req.params.id);
-  if (!instruction) {
-    return res.status(404).json({ error: "  " });
-  }
-  res.json(instruction);
-});
+import {
+  instructionsRepository
+} from "../services/instructionsRepository.js";
 
-instructionsRouter.post("/generate", requireAdmin, async (req, res) => {
-  const profession = String(req.body?.profession ?? "").trim();
-  if (!profession) {
-    return res.status(400).json({ error: " profession " });
-  }
+import {
+  searchInstructions
+} from "../services/searchService.js";
 
-  if (!isYandexGptConfigured()) {
-    return res.status(503).json({
-      error:
-        "YandexGPT    .  YANDEX_API_KEY  YANDEX_FOLDER_ID  server/.env   .",
-    });
-  }
+import {
+  generateInstructionWithYandexGpt,
+  isYandexGptConfigured
+} from "../services/yandexGptService.js";
 
-  const id = slugify(profession) || `instruction-${Date.now()}`;
+import {
+  runScheduledGeneration
+} from "../services/scheduledGenerationService.js";
 
-  const existing = instructionsRepository.getById(id);
-  if (existing) {
-    return res.json(existing);
-  }
+import {
+  slugify
+} from "../utils/slug.js";
 
-  try {
-    const instruction = await runExclusive(id, async () => {
-      const alreadySaved = instructionsRepository.getById(id);
-      if (alreadySaved) return alreadySaved;
+import {
+  requireAdmin
+} from "../middleware/auth.js";
 
-      const generated = await generateInstructionWithYandexGpt(profession);
-      const built = {
-        id,
-        title: generated.title,
-        profession: generated.profession,
-        intro: generated.intro,
-        sections: generated.sections,
-        source: "generated",
-        generatedBy: "admin",
-        createdAt: new Date().toISOString(),
-      };
-      instructionsRepository.save(built);
-      return built;
-    });
-    res.status(201).json(instruction);
-  } catch (err) {
-    console.error("    YandexGPT:", err);
-    res.status(502).json({ error: `   : ${err.message}` });
-  }
-});
+import {
+  runExclusive
+} from "../services/generationLock.js";
 
-instructionsRouter.post(
-  "/upload",
-  requireAdmin,
-  (req, res, next) => {
-    upload.array("files", 50)(req, res, (err) => {
-      if (!err) return next();
-      if (err.code === "LIMIT_FILE_SIZE") {
-        return res.status(413).json({
-          error: `     ${Math.round(MAX_UPLOAD_SIZE_BYTES / (1024 * 1024))} `,
-        });
+
+export const instructionsRouter =
+  Router();
+
+
+
+const MAX_UPLOAD_SIZE_BYTES =
+  15 * 1024 * 1024;
+
+
+
+const upload =
+  multer({
+
+    storage:
+      multer.memoryStorage(),
+
+    limits:{
+      fileSize:
+        MAX_UPLOAD_SIZE_BYTES
+    }
+
+  });
+
+
+
+
+// =========================
+// GET ALL
+// =========================
+
+instructionsRouter.get(
+"/",
+(req,res)=>{
+
+
+  const q =
+    typeof req.query.q === "string"
+      ?
+      req.query.q
+      :
+      "";
+
+
+  const page =
+    Number.parseInt(
+      req.query.page,
+      10
+    ) || 1;
+
+
+  const pageSize =
+    Number.parseInt(
+      req.query.pageSize,
+      10
+    ) || 6;
+
+
+
+  res.json(
+    searchInstructions(
+      q,
+      {
+        page,
+        pageSize
       }
-      res.status(400).json({ error: `   : ${err.message}` });
-    });
-  },
-  async (req, res) => {
-    const title = String(req.body?.title ?? "").trim();
-    const profession = String(req.body?.profession ?? "").trim();
-    const manualContent = String(req.body?.content ?? "").trim();
+    )
+  );
 
-    if (!title) {
-      return res.status(400).json({ error: " title ( ) " });
-    }
-    if (!profession) {
-      return res.status(400).json({ error: " profession " });
-    }
-    if (!req.files && !manualContent) {
-      return res.status(400).json({ error: "      " });
-    }
 
-    let rawText;
-    let fileType = "manual";
-    let originalFileName = null;
+});
 
-    try {
-      if (req.file) {
-        rawText = await extractTextFromUpload({
-          buffer: req.file.buffer,
-          originalName: req.file.originalname,
-          mimetype: req.file.mimetype,
-        });
-        fileType = path.extname(req.file.originalname || "").replace(".", "").toLowerCase() || "file";
-        originalFileName = req.file.originalname;
-      } else {
-        rawText = manualContent;
-      }
-    } catch (err) {
-      return res.status(422).json({ error: err.message });
-    }
+instructionsRouter.get(
+"/imports/:id",
+requireAdmin,
+(req,res)=>{
 
-    const paragraphs = splitIntoParagraphs(rawText);
-    if (paragraphs.length === 0) {
-      return res.status(422).json({
-        error:
-          "       , ,      ().       .",
-      });
-    }
 
-    const id = `${slugify(title) || "instruction"}-${nanoid(6)}`;
-
-    const instruction = {
-      id,
-      title,
-      profession,
-      intro: "",
-      sections: [{ number: 1, heading: " ", paragraphs }],
-      source: "uploaded",
-      uploadedBy: "admin",
-      fileType,
-      originalFileName,
-      createdAt: new Date().toISOString(),
-    };
-
-    instructionsRepository.save(instruction);
-    res.status(201).json(instruction);
-  }
+const progress =
+getImportProgress(
+ req.params.id
 );
 
-instructionsRouter.put("/:id", requireAdmin, (req, res) => {
 
-  const existing = instructionsRepository.getById(req.params.id);
 
-  if (!existing) {
+if(!progress){
+
+return res.status(404).json({
+
+error:
+"Импорт не найден"
+
+});
+
+}
+
+
+
+res.json(
+ progress
+);
+
+
+});
+
+instructionsRouter.get(
+"/imports",
+requireAdmin,
+(req,res)=>{
+
+
+res.json(
+ getAllImports()
+);
+
+
+});
+
+
+
+// =========================
+// GET ONE
+// =========================
+
+instructionsRouter.get(
+"/:id",
+(req,res)=>{
+
+
+  const instruction =
+    instructionsRepository.getById(
+      req.params.id
+    );
+
+
+
+  if(!instruction){
+
     return res.status(404).json({
-      error: "  "
+
+      error:
+        "Инструкция не найдена"
+
     });
+
   }
+
+
+
+  res.json(
+    instruction
+  );
+
+
+});
+
+
+
+
+
+// =========================
+// GENERATE GPT
+// =========================
+
+instructionsRouter.post(
+"/generate",
+requireAdmin,
+async(req,res)=>{
+
+
+const profession =
+String(
+  req.body?.profession ?? ""
+)
+.trim();
+
+
+
+if(!profession){
+
+return res.status(400).json({
+
+error:
+"Не указана профессия"
+
+});
+
+}
+
+
+
+if(!isYandexGptConfigured()){
+
+return res.status(503).json({
+
+error:
+"YandexGPT не настроен"
+
+});
+
+}
+
+
+
+const id =
+slugify(profession)
+||
+`instruction-${Date.now()}`;
+
+
+
+try{
+
+
+const instruction =
+await runExclusive(
+id,
+async()=>{
+
+
+const existing =
+instructionsRepository.getById(
+id
+);
+
+
+
+if(existing){
+
+return existing;
+
+}
+
+
+
+const generated =
+await generateInstructionWithYandexGpt(
+profession
+);
+
+
+
+const built = {
+
+
+id,
+
+
+title:
+generated.title,
+
+
+profession:
+generated.profession,
+
+
+intro:
+generated.intro,
+
+
+sections:
+generated.sections,
+
+
+source:
+"generated",
+
+
+generatedBy:
+"admin",
+
+
+version:
+"1.0",
+
+
+createdAt:
+new Date().toISOString(),
+
+
+updatedAt:
+new Date().toISOString()
+
+};
+
+
+
+instructionsRepository.save(
+built
+);
+
+
+
+return built;
+
+
+}
+);
+
+
+
+res.status(201).json(
+instruction
+);
+
+
+
+}
+catch(error){
+
+
+console.error(error);
+
+
+res.status(502).json({
+
+error:
+error.message
+
+});
+
+
+}
+
+
+});
+
+// =========================
+// UPLOAD MANY FILES
+// =========================
+
+instructionsRouter.post(
+"/upload",
+
+requireAdmin,
+
+
+(req,res,next)=>{
+
+
+  upload.array(
+    "files",
+    50
+  )
+  (
+    req,
+    res,
+    error=>{
+
+
+      if(!error){
+
+        return next();
+
+      }
+
+
+
+      if(error.code==="LIMIT_FILE_SIZE"){
+
+        return res.status(413).json({
+
+          error:
+          "Файл превышает лимит 15 МБ"
+
+        });
+
+      }
+
+
+
+      return res.status(400).json({
+
+        error:
+        error.message
+
+      });
+
+
+    }
+  );
+
+
+},
+
+
+
+async(req,res)=>{
+
+
+  const manualContent =
+    String(
+      req.body?.content ?? ""
+    )
+    .trim();
+
+
+
+
+  if(
+    (!req.files ||
+     req.files.length===0)
+     &&
+    !manualContent
+  ){
+
+    return res.status(400).json({
+
+      error:
+      "Файл или текст не переданы"
+
+    });
+
+  }
+
+
+
+
+  const importTask =
+    createImport(
+      req.files || []
+    );
+
+
+
+
+  updateImport(
+    importTask.id,
+    {
+      status:
+      "waiting"
+    }
+  );
+
+
+
+
+  try{
+
+
+    if(req.files?.length){
+
+
+
+      for(
+        let index = 0;
+        index < req.files.length;
+        index++
+      ){
+
+
+        const file =
+          req.files[index];
+
+
+
+        const importFile =
+          importTask.files[index];
+
+
+
+
+        try{
+
+
+          const savedPath =
+            await saveImportFile(
+              importTask.id,
+              file
+            );
+
+
+
+          updateImportFile(
+            importTask.id,
+            importFile.id,
+            {
+
+              path:
+              savedPath,
+
+
+              status:
+              "waiting"
+
+            }
+          );
+
+
+
+
+
+          addToQueue(
+
+            () =>
+
+              processImportFile({
+
+                importId:
+                importTask.id,
+
+
+                importFile,
+
+
+                file
+
+              })
+
+          );
+
+
+
+        }
+        catch(error){
+
+
+          updateImportFile(
+            importTask.id,
+            importFile.id,
+            {
+
+              status:
+              "failed",
+
+
+              error:
+              error.message,
+
+
+              finishedAt:
+              new Date()
+              .toISOString()
+
+            }
+          );
+
+
+        }
+
+
+      }
+
+
+    }
+
+
+
+
+    // ручной текст
+    // оставляем отдельную обработку
+
+    if(manualContent){
+
+
+      addToQueue(
+
+        async()=>{
+
+
+          const fakeFile = {
+
+
+            buffer:
+            Buffer.from(
+              manualContent,
+              "utf-8"
+            ),
+
+
+            originalname:
+            "manual.txt",
+
+
+            mimetype:
+            "text/plain"
+
+
+          };
+
+
+
+          const instruction =
+            await processImportFile({
+
+              importId:
+              importTask.id,
+
+
+              importFile:
+              {
+
+                id:
+                nanoid(),
+
+                status:
+                "waiting"
+
+              },
+
+
+              file:
+              fakeFile
+
+
+            });
+
+
+
+          return instruction;
+
+
+        }
+
+      );
+
+
+    }
+
+
+
+
+    res.status(201).json({
+
+      importId:
+      importTask.id,
+
+
+      total:
+      importTask.total,
+
+
+      status:
+      "waiting",
+
+
+      message:
+      "Документы добавлены в очередь обработки"
+
+    });
+
+
+
+  }
+  catch(error){
+
+
+
+    console.error(
+      error
+    );
+
+
+
+    updateImport(
+      importTask.id,
+      {
+        status:
+        "failed"
+      }
+    );
+
+
+
+    res.status(422).json({
+
+      error:
+      error.message
+
+    });
+
+
+  }
+
+
+});
+
+
+
+
+
+// =========================
+// EDIT
+// =========================
+
+instructionsRouter.put(
+"/:id",
+
+requireAdmin,
+
+
+(req,res)=>{
+
+
+  const existing =
+    instructionsRepository.getById(
+      req.params.id
+    );
+
+
+
+  if(!existing){
+
+
+    return res.status(404).json({
+
+      error:
+      "Инструкция не найдена"
+
+    });
+
+
+  }
+
+
 
 
   const updated = {
 
+
     ...existing,
+
 
     ...req.body,
 
 
-    id: existing.id,
+
+    id:
+    existing.id,
 
 
-  version: existing.version
-  ? (Number(existing.version) + 0.1).toFixed(1)
-  : "1.1",
 
-    updatedAt: new Date().toISOString()
+    version:
+
+      existing.version
+
+      ?
+
+      (
+        Number(existing.version)
+        +
+        0.1
+      )
+      .toFixed(1)
+
+
+      :
+
+      "1.1",
+
+
+
+
+    updatedAt:
+    new Date()
+    .toISOString()
+
 
   };
 
 
-  instructionsRepository.save(updated);
 
 
-  res.json(updated);
+  instructionsRepository.save(
+    updated
+  );
+
+
+
+  res.json(
+    updated
+  );
+
 
 });
 
-// DELETE /api/instructions/:id   .  .
-instructionsRouter.delete("/:id", requireAdmin, (req, res) => {
-  const existing = instructionsRepository.getById(req.params.id);
-  if (!existing) {
-    return res.status(404).json({ error: "  " });
+
+
+
+
+
+// =========================
+// DELETE
+// =========================
+
+instructionsRouter.delete(
+"/:id",
+
+requireAdmin,
+
+
+(req,res)=>{
+
+
+  const existing =
+    instructionsRepository.getById(
+      req.params.id
+    );
+
+
+
+  if(!existing){
+
+
+    return res.status(404).json({
+
+      error:
+      "Инструкция не найдена"
+
+    });
+
+
   }
-  instructionsRepository.remove(req.params.id);
+
+
+
+  instructionsRepository.remove(
+    req.params.id
+  );
+
+
+
   res.status(204).end();
+
+
 });
 
-// POST /api/instructions/run-scheduled-generation
-//     ,     
-// (jobs/dailyGenerationJob.js)      
-//  server/src/data/professionQueue.json     .
-//   ,      .  .
-instructionsRouter.post("/run-scheduled-generation", requireAdmin, async (req, res) => {
-  const result = await runScheduledGeneration();
 
-  if (result.status === "generated") {
-    return res.status(201).json(result.instruction);
+
+
+
+
+// =========================
+// SCHEDULE GENERATION
+// =========================
+
+instructionsRouter.post(
+"/run-scheduled-generation",
+
+requireAdmin,
+
+
+async(req,res)=>{
+
+
+  const result =
+    await runScheduledGeneration();
+
+
+
+
+  if(result.status==="generated"){
+
+
+    return res.status(201)
+    .json(
+      result.instruction
+    );
+
+
   }
-  if (result.status === "skipped") {
-    return res.status(200).json({ message: result.reason });
+
+
+
+
+  if(result.status==="skipped"){
+
+
+    return res.status(200)
+    .json({
+
+      message:
+      result.reason
+
+    });
+
+
   }
-  res.status(502).json({ error: result.reason });
+
+
+
+
+
+  res.status(502).json({
+
+    error:
+    result.reason
+
+  });
+
+
+
 });
