@@ -3,8 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import SEO from "../SEO/SEO.jsx";
-import Header from "../Header/Header.jsx";
-import Navigation from "../Navigation/Navigation.jsx";
+import InstructionStickyHeader from "../InstructionStickyHeader/InstructionStickyHeader.jsx";
 import StructuredData from "../StructuredData/StructuredData.jsx";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs.jsx";
 import MetaTags from "../MetaTags/MetaTags.jsx";
@@ -15,6 +14,79 @@ import EditInstructionModal from "../EditInstructionModal/EditInstructionModal.j
 import { selectIsAdmin } from "../../store/authSlice.js";
 
 import styles from "./InstructionPage.module.css";
+
+
+
+function renderInstructionParagraph(
+    paragraph,
+    index
+) {
+    const text =
+        String(paragraph ?? "").trim();
+
+    /*
+     * Встроенный список:
+     *
+     * 1.4. Работник должен: - пункт; - пункт; - пункт.
+     */
+    if (!/:\\s*-\\s+/.test(text)) {
+        return (
+            <p key={index}>
+                {text}
+            </p>
+        );
+    }
+
+    const parts =
+        text.split(/\\s+-\\s+/);
+
+    const lead =
+        parts.shift()?.trim();
+
+    const items =
+        parts
+            .map(item =>
+                item
+                    .trim()
+                    .replace(/;\\s*$/, "")
+            )
+            .filter(Boolean);
+
+    /*
+     * Один дефис ещё не считаем списком.
+     */
+    if (
+        !lead ||
+        items.length < 2
+    ) {
+        return (
+            <p key={index}>
+                {text}
+            </p>
+        );
+    }
+
+    return (
+        <div
+            key={index}
+            className={styles.paragraphWithList}
+        >
+            <p className={styles.paragraphLead}>
+                {lead}
+            </p>
+
+            <ul className={styles.inlineList}>
+                {items.map(
+                    (item, itemIndex) => (
+                        <li key={itemIndex}>
+                            {item}
+                        </li>
+                    )
+                )}
+            </ul>
+        </div>
+    );
+}
 
 
 export default function InstructionPage() {
@@ -212,19 +284,7 @@ export default function InstructionPage() {
 
 
 
-            <div className={styles.siteHeader}>
-
-                <Header
-                    query=""
-                    onQueryChange={() => {}}
-                />
-
-                <Navigation />
-
-            </div>
-
-
-
+            <InstructionStickyHeader />
 
             <main className={styles.content}>
 
@@ -399,13 +459,12 @@ export default function InstructionPage() {
 
 
                                 {section.paragraphs.map(
-                                    (paragraph,index)=>(
-
-                                    <p key={index}>
-                                        {paragraph}
-                                    </p>
-
-                                ))}
+                                    (paragraph, index) =>
+                                        renderInstructionParagraph(
+                                            paragraph,
+                                            index
+                                        )
+                                )}
 
 
                             </section>

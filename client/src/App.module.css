@@ -58,3 +58,2228 @@
     align-items: flex-start;
   }
 }
+
+
+/*
+ * BOYKOVDOCS LOAD MORE
+ */
+
+.loadMoreZone {
+  min-height: 92px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px 0 8px;
+}
+
+
+.loadMoreText,
+.loadMoreDone,
+.loadMoreRetry {
+  font-family:
+    var(--font-mono);
+
+  font-size: 11.5px;
+  font-weight: 600;
+
+  letter-spacing: 0.04em;
+}
+
+
+.loadMoreText {
+  color:
+    var(--color-primary);
+
+  animation:
+    loadMorePulse
+    1.3s
+    ease-in-out
+    infinite;
+}
+
+
+.loadMoreDone {
+  color:
+    var(--color-text);
+
+  opacity: 0.45;
+}
+
+
+.loadMoreRetry {
+  padding: 7px 9px;
+
+  color:
+    var(--color-danger);
+
+  background: none;
+  border: none;
+
+  cursor: pointer;
+}
+
+
+.loadMoreRetry:hover,
+.loadMoreRetry:focus-visible {
+  text-decoration: underline;
+}
+
+
+@keyframes loadMorePulse {
+
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+}
+
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  .loadMoreText {
+    animation: none;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * STICKY INTRO
+ * Navigation + Hero
+ * ============================================================
+ */
+
+.stickyIntro {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 50;
+
+  background:
+    var(--color-bg);
+
+  border-bottom:
+    var(--border-hair);
+
+  /*
+   * Не даём карточкам,
+   * прокручивающимся снизу,
+   * визуально проступать через hero.
+   */
+  isolation: isolate;
+}
+
+
+/*
+ * На небольших экранах большой hero,
+ * закреплённый сверху, занимает слишком
+ * много полезной высоты.
+ */
+@media (max-width: 760px) {
+
+  .stickyIntro {
+    position: relative;
+
+    top: auto;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * COMPACT ANIMATED STICKY HEADER
+ * ============================================================
+ */
+
+.stickyIntro {
+  transition:
+    background-color
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    box-shadow
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    border-color
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact {
+  background:
+    var(--color-bg);
+
+  box-shadow:
+    0 12px 34px
+    rgba(20, 30, 50, 0.06);
+}
+
+
+/*
+ * ------------------------------------------------------------
+ * Поиск + логотип
+ *
+ * В обычном состоянии их здесь визуально нет.
+ * Когда блок закрепляется — они плавно раскрываются.
+ * ------------------------------------------------------------
+ */
+
+.compactControls {
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 18px;
+
+  max-height: 0;
+
+  padding:
+    0;
+
+  opacity: 0;
+
+  overflow: hidden;
+
+  transform:
+    translate3d(
+      0,
+      -10px,
+      0
+    );
+
+  pointer-events: none;
+
+  border-bottom:
+    1px solid
+    transparent;
+
+  transition:
+    max-height
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    padding
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    opacity
+      650ms
+      ease,
+
+    transform
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    border-color
+      850ms
+      ease;
+}
+
+
+.stickyIntroCompact
+.compactControls {
+  max-height:
+    82px;
+
+  padding:
+    10px
+    0;
+
+  opacity: 1;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  pointer-events: auto;
+
+  border-bottom:
+    var(--border-hair);
+}
+
+
+.compactSearch {
+  min-width: 0;
+}
+
+
+.compactLogo {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    flex-end;
+}
+
+
+/*
+ * ------------------------------------------------------------
+ * Navigation
+ * ------------------------------------------------------------
+ */
+
+.stickyIntro nav {
+  transition:
+    gap
+      900ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    padding
+      900ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    margin
+      900ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntro nav a {
+  transition:
+    font-size
+      900ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    opacity
+      200ms
+      ease;
+}
+
+
+.stickyIntroCompact nav {
+  gap: 18px;
+
+  padding:
+    8px
+    0
+    10px;
+
+  margin-bottom:
+    10px;
+
+  overflow-x: auto;
+
+  overscroll-behavior-inline:
+    contain;
+
+  scrollbar-width:
+    none;
+}
+
+
+.stickyIntroCompact
+nav::-webkit-scrollbar {
+  display: none;
+}
+
+
+.stickyIntroCompact nav a {
+  font-size:
+    12px;
+}
+
+
+/*
+ * ------------------------------------------------------------
+ * Hero
+ * ------------------------------------------------------------
+ */
+
+.hero {
+  transition:
+    gap
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    margin
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.heroText {
+  transition:
+    max-width
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.title {
+  transition:
+    margin
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    font-size
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    line-height
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.subtitle {
+  max-height:
+    100px;
+
+  opacity: 1;
+
+  overflow: hidden;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  transition:
+    max-height
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    opacity
+      500ms
+      ease,
+
+    transform
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact
+.hero {
+  gap: 20px;
+
+  margin:
+    0
+    0
+    10px;
+}
+
+
+.stickyIntroCompact
+.heroText {
+  max-width:
+    100%;
+}
+
+
+.stickyIntroCompact
+.title {
+  margin:
+    0;
+
+  font-size:
+    25px;
+
+  line-height:
+    1.2;
+}
+
+
+.stickyIntroCompact
+.subtitle {
+  max-height:
+    0;
+
+  opacity: 0;
+
+  transform:
+    translate3d(
+      0,
+      -6px,
+      0
+    );
+}
+
+
+/*
+ * ------------------------------------------------------------
+ * Portrait
+ *
+ * При фиксации портрет мягко сворачивается.
+ * Благодаря max-width/max-height hero действительно
+ * становится ниже, а не только визуально масштабируется.
+ * ------------------------------------------------------------
+ */
+
+.heroPortraitWrap {
+  max-width:
+    480px;
+
+  max-height:
+    260px;
+
+  opacity: 1;
+
+  overflow: hidden;
+
+  transform:
+    scale(1);
+
+  transform-origin:
+    right center;
+
+  transition:
+    max-width
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    max-height
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    opacity
+      550ms
+      ease,
+
+    transform
+      950ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact
+.heroPortraitWrap {
+  max-width:
+    190px;
+
+  max-height:
+    110px;
+
+  opacity: 1;
+
+  transform:
+    scale(0.82);
+
+  transform-origin:
+    right center;
+
+  pointer-events: auto;
+}
+
+
+/*
+ * ------------------------------------------------------------
+ * Reduced motion
+ * ------------------------------------------------------------
+ */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .stickyIntro,
+  .compactControls,
+  .stickyIntro nav,
+  .stickyIntro nav a,
+  .hero,
+  .heroText,
+  .title,
+  .subtitle,
+  .heroPortraitWrap {
+    transition: none;
+  }
+
+}
+
+
+/*
+ * На небольших экранах сохраняем
+ * текущее поведение без sticky-header.
+ */
+
+@media (
+  max-width: 760px
+) {
+
+  .compactControls {
+    display: none;
+  }
+
+  .stickyIntroCompact
+  .subtitle {
+    max-height:
+      100px;
+
+    opacity: 1;
+
+    transform: none;
+  }
+
+  .stickyIntroCompact
+  .heroPortraitWrap {
+    max-width:
+      480px;
+
+    max-height:
+      260px;
+
+    opacity: 1;
+
+    transform: none;
+  }
+
+  .stickyIntroCompact
+  .title {
+    font-size:
+      40px;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * COMPACT PORTRAIT LAYOUT FIX
+ * ============================================================
+ *
+ * Реальные размеры портрета теперь контролирует
+ * HeroPortrait.module.css.
+ *
+ * Внешняя обёртка больше ничего не режет
+ * и не масштабирует.
+ */
+
+.heroPortraitWrap {
+  max-width: none;
+  max-height: none;
+
+  overflow: visible;
+
+  opacity: 1;
+
+  transform: none;
+
+  flex-shrink: 0;
+
+  transition: none;
+}
+
+
+.stickyIntroCompact
+.heroPortraitWrap {
+  max-width: none;
+  max-height: none;
+
+  overflow: visible;
+
+  opacity: 1;
+
+  transform: none;
+
+  pointer-events: auto;
+}
+
+
+/*
+ * В compact hero оставляем портрет справа.
+ */
+
+.stickyIntroCompact
+.hero {
+  align-items: center;
+
+  min-height: 100px;
+}
+
+
+/*
+ * ============================================================
+ * FINAL SMOOTH STICKY HEADER
+ * ============================================================
+ */
+
+
+/*
+ * Отдельная точка переключения состояния.
+ *
+ * Она не меняет размеры при анимации,
+ * поэтому compact state больше не дрожит.
+ */
+.stickyTrigger {
+  width: 100%;
+  height: 1px;
+
+  margin-top: -1px;
+
+  pointer-events: none;
+}
+
+
+/*
+ * Sticky остаётся в текущей сетке,
+ * но визуальная панель через ::before
+ * растягивается на 100% viewport.
+ *
+ * Таким образом контент не прыгает
+ * по горизонтали.
+ */
+.stickyIntro {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 50;
+
+  background:
+    transparent;
+
+  border-bottom:
+    0;
+
+  isolation:
+    isolate;
+}
+
+
+.stickyIntro::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+
+  left: 50%;
+
+  width: 100vw;
+
+  transform:
+    translateX(-50%);
+
+  z-index: -1;
+
+  background:
+    var(--color-bg);
+
+  border-bottom:
+    var(--border-hair);
+
+  box-shadow:
+    0 0 0
+    rgba(20, 30, 50, 0);
+
+  transition:
+    box-shadow
+      1200ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    background-color
+      1200ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact::before {
+  box-shadow:
+    0 14px 40px
+    rgba(20, 30, 50, 0.07);
+}
+
+
+/*
+ * ============================================================
+ * SEARCH + LOGO
+ * ============================================================
+ *
+ * Используем конкретную height вместо max-height.
+ * Так браузер может плавно интерполировать размер
+ * без скачка между auto/0.
+ */
+
+.compactControls {
+  width: 100%;
+
+  height: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(280px, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding:
+    0;
+
+  opacity: 0;
+
+  overflow: hidden;
+
+  transform:
+    translate3d(
+      0,
+      -7px,
+      0
+    );
+
+  pointer-events:
+    none;
+
+  border-bottom:
+    1px solid
+    transparent;
+
+  transition:
+    height
+      1150ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    padding
+      1150ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    opacity
+      900ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    transform
+      1150ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    border-color
+      900ms
+      ease;
+}
+
+
+.stickyIntroCompact
+.compactControls {
+  height:
+    64px;
+
+  padding:
+    6px
+    0
+    4px;
+
+  opacity:
+    1;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  pointer-events:
+    auto;
+
+  border-bottom:
+    var(--border-hair);
+}
+
+
+.compactSearch {
+  width: 100%;
+
+  min-width: 0;
+}
+
+
+.compactLogo {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    flex-end;
+
+  /*
+   * Запрошенный отступ.
+   */
+  margin-bottom:
+    3px;
+}
+
+
+/*
+ * ============================================================
+ * NAVIGATION
+ * ============================================================
+ */
+
+.stickyIntro nav {
+  transition:
+    gap
+      1150ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    padding
+      1150ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    margin
+      1150ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntro nav a {
+  transition:
+    font-size
+      1050ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    opacity
+      250ms
+      ease;
+}
+
+
+.stickyIntroCompact nav {
+  gap:
+    18px;
+
+  padding:
+    7px
+    0
+    9px;
+
+  margin-bottom:
+    8px;
+
+  overflow-x:
+    auto;
+
+  scrollbar-width:
+    none;
+}
+
+
+.stickyIntroCompact
+nav::-webkit-scrollbar {
+  display: none;
+}
+
+
+.stickyIntroCompact
+nav a {
+  font-size:
+    12px;
+}
+
+
+/*
+ * ============================================================
+ * HERO
+ * ============================================================
+ *
+ * Главное изменение против скачка:
+ * normal и compact теперь имеют конкретный
+ * min-height, который браузер может анимировать.
+ */
+
+.hero {
+  min-height:
+    210px;
+
+  gap:
+    40px;
+
+  transition:
+    min-height
+      1250ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    gap
+      1250ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    margin
+      1250ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact
+.hero {
+  min-height:
+    96px;
+
+  gap:
+    24px;
+
+  margin:
+    0
+    0
+    8px;
+
+  align-items:
+    center;
+}
+
+
+.title {
+  transition:
+    font-size
+      1200ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    line-height
+      1200ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    margin
+      1200ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact
+.title {
+  margin:
+    0;
+
+  font-size:
+    25px;
+
+  line-height:
+    1.2;
+}
+
+
+.subtitle {
+  max-height:
+    90px;
+
+  opacity:
+    1;
+
+  overflow:
+    hidden;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  transition:
+    max-height
+      1100ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    opacity
+      750ms
+      ease,
+
+    transform
+      1100ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact
+.subtitle {
+  max-height:
+    0;
+
+  opacity:
+    0;
+
+  transform:
+    translate3d(
+      0,
+      -4px,
+      0
+    );
+}
+
+
+/*
+ * Внешняя обёртка портрета больше
+ * никогда не режет его.
+ */
+
+.heroPortraitWrap,
+.stickyIntroCompact
+.heroPortraitWrap {
+  max-width:
+    none;
+
+  max-height:
+    none;
+
+  flex-shrink:
+    0;
+
+  overflow:
+    visible;
+
+  opacity:
+    1;
+
+  transform:
+    none;
+
+  pointer-events:
+    auto;
+}
+
+
+/*
+ * ============================================================
+ * REDUCED MOTION
+ * ============================================================
+ */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .stickyIntro::before,
+  .compactControls,
+  .stickyIntro nav,
+  .stickyIntro nav a,
+  .hero,
+  .title,
+  .subtitle {
+    transition:
+      none;
+  }
+
+}
+
+
+/*
+ * На мобильных оставляем hero обычным,
+ * как и раньше.
+ */
+
+@media (
+  max-width: 760px
+) {
+
+  .stickyIntro {
+    position:
+      relative;
+
+    top:
+      auto;
+  }
+
+
+  .compactControls {
+    display:
+      none;
+  }
+
+
+  .hero {
+    min-height:
+      auto;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * FINAL STICKY PANEL SPACING
+ * ============================================================
+ *
+ * 1. Панель занимает всю ширину viewport.
+ * 2. Контент остаётся выровнен по основной сетке сайта.
+ * 3. Search / logo получают нормальный вертикальный воздух.
+ * 4. Портрет больше не касается нижней границы.
+ */
+
+
+/*
+ * Полноэкранная sticky-панель.
+ */
+.stickyIntro {
+  width: 100vw;
+  max-width: 100vw;
+
+  margin-left:
+    calc(50% - 50vw);
+
+  padding-left:
+    max(
+      32px,
+      calc(
+        (100vw - var(--max-width)) / 2
+        + 32px
+      )
+    );
+
+  padding-right:
+    max(
+      32px,
+      calc(
+        (100vw - var(--max-width)) / 2
+        + 32px
+      )
+    );
+
+  box-sizing:
+    border-box;
+}
+
+
+/*
+ * stickyIntro теперь сам полноэкранный,
+ * поэтому pseudo-background больше
+ * не нужно дополнительно растягивать.
+ */
+.stickyIntro::before {
+  left: 0;
+
+  width: 100%;
+
+  transform: none;
+}
+
+
+/*
+ * ============================================================
+ * SEARCH + LOGO
+ * ============================================================
+ */
+
+/*
+ * Раньше 64px было слишком мало:
+ * крупная кнопка логотипа попадала почти
+ * вплотную к верхней/нижней границе.
+ */
+.stickyIntroCompact
+.compactControls {
+  height:
+    82px;
+
+  padding:
+    8px
+    0
+    9px;
+
+  box-sizing:
+    border-box;
+}
+
+
+.compactSearch {
+  min-width:
+    0;
+
+  padding:
+    3px
+    0;
+
+  box-sizing:
+    border-box;
+}
+
+
+.compactLogo {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    flex-end;
+
+  padding-top:
+    3px;
+
+  /*
+   * Нужный отступ от кнопки.
+   */
+  margin-bottom:
+    3px;
+
+  box-sizing:
+    border-box;
+}
+
+
+/*
+ * ============================================================
+ * COMPACT HERO
+ * ============================================================
+ */
+
+/*
+ * Фото 96px.
+ *
+ * Делаем hero выше фотографии и добавляем
+ * реальные вертикальные padding, чтобы
+ * круг не касался границы панели.
+ */
+.stickyIntroCompact
+.hero {
+  min-height:
+    118px;
+
+  padding:
+    9px
+    0
+    13px;
+
+  margin:
+    0;
+
+  box-sizing:
+    border-box;
+
+  align-items:
+    center;
+}
+
+
+/*
+ * Дополнительный небольшой воздух
+ * непосредственно вокруг portrait.
+ */
+.stickyIntroCompact
+.heroPortraitWrap {
+  padding:
+    3px
+    8px
+    5px
+    0;
+
+  box-sizing:
+    border-box;
+}
+
+
+/*
+ * Немного увеличиваем расстояние
+ * между navigation и compact hero.
+ */
+.stickyIntroCompact
+nav {
+  margin-bottom:
+    5px;
+}
+
+
+/*
+ * ============================================================
+ * MOBILE
+ * ============================================================
+ */
+
+@media (
+  max-width: 760px
+) {
+
+  .stickyIntro {
+    width:
+      auto;
+
+    max-width:
+      none;
+
+    margin-left:
+      0;
+
+    padding-left:
+      0;
+
+    padding-right:
+      0;
+  }
+
+
+  .stickyIntroCompact
+  .hero {
+    min-height:
+      auto;
+
+    padding:
+      0;
+  }
+
+
+  .stickyIntroCompact
+  .heroPortraitWrap {
+    padding:
+      0;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * COMPACT BOYKOVGROUP BUTTON SIZE
+ * ============================================================
+ */
+
+.compactLogo {
+  margin-bottom: 3px;
+
+  transform:
+    scale(0.82);
+
+  transform-origin:
+    right center;
+
+  transition:
+    transform
+      900ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  .compactLogo {
+    transition: none;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * COMPACT CONTROLS — EQUAL HEIGHT
+ * ============================================================
+ *
+ * Поиск и кнопка БОЙКОВГРУПП
+ * имеют одинаковую реальную высоту.
+ */
+
+.stickyIntroCompact
+.compactControls {
+  --compact-control-height: 48px;
+
+  align-items: center;
+}
+
+
+/*
+ * SEARCH
+ */
+
+.compactSearch {
+  height:
+    var(--compact-control-height);
+
+  padding:
+    0;
+
+  box-sizing:
+    border-box;
+}
+
+
+.compactSearch > * {
+  height:
+    100%;
+
+  box-sizing:
+    border-box;
+}
+
+
+.compactSearch input {
+  height:
+    100%;
+
+  min-height:
+    0;
+
+  box-sizing:
+    border-box;
+}
+
+
+/*
+ * BOYKOVGROUP BUTTON
+ */
+
+.compactLogo {
+  height:
+    var(--compact-control-height);
+
+  padding:
+    0;
+
+  margin-bottom:
+    3px;
+
+  /*
+   * Убираем предыдущий scale(0.82).
+   * Теперь размер настоящий,
+   * а не только визуально уменьшенный.
+   */
+  transform:
+    none;
+
+  align-items:
+    stretch;
+}
+
+
+.compactLogo > * {
+  height:
+    100%;
+
+  min-height:
+    0;
+
+  max-height:
+    100%;
+
+  box-sizing:
+    border-box;
+}
+
+
+/*
+ * Если логотип внутри кнопки является img,
+ * не даём картинке выйти за высоту кнопки.
+ */
+
+.compactLogo img {
+  height:
+    100%;
+
+  max-height:
+    100%;
+
+  width:
+    auto;
+
+  object-fit:
+    contain;
+}
+
+
+/*
+ * ============================================================
+ * STICKY ANIMATION STABILITY
+ * ============================================================
+ *
+ * Браузер не должен самостоятельно менять
+ * scroll position из-за изменения высоты
+ * анимируемого sticky hero.
+ */
+
+.page {
+  overflow-anchor: none;
+}
+
+
+.stickyIntro {
+  overflow-anchor: none;
+
+  will-change:
+    contents;
+}
+
+
+.compactControls,
+.hero,
+.heroPortraitWrap {
+  overflow-anchor: none;
+}
+
+
+/*
+ * ============================================================
+ * STICKY ANIMATION STABILITY
+ * ============================================================
+ *
+ * Браузер не должен самостоятельно менять
+ * scroll position из-за изменения высоты
+ * анимируемого sticky hero.
+ */
+
+.page {
+  overflow-anchor: none;
+}
+
+
+.stickyIntro {
+  overflow-anchor: none;
+
+  will-change:
+    contents;
+}
+
+
+.compactControls,
+.hero,
+.heroPortraitWrap {
+  overflow-anchor: none;
+}
+
+
+/*
+ * ============================================================
+ * SMOOTH HERO DESCRIPTION
+ * ============================================================
+ *
+ * Описание сначала плавно растворяется,
+ * и только затем окончательно схлопывается
+ * занимаемая им высота.
+ */
+
+.subtitle {
+  max-height: 96px;
+
+  opacity: 1;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  transition:
+    opacity
+      1250ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    transform
+      1450ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    max-height
+      1500ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+/*
+ * При сжатии:
+ *
+ * opacity начинает меняться сразу,
+ * а max-height — с небольшой задержкой.
+ *
+ * За счёт этого текст не обрезается
+ * раньше, чем успеет раствориться.
+ */
+.stickyIntroCompact
+.subtitle {
+  max-height: 0;
+
+  opacity: 0;
+
+  transform:
+    translate3d(
+      0,
+      -2px,
+      0
+    );
+
+  transition:
+    opacity
+      1400ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    transform
+      1500ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    max-height
+      1650ms
+      cubic-bezier(0.16, 1, 0.3, 1)
+      220ms;
+}
+
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  .subtitle,
+  .stickyIntroCompact
+  .subtitle {
+    transition: none;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * ULTRA SMOOTH HERO DESCRIPTION
+ * ============================================================
+ */
+
+.subtitle {
+  max-height: 96px;
+
+  opacity: 1;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  transition:
+    opacity
+      1800ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    transform
+      2000ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    max-height
+      2200ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact
+.subtitle {
+  max-height: 0;
+
+  opacity: 0;
+
+  transform:
+    translate3d(
+      0,
+      -1px,
+      0
+    );
+
+  transition:
+    opacity
+      1900ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    transform
+      2100ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    max-height
+      2300ms
+      cubic-bezier(0.16, 1, 0.3, 1)
+      500ms;
+}
+
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  .subtitle,
+  .stickyIntroCompact
+  .subtitle {
+    transition: none;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * HERO BOTTOM SPACING + CONTENT-WIDTH DIVIDER
+ * ============================================================
+ */
+
+
+/*
+ * Убираем полноэкранную нижнюю линию
+ * с фонового ::before.
+ */
+.stickyIntro::before {
+  border-bottom: none;
+}
+
+
+/*
+ * Новая линия совпадает по ширине
+ * с основной сеткой сайта.
+ */
+.stickyIntro::after {
+  content: "";
+
+  position: absolute;
+
+  left:
+    max(
+      32px,
+      calc(
+        (100vw - var(--max-width)) / 2
+        + 32px
+      )
+    );
+
+  right:
+    max(
+      32px,
+      calc(
+        (100vw - var(--max-width)) / 2
+        + 32px
+      )
+    );
+
+  bottom: 0;
+
+  height: 1px;
+
+  background:
+    rgba(20, 30, 50, 0.15);
+
+  pointer-events: none;
+}
+
+
+/*
+ * В обычном большом hero добавляем
+ * реальное пространство между портретом
+ * и нижней линией.
+ *
+ * margin здесь не используем:
+ * он может схлопываться с родителем.
+ */
+.stickyIntro:not(.stickyIntroCompact)
+.hero {
+  margin-bottom: 0;
+
+  padding-bottom: 30px;
+}
+
+
+/*
+ * Небольшой дополнительный воздух
+ * именно под портретом.
+ */
+.stickyIntro:not(.stickyIntroCompact)
+.heroPortraitWrap {
+  padding-bottom: 6px;
+
+  box-sizing: border-box;
+}
+
+
+/*
+ * В compact-состоянии оставляем
+ * текущие размеры и отступы.
+ */
+.stickyIntroCompact
+.hero {
+  padding-bottom: 13px;
+}
+
+
+/*
+ * Mobile — линия соответствует
+ * обычным боковым отступам страницы.
+ */
+@media (
+  max-width: 760px
+) {
+
+  .stickyIntro::after {
+    left: 0;
+    right: 0;
+  }
+
+
+  .stickyIntro:not(.stickyIntroCompact)
+  .hero {
+    padding-bottom: 20px;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * RESULTS HEADER CLEANUP
+ * ============================================================
+ *
+ * Убираем двойной разделитель:
+ * верхняя линия уже принадлежит hero.
+ */
+
+.resultsHead {
+  border-bottom: none;
+
+  padding-top: 22px;
+  padding-bottom: 0;
+
+  margin-top: 0;
+  margin-bottom: 24px;
+
+  align-items: center;
+}
+
+
+/*
+ * Сам счётчик немного отделяем
+ * от линии hero.
+ */
+.count {
+  display: block;
+
+  line-height: 1.4;
+}
+
+
+/*
+ * ============================================================
+ * FASTER SMOOTH HERO DESCRIPTION
+ * ============================================================
+ *
+ * Быстрее предыдущей версии,
+ * но без резкого обрезания текста.
+ */
+
+.subtitle {
+  max-height: 96px;
+
+  opacity: 1;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  transition:
+    opacity
+      850ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    transform
+      1000ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    max-height
+      1100ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.stickyIntroCompact
+.subtitle {
+  max-height: 0;
+
+  opacity: 0;
+
+  transform:
+    translate3d(
+      0,
+      -1px,
+      0
+    );
+
+  transition:
+    opacity
+      900ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    transform
+      1050ms
+      cubic-bezier(0.16, 1, 0.3, 1),
+
+    max-height
+      1150ms
+      cubic-bezier(0.16, 1, 0.3, 1)
+      180ms;
+}
+
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  .subtitle,
+  .stickyIntroCompact
+  .subtitle {
+    transition: none;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * EMERGENCY_SCROLL_FIX_V1
+ * ============================================================
+ *
+ * Sticky временно отключён.
+ * Элемент снова находится в обычном document flow,
+ * поэтому высота страницы стабильна и infinite scroll
+ * может нормально достигать loadMore sentinel.
+ */
+.stickyIntro {
+  position: relative;
+  top: auto;
+}
+
+
+
+/*
+ * ============================================================
+ * SAFE_FIXED_COMPACT_HEADER_V2
+ * ============================================================
+ *
+ * Отдельная fixed-шапка не участвует в document flow.
+ * Её появление не меняет scrollHeight страницы.
+ */
+
+.safeCompactHeader {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  z-index: 100;
+
+  background:
+    var(--color-bg);
+
+  border-bottom:
+    var(--border-hair);
+
+  box-shadow:
+    0 12px 34px
+    rgba(20, 30, 50, 0.06);
+
+  opacity: 0;
+
+  transform:
+    translate3d(
+      0,
+      -105%,
+      0
+    );
+
+  pointer-events:
+    none;
+
+  transition:
+    opacity
+      260ms
+      ease,
+    transform
+      360ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.safeCompactHeaderVisible {
+  opacity: 1;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    );
+
+  pointer-events:
+    auto;
+}
+
+
+.safeCompactInner {
+  max-width:
+    var(--max-width);
+
+  margin:
+    0 auto;
+
+  padding:
+    8px 32px 6px;
+}
+
+
+.safeCompactTop {
+  display: grid;
+
+  grid-template-columns:
+    minmax(280px, 1fr)
+    auto;
+
+  align-items:
+    center;
+
+  gap:
+    18px;
+}
+
+
+.safeCompactSearch {
+  min-width: 0;
+}
+
+
+.safeCompactLogo {
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    flex-end;
+}
+
+
+.safeCompactHeader nav {
+  margin-top: 6px;
+}
+
+
+/*
+ * Исходный hero всегда остаётся
+ * обычной частью document flow.
+ */
+.stickyIntro {
+  position: relative;
+  top: auto;
+}
+
+
+@media (
+  max-width: 760px
+) {
+
+  .safeCompactHeader {
+    display: none;
+  }
+
+}
+
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+
+  .safeCompactHeader {
+    transition: none;
+  }
+
+}
+
+
+
+/*
+ * ============================================================
+ * SAFE_FIXED_COMPACT_HEADER_V3
+ * ============================================================
+ *
+ * Возвращаем полный визуальный состав старой compact-шапки:
+ * поиск, меню, заголовок и HeroPortrait.
+ *
+ * Сам header остаётся position: fixed и не влияет
+ * на геометрию документа и infinite scroll.
+ */
+
+.safeCompactHeader
+.stickyIntroCompact {
+  position: relative;
+
+  top: auto;
+
+  width: 100%;
+
+  background:
+    transparent;
+
+  border:
+    0;
+
+  box-shadow:
+    none;
+
+  isolation:
+    auto;
+}
+
+
+.safeCompactHeader
+.stickyIntroCompact::before,
+.safeCompactHeader
+.stickyIntroCompact::after {
+  display: none;
+}
+
+
+.safeCompactHeader
+.hero {
+  margin-bottom:
+    0;
+}
+
+
+.safeCompactHeader
+.heroPortraitWrap {
+  pointer-events:
+    auto;
+}
+
+
+/*
+ * Внешний fixed-контейнер уже отвечает
+ * за фон и тень.
+ */
+.safeCompactHeader {
+  overflow:
+    visible;
+}
+
+
+.safeCompactInner {
+  padding:
+    0 32px;
+}
+
+
+@media (
+  max-width: 760px
+) {
+
+  .safeCompactInner {
+    padding:
+      0 20px;
+  }
+
+}
+

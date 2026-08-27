@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import InstructionPage from "./components/InstructionPage/InstructionPage.jsx";
+import UrgentGenerationPage from "./components/UrgentGenerationPage/UrgentGenerationPage.jsx";
+import UrgentGenerationHint from "./components/UrgentGenerationHint/UrgentGenerationHint.jsx";
 import Header from "./components/Header/Header.jsx";
 import InstructionsCatalog from "./components/InstructionCatalog/InstructionsCatalog.jsx";
 import InstructionList from "./components/InstructionList/InstructionList.jsx";
-import Pagination from "./components/Pagination/Pagination.jsx";
 import Loader from "./components/Loader/Loader.jsx";
 import EmptyState from "./components/EmptyState/EmptyState.jsx";
 import HeroPortrait from "./components/HeroPortrait/HeroPortrait.jsx";
+import SearchBar from "./components/SearchBar/SearchBar.jsx";
+import SiteLinkButton from "./components/SiteLinkButton/SiteLinkButton.jsx";
 import { useDebouncedValue } from "./hooks/useDebouncedValue.js";
 import {
   searchInstructions,
@@ -22,7 +25,8 @@ import EditInstructionModal from "./components/EditInstructionModal/EditInstruct
 
 import {
   Routes,
-  Route
+  Route,
+  useLocation
 } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel.jsx";
 
@@ -30,19 +34,56 @@ import AdminPanel from "./components/AdminPanel/AdminPanel.jsx";
 
 export default function App() {
   const dispatch = useDispatch();
+
+  const location =
+    useLocation();
   const isAdmin = useSelector(selectIsAdmin);
   const [importId,setImportId] = useState(null);
-  const [queryInput, setQueryInput] = useState("");
-  const [requestedPage, setRequestedPage] = useState(1);
+  const [queryInput, setQueryInput] = useState(
+    () =>
+      new URLSearchParams(
+        window.location.search
+      ).get("q") ?? ""
+  );
   const [editingInstruction, setEditingInstruction] = useState(null);
+
+  const [
+    isCompactHeader,
+    setIsCompactHeader
+  ] = useState(false);
   const debouncedQuery = useDebouncedValue(queryInput, 350);
+
+  const stickyIntroRef =
+    useRef(null);
+
+  const stickyTriggerRef =
+    useRef(null);
+
+  const loadMoreRef =
+    useRef(null);
+
+  const loadMoreLockRef =
+    useRef(false);
+
+  /*
+   * После одной автоматической загрузки
+   * ждём, пока sentinel выйдет из viewport.
+   *
+   * Это предотвращает:
+   * page 2 -> page 3 -> page 4 -> ...
+   * без прокрутки пользователя.
+   */
+  const loadMoreArmedRef =
+    useRef(true);
   const {
     items,
     total,
     page: resultPage,
     totalPages,
     isSearching,
+    isLoadingMore,
     searchError,
+    loadMoreError,
     isGenerating,
     generateError,
     deletingId,
@@ -53,15 +94,379 @@ export default function App() {
     dispatch(restoreSession());
   }, [dispatch]);
 
-  //         .
-  useEffect(() => {
-    setRequestedPage(1);
-  }, [debouncedQuery]);
+  /*
+   * ==========================================================
+   * ROUTE SCROLL RESET
+   * ==========================================================
+   *
+   * React Router сам не обязан возвращать
+   * новый route к началу страницы.
+   *
+   * Сбрасываем позицию ДО отрисовки кадра,
+   * чтобы пользователь не увидел старое
+   * compact-состояние sticky-header.
+   */
+  useLayoutEffect(() => {
+
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto"
+    });
+
+    document.documentElement.scrollTop =
+      0;
+
+    document.body.scrollTop =
+      0;
+
+  }, [
+    location.pathname
+  ]);
+
 
   //         .
+  /*
+   * ==========================================================
+   * BOYKOVDOCS INITIAL SEARCH
+   * ==========================================================
+   *
+   * Первый запрос и каждый новый поисковый запрос
+   * всегда начинаются с первой страницы.
+   */
   useEffect(() => {
-    dispatch(searchInstructions({ query: debouncedQuery, page: requestedPage, pageSize: PAGE_SIZE }));
-  }, [dispatch, debouncedQuery, requestedPage]);
+
+    loadMoreLockRef.current =
+      false;
+
+    loadMoreArmedRef.current =
+      true;
+
+
+    dispatch(
+      searchInstructions({
+        query:
+          debouncedQuery,
+
+        page:
+          1,
+
+        pageSize:
+          PAGE_SIZE,
+
+        append:
+          false
+      })
+    );
+
+  }, [
+    dispatch,
+    debouncedQuery
+  ]);
+
+
+  /*
+   * ==========================================================
+   * MAIN ROUTE STICKY RESET
+   * ==========================================================
+   *
+   * При любом route-переходе compact-состояние
+   * сбрасывается до первого кадра.
+   */
+  useLayoutEffect(() => {
+
+    setIsCompactHeader(
+      false
+    );
+
+
+    if (
+      location.pathname === "/"
+    ) {
+
+      loadMoreLockRef.current =
+        false;
+
+      loadMoreArmedRef.current =
+        true;
+
+    }
+
+  }, [
+    location.pathname
+  ]);
+
+
+  useEffect(() => {
+
+    /*
+     * SAFE_FIXED_COMPACT_HEADER_V2
+     *
+     * Обычный hero никогда не меняет свою высоту.
+     * Compact header является отдельным fixed-слоем.
+     */
+    if (
+      location.pathname !== "/"
+    ) {
+      setIsCompactHeader(false);
+      return undefined;
+    }
+
+    const intro =
+      stickyIntroRef.current;
+
+    if (!intro) {
+      setIsCompactHeader(false);
+      return undefined;
+    }
+
+    let frameId =
+      null;
+
+    const update =
+      () => {
+
+        frameId =
+          null;
+
+        const top =
+          intro
+            .getBoundingClientRect()
+            .top;
+
+        setIsCompactHeader(
+          (current) => {
+
+            if (current) {
+
+              if (
+                top >= 16
+              ) {
+                return false;
+              }
+
+              return true;
+            }
+
+            if (
+              top <= -4
+            ) {
+              return true;
+            }
+
+            return false;
+          }
+        );
+      };
+
+    const scheduleUpdate =
+      () => {
+
+        if (
+          frameId !== null
+        ) {
+          return;
+        }
+
+        frameId =
+          window.requestAnimationFrame(
+            update
+          );
+      };
+
+    update();
+
+    window.addEventListener(
+      "scroll",
+      scheduleUpdate,
+      {
+        passive: true
+      }
+    );
+
+    window.addEventListener(
+      "resize",
+      scheduleUpdate
+    );
+
+    return () => {
+
+      window.removeEventListener(
+        "scroll",
+        scheduleUpdate
+      );
+
+      window.removeEventListener(
+        "resize",
+        scheduleUpdate
+      );
+
+      if (
+        frameId !== null
+      ) {
+        window.cancelAnimationFrame(
+          frameId
+        );
+      }
+    };
+
+  }, [
+    location.pathname
+  ]);
+
+
+  const hasMore =
+    resultPage <
+    totalPages;
+
+
+  useEffect(() => {
+
+    loadMoreArmedRef.current =
+      true;
+
+  }, [
+    debouncedQuery
+  ]);
+
+
+  const loadMore =
+    useCallback(
+      async () => {
+
+        if (
+          !loadMoreArmedRef.current
+        ) {
+          return;
+        }
+
+
+        if (
+loadMoreLockRef.current ||
+          isSearching ||
+          isLoadingMore ||
+          !hasMore
+        ) {
+          return;
+        }
+
+
+        loadMoreArmedRef.current =
+          false;
+
+        loadMoreLockRef.current =
+          true;
+
+
+        try {
+
+          await dispatch(
+            searchInstructions({
+              query:
+                debouncedQuery,
+
+              page:
+                resultPage + 1,
+
+              pageSize:
+                PAGE_SIZE,
+
+              append:
+                true
+            })
+          );
+
+        }
+        finally {
+
+          loadMoreLockRef.current =
+            false;
+
+        }
+
+      },
+      [
+        dispatch,
+        debouncedQuery,
+        resultPage,
+        hasMore,
+        isSearching,
+        isLoadingMore
+      ]
+    );
+
+
+  useEffect(() => {
+
+    const target =
+      loadMoreRef.current;
+
+
+    if (
+      !target ||
+      !hasMore ||
+      loadMoreError
+    ) {
+      return undefined;
+    }
+
+
+    const observer =
+      new IntersectionObserver(
+        ([entry]) => {
+
+          /*
+           * Новые карточки вытолкнули sentinel
+           * за пределы viewport.
+           *
+           * Теперь пользователь может прокрутить
+           * до него ещё раз и получить следующую страницу.
+           */
+          if (
+            !entry.isIntersecting
+          ) {
+            loadMoreArmedRef.current =
+              true;
+
+            return;
+          }
+
+
+          if (
+            entry.isIntersecting
+          ) {
+            void loadMore();
+          }
+
+        },
+        {
+          /*
+           * Следующая порция начинает
+           * загружаться заранее.
+           */
+          rootMargin:
+            "120px 0px",
+
+          threshold:
+            0.01
+        }
+      );
+
+
+    observer.observe(
+      target
+    );
+
+
+    return () => {
+      observer.disconnect();
+    };
+
+  }, [
+    loadMore,
+    hasMore,
+    loadMoreError
+  ]);
 
 
   async function handleGenerate() {
@@ -121,7 +526,7 @@ export default function App() {
     dispatch(
       searchInstructions({
         query: debouncedQuery,
-        page: requestedPage,
+        page: 1,
         pageSize: PAGE_SIZE
       })
     );
@@ -137,7 +542,7 @@ export default function App() {
     dispatch(
         searchInstructions({
             query: debouncedQuery,
-            page: requestedPage,
+            page: 1,
             pageSize: PAGE_SIZE
         })
     );
@@ -173,7 +578,138 @@ export default function App() {
 />
 
 
-<Navigation />
+{/* SAFE_FIXED_COMPACT_HEADER_V3 */}
+            <div
+              className={[
+                styles.safeCompactHeader,
+                isCompactHeader
+                  ? styles.safeCompactHeaderVisible
+                  : ""
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              aria-hidden={!isCompactHeader}
+            >
+              <div className={styles.safeCompactInner}>
+
+                <div className={styles.stickyIntroCompact}>
+
+                  <div
+                    className={
+                      styles.compactControls
+                    }
+                  >
+
+                    <div
+                      className={
+                        styles.compactSearch
+                      }
+                    >
+                      <SearchBar
+                        value={queryInput}
+                        onChange={setQueryInput}
+                      />
+                    </div>
+
+                    <div
+                      className={
+                        styles.compactLogo
+                      }
+                    >
+                      <SiteLinkButton />
+                    </div>
+
+                  </div>
+
+                  <Navigation />
+
+                  <section
+                    className={
+                      styles.hero
+                    }
+                  >
+
+                    <div
+                      className={
+                        styles.heroText
+                      }
+                    >
+
+                      <h1
+                        className={
+                          styles.title
+                        }
+                      >
+                        Инструкции по охране труда
+                      </h1>
+
+                      <p
+                        className={
+                          styles.subtitle
+                        }
+                      >
+                        Найдите готовую инструкцию для нужной профессии.
+                        База пополняется автоматически каждый день.
+                      </p>
+
+                    </div>
+
+                    <div
+                      className={
+                        styles.heroPortraitWrap
+                      }
+                    >
+                      <HeroPortrait
+                        compact={true}
+                      />
+                    </div>
+
+                  </section>
+
+                </div>
+
+              </div>
+            </div>
+
+            <div
+            ref={stickyTriggerRef}
+            className={styles.stickyTrigger}
+            aria-hidden="true"
+          />
+
+          <div ref={stickyIntroRef}
+              className={styles.stickyIntro}>
+
+            {/* COMPACT STICKY HEADER */}
+            <div
+              className={
+                styles.compactControls
+              }
+            >
+
+              <div
+                className={
+                  styles.compactSearch
+                }
+              >
+                <SearchBar
+                  value={queryInput}
+                  onChange={setQueryInput}
+                />
+              </div>
+
+
+              <div
+                className={
+                  styles.compactLogo
+                }
+              >
+                <SiteLinkButton />
+              </div>
+
+            </div>
+
+            <Navigation />
 
           <section className={styles.hero}>
             <div className={styles.heroText}>
@@ -189,10 +725,16 @@ export default function App() {
 
             </div>
 
-            <HeroPortrait />
+            <div
+                className={
+                  styles.heroPortraitWrap
+                }
+              >
+                <HeroPortrait compact={false} />
+              </div>
 
           </section>
-
+          </div>
 
           <main>
 
@@ -227,11 +769,55 @@ export default function App() {
 />
 
 
-                <Pagination
-                  page={resultPage}
-                  totalPages={totalPages}
-                  onChange={setRequestedPage}
-                />
+                <div
+                  ref={loadMoreRef}
+                  className={styles.loadMoreZone}
+                  aria-live="polite"
+                >
+
+                  {isLoadingMore && (
+                    <span
+                      className={
+                        styles.loadMoreText
+                      }
+                    >
+                      [ загружаем ещё ]
+                    </span>
+                  )}
+
+
+                  {!isLoadingMore &&
+                    loadMoreError &&
+                    hasMore && (
+
+                      <button
+                        type="button"
+                        className={
+                          styles.loadMoreRetry
+                        }
+                        onClick={loadMore}
+                      >
+                        [ повторить загрузку ]
+                      </button>
+
+                    )}
+
+
+                  {!isLoadingMore &&
+                    !loadMoreError &&
+                    !hasMore && (
+
+                      <span
+                        className={
+                          styles.loadMoreDone
+                        }
+                      >
+                        [ все инструкции загружены ]
+                      </span>
+
+                    )}
+
+                </div>
 
               </>
             )}
@@ -248,7 +834,9 @@ export default function App() {
             )}
 
           </main>
-{editingInstruction && (
+<UrgentGenerationHint />
+
+          {editingInstruction && (
 
   <EditInstructionModal
 
@@ -268,6 +856,11 @@ export default function App() {
   path="/instrukcii-po-ohrane-truda"
   element={<InstructionsCatalog />}
 />
+
+    <Route
+      path="/srochnaya-generaciya-instrukcii"
+      element={<UrgentGenerationPage />}
+    />
 
     <Route
       path="/instrukciya-po-ohrane-truda/:id"

@@ -36,7 +36,9 @@ const initialState = {
   totalPages: 1,
   query: "",
   isSearching: true,
+  isLoadingMore: false,
   searchError: null,
+  loadMoreError: null,
 
   selected: null,
   isLoadingSelected: false,
@@ -54,22 +56,184 @@ const initialState = {
 
 export function instructionsReducer(state = initialState, action) {
   switch (action.type) {
-    case SEARCH_START:
-      return { ...state, isSearching: true, searchError: null };
+    /*
+     * INFINITE SCROLL REDUX
+     *
+     * append=false:
+     * новая выдача / новый поиск.
+     *
+     * append=true:
+     * добавление следующей страницы.
+     */
+    case SEARCH_START: {
 
-    case SEARCH_SUCCESS:
+      const append =
+        action.meta?.append === true;
+
       return {
         ...state,
-        isSearching: false,
-        items: action.payload.items,
-        total: action.payload.total,
-        page: action.payload.page,
-        totalPages: action.payload.totalPages,
-        query: action.payload.query,
-      };
 
-    case SEARCH_FAIL:
-      return { ...state, isSearching: false, searchError: action.payload };
+        isSearching:
+          !append,
+
+        isLoadingMore:
+          append,
+
+        searchError:
+          append
+            ? state.searchError
+            : null,
+
+        loadMoreError:
+          null,
+
+        query:
+          append
+            ? state.query
+            : (
+                action.meta?.query ??
+                ""
+              )
+      };
+    }
+
+
+    case SEARCH_SUCCESS: {
+
+      /*
+       * Старый HTTP-ответ не должен
+       * попасть в уже новый поисковый запрос.
+       */
+      if (
+        action.meta?.query !==
+        state.query
+      ) {
+        return state;
+      }
+
+
+      const append =
+        action.meta?.append === true;
+
+
+      const incoming =
+        Array.isArray(
+          action.payload?.items
+        )
+          ? action.payload.items
+          : [];
+
+
+      let nextItems =
+        incoming;
+
+
+      if (append) {
+
+        /*
+         * Защита от случайного дубля
+         * на границе страниц.
+         */
+        const byId =
+          new Map();
+
+        for (
+          const item
+          of [
+            ...state.items,
+            ...incoming
+          ]
+        ) {
+          byId.set(
+            item.id,
+            item
+          );
+        }
+
+        nextItems =
+          Array.from(
+            byId.values()
+          );
+      }
+
+
+      return {
+        ...state,
+
+        isSearching:
+          false,
+
+        isLoadingMore:
+          false,
+
+        searchError:
+          null,
+
+        loadMoreError:
+          null,
+
+        items:
+          nextItems,
+
+        total:
+          action.payload.total,
+
+        page:
+          action.payload.page,
+
+        totalPages:
+          action.payload.totalPages,
+
+        query:
+          action.meta.query
+      };
+    }
+
+
+    case SEARCH_FAIL: {
+
+      if (
+        action.meta?.query !==
+        state.query
+      ) {
+        return state;
+      }
+
+
+      const append =
+        action.meta?.append === true;
+
+
+      if (append) {
+        return {
+          ...state,
+
+          isLoadingMore:
+            false,
+
+          loadMoreError:
+            action.payload
+        };
+      }
+
+
+      return {
+        ...state,
+
+        isSearching:
+          false,
+
+        isLoadingMore:
+          false,
+
+        searchError:
+          action.payload,
+
+        loadMoreError:
+          null
+      };
+    }
+
 
     case SELECT_START:
       return { ...state, isLoadingSelected: true, selectedError: null, selected: null };
@@ -126,17 +290,74 @@ export function instructionsReducer(state = initialState, action) {
 // --- thunks ---
 
 /**    :       . */
-export function searchInstructions({ query = "", page = 1, pageSize = PAGE_SIZE } = {}) {
+export function searchInstructions({
+  query = "",
+  page = 1,
+  pageSize = PAGE_SIZE,
+  append = false
+} = {}) {
+
   return async (dispatch) => {
-    dispatch({ type: SEARCH_START });
+
+    dispatch({
+      type:
+        SEARCH_START,
+
+      meta: {
+        query,
+        append
+      }
+    });
+
+
     try {
-      const data = await searchRequest({ query, page, pageSize });
-      dispatch({ type: SEARCH_SUCCESS, payload: data });
-    } catch (err) {
-      dispatch({ type: SEARCH_FAIL, payload: err.message });
+
+      const data =
+        await searchRequest({
+          query,
+          page,
+          pageSize
+        });
+
+
+      dispatch({
+        type:
+          SEARCH_SUCCESS,
+
+        payload:
+          data,
+
+        meta: {
+          query,
+          append
+        }
+      });
+
+
+      return data;
+
+    }
+    catch (err) {
+
+      dispatch({
+        type:
+          SEARCH_FAIL,
+
+        payload:
+          err.message,
+
+        meta: {
+          query,
+          append
+        }
+      });
+
+
+      return null;
     }
   };
 }
+
 
 export function fetchInstruction(id) {
   return async (dispatch) => {

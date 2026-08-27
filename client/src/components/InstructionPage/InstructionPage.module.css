@@ -225,3 +225,51 @@
     background: #f5f5f5;
 
 }
+
+
+.paragraphWithList {
+    margin-bottom: 18px;
+}
+
+.paragraphLead {
+    margin-bottom: 8px !important;
+}
+
+.inlineList {
+    margin: 0 0 16px 22px;
+    padding-left: 18px;
+}
+
+.inlineList li {
+    margin-bottom: 7px;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.inlineList li:last-child {
+    margin-bottom: 0;
+}
+
+
+/*
+ * ============================================================
+ * STICKY PROFILE HEADER CONTENT OFFSET
+ * ============================================================
+ */
+
+.content {
+  padding-top:
+    38px;
+}
+
+
+@media (
+  max-width: 760px
+) {
+
+  .content {
+    padding-top:
+      28px;
+  }
+
+}

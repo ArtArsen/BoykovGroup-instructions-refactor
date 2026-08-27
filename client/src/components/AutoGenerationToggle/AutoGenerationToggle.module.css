@@ -1,0 +1,82 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stopButton,
+.startButton {
+  min-height: 44px;
+  padding: 10px 18px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  border: var(--border-width) solid;
+  border-radius: var(--radius-sm);
+
+  background: var(--color-surface);
+
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    background .15s ease,
+    color .15s ease,
+    border-color .15s ease;
+}
+
+.stopButton {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.stopButton:hover:not(:disabled) {
+  color: #fff;
+  background: var(--color-danger);
+}
+
+.startButton {
+  color: #15803d;
+  border-color: #15803d;
+}
+
+.startButton:hover:not(:disabled) {
+  color: #fff;
+  background: #15803d;
+}
+
+.stopButton:disabled,
+.startButton:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.statusEnabled,
+.statusDisabled {
+  width: 9px;
+  height: 9px;
+
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+}
+
+.statusEnabled {
+  background: #16a34a;
+}
+
+.statusDisabled {
+  background: var(--color-danger);
+}
+
+.error {
+  max-width: 300px;
+  color: var(--color-danger);
+  font-size: 12px;
+}

@@ -1,0 +1,79 @@
+.instruction {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header {
+  padding-bottom: 28px;
+  border-bottom: var(--border-hair);
+}
+
+.title {
+  max-width: 940px;
+  margin: 0;
+  font-family: "Comfortaa", sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+
+.intro {
+  max-width: 900px;
+  margin: 18px 0 0;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text-muted);
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  padding: 30px 0;
+  border-bottom: var(--border-hair);
+}
+
+.sectionTitle {
+  max-width: 900px;
+  margin: 0 0 18px;
+  font-family: "Comfortaa", sans-serif;
+  font-size: 21px;
+  line-height: 1.35;
+  color: var(--color-text);
+}
+
+.paragraph {
+  max-width: 920px;
+  margin: 0 0 13px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text);
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.compact .header {
+  padding-bottom: 18px;
+}
+
+.compact .title {
+  font-size: 24px;
+}
+
+.compact .section {
+  padding: 20px 0;
+}
+
+.compact .sectionTitle {
+  font-size: 17px;
+}
+
+.compact .paragraph {
+  font-size: 13px;
+  line-height: 1.6;
+}

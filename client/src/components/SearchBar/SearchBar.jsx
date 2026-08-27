@@ -1,6 +1,6 @@
 import styles from "./SearchBar.module.css";
 
-export default function SearchBar({ value, onChange }) {
+export default function SearchBar({ value, onChange, onSubmit }) {
   return (
     <div className={styles.wrapper}>
       <svg
@@ -20,6 +20,15 @@ export default function SearchBar({ value, onChange }) {
         placeholder="Поиск инструкций..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (
+            e.key === "Enter" &&
+            typeof onSubmit === "function"
+          ) {
+            e.preventDefault();
+            onSubmit(value);
+          }
+        }}
         aria-label="Поиск инструкций по охране труда"
       />
       {value && (

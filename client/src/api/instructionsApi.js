@@ -69,9 +69,182 @@ export function uploadInstruction(formData, token) {
 }
 
 /** Удаляет инструкцию. Только для админа. */
+export function getGenerationStats(token) {
+  return request(
+    "/api/instructions/generation-stats",
+    {
+      headers: authHeaders(token)
+    }
+  );
+}
+
 export function deleteInstruction(id, token) {
   return request(`/api/instructions/${encodeURIComponent(id)}`, {
     method: "DELETE",
     headers: authHeaders(token),
   });
+}
+
+
+
+/**
+ * ============================================================
+ * BULK IMPORT
+ * ============================================================
+ *
+ * Файловый массовый импорт.
+ *
+ * Один batch может содержать тысячи документов,
+ * но сами файлы отправляются небольшими HTTP-пакетами.
+ */
+
+export function createBulkImport(
+  total,
+  token
+) {
+  return request(
+    "/api/instructions/import-batches",
+    {
+      method: "POST",
+
+      headers:
+        authHeaders(token),
+
+      body:
+        JSON.stringify({
+          total
+        })
+    }
+  );
+}
+
+
+export function uploadBulkImportChunk(
+  batchId,
+  files,
+  token
+) {
+  const formData =
+    new FormData();
+
+  for (const file of files) {
+    formData.append(
+      "files",
+      file
+    );
+  }
+
+  return request(
+    `/api/instructions/import-batches/${encodeURIComponent(batchId)}/files`,
+    {
+      method: "POST",
+
+      headers:
+        authHeaders(token),
+
+      body:
+        formData
+    }
+  );
+}
+
+
+export function startBulkImport(
+  batchId,
+  token
+) {
+  return request(
+    `/api/instructions/import-batches/${encodeURIComponent(batchId)}/start`,
+    {
+      method: "POST",
+
+      headers:
+        authHeaders(token)
+    }
+  );
+}
+
+
+export function getBulkImportProgress(
+  batchId,
+  token
+) {
+  return request(
+    `/api/instructions/import-batches/${encodeURIComponent(batchId)}`,
+    {
+      headers:
+        authHeaders(token)
+    }
+  );
+}
+
+
+export function getBulkImportFiles(
+  batchId,
+  token,
+  {
+    status = "",
+    offset = 0,
+    limit = 100
+  } = {}
+) {
+  const params =
+    new URLSearchParams();
+
+  if (status) {
+    params.set(
+      "status",
+      status
+    );
+  }
+
+  params.set(
+    "offset",
+    String(offset)
+  );
+
+  params.set(
+    "limit",
+    String(limit)
+  );
+
+  return request(
+    `/api/instructions/import-batches/${encodeURIComponent(batchId)}/files?${params.toString()}`,
+    {
+      headers:
+        authHeaders(token)
+    }
+  );
+}
+
+
+export function stopBulkImport(
+  batchId,
+  token
+) {
+  return request(
+    `/api/instructions/import-batches/${encodeURIComponent(batchId)}/stop`,
+    {
+      method: "POST",
+
+      headers:
+        authHeaders(token)
+    }
+  );
+}
+
+
+export function resumeBulkImport(
+  batchId,
+  token
+) {
+  return request(
+    `/api/instructions/import-batches/${encodeURIComponent(batchId)}/resume`,
+    {
+      method: "POST",
+
+      headers:
+        authHeaders(token)
+    }
+  );
 }
