@@ -1,3 +1,7 @@
+import {
+  normalizeUploadedFilename
+} from "../utils/uploadedFilename.js";
+
 /**
  * История массовой обработки документов
  *
@@ -79,9 +83,11 @@ updatedVersions:
 
 
     name:
-      file.originalname ||
-      file.name ||
-      "unknown",
+      normalizeUploadedFilename(
+        file.originalname ||
+        file.name ||
+        "unknown"
+      ),
 
 
     // путь к сохранённому файлу

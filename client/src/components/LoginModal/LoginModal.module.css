@@ -144,3 +144,56 @@
   color: var(--color-danger);
   font-size: 13px;
 }
+
+
+/*
+ * USER_AUTH_UI_V1
+ */
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin: 0 0 22px;
+  border: var(--border-ink);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.tab {
+  min-height: 42px;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.tab + .tab {
+  border-left: var(--border-ink);
+}
+
+.tabActive {
+  background: var(--color-text);
+  color: #ffffff;
+}
+
+.hint {
+  margin: -6px 0 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.adminHint {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: var(--border-hair);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}

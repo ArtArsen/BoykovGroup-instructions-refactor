@@ -1,3 +1,11 @@
+import {
+  acquireScheduledGenerationLock,
+  releaseScheduledGenerationLock
+} from "./scheduledGenerationFileLock.js";
+
+import {
+  isAutoGenerationEnabled
+} from "./autoGenerationSettingsService.js";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -54,7 +62,24 @@ function pickNextProfession() {
  *   | { status: "error", reason: string }
  * >}
  */
-export async function runScheduledGeneration() {
+async function runScheduledGenerationCore(
+  options = {}
+) {
+
+  const force =
+    options?.force === true;
+
+  if (
+    !force &&
+    !isAutoGenerationEnabled()
+  ) {
+    return {
+      status: "skipped",
+      reason:
+        "Автогенерация остановлена администратором"
+    };
+  }
+
   if (!isYandexGptConfigured()) {
     return {
       status: "skipped",
@@ -79,7 +104,13 @@ export async function runScheduledGeneration() {
       const alreadySaved = instructionsRepository.getById(next.id);
       if (alreadySaved) return alreadySaved;
 
-      const generated = await generateInstructionWithYandexGpt(next.profession);
+      const generated =
+        await generateInstructionWithYandexGpt(
+          next.profession,
+          {
+            source: "schedule"
+          }
+        );
       const built = {
         id: next.id,
         title: generated.title,
@@ -98,5 +129,49 @@ export async function runScheduledGeneration() {
   } catch (err) {
     console.error("[-]   :", err.message);
     return { status: "error", reason: err.message };
+  }
+}
+
+
+
+export async function runScheduledGeneration(
+  options = {}
+) {
+
+  const lock =
+    acquireScheduledGenerationLock();
+
+
+  if (!lock.acquired) {
+
+    const owner =
+      lock.existing?.pid
+        ? ` PID ${lock.existing.pid}`
+        : "";
+
+    console.log(
+      `[ScheduledGeneration] Пропуск: генерация уже выполняется другим процессом.${owner}`
+    );
+
+    return {
+      status: "skipped",
+      reason:
+        "Автогенерация уже выполняется в другом процессе"
+    };
+  }
+
+
+  try {
+
+    return await runScheduledGenerationCore(
+      options
+    );
+
+  }
+  finally {
+
+    releaseScheduledGenerationLock(
+      lock
+    );
   }
 }

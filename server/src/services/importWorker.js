@@ -1,4 +1,8 @@
 import {
+  normalizeUploadedFilename
+} from "../utils/uploadedFilename.js";
+
+import {
     processInstructionFile
 } from "./instructionProcessingService.js";
 
@@ -65,7 +69,9 @@ export async function processImportFile({
 
 
                 filename:
-                    file.originalname,
+                    normalizeUploadedFilename(
+                      file.originalname
+                    ),
 
 
                 mimetype:

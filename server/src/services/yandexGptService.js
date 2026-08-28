@@ -1,3 +1,4 @@
+import { buildInstructionIntro } from "../utils/instructionIntro.js";
 import fetch from "node-fetch";
 import {
   SECTION_DEFINITIONS,
@@ -963,7 +964,11 @@ export async function generateInstructionWithYandexGpt(
 
     if (includeTitleAndIntro) {
       title = result.title;
-      intro = result.intro;
+      intro =
+        buildInstructionIntro(
+          title ||
+          result.title
+        );
     }
 
     sections.push(result.section);

@@ -273,7 +273,7 @@ function makeDescription(instruction) {
 
   const source = profession
     ? `${title}. Требования охраны труда, порядок безопасного выполнения работ и действия работника в аварийных ситуациях.`
-    : `${title}. Полный текст инструкции по охране труда.`;
+    : `${title}. Полный текст иИнструкции по охране труда.`;
 
   return source.length <= 165
     ? source
@@ -421,7 +421,7 @@ function renderMainHero({ headingTag = "h1" } = {}) {
     <section class="App_hero">
  <div class="App_heroText">
        <a class="seo-title-link" href="/">
-  ${openTag} class="App_title">нструкции по охране труда${closeTag}
+  ${openTag} class="App_title">Инструкции по охране труда${closeTag}
 </a>
         <p class="App_subtitle">
           Найдите готовую инструкцию для нужной профессии. База пополняется автоматически каждый день.
@@ -543,7 +543,7 @@ function renderInstructionsCatalogPage(req, instructions, query = "") {
 
   const pageTitle = hasQuery
     ? `Поиск инструкций: ${query} | ${BRAND_NAME}`
-    : `нструкции по охране труда | ${BRAND_NAME}`;
+    : `Инструкции по охране труда | ${BRAND_NAME}`;
 
   const description =
     "Каталог инструкций по охране труда для работников различных профессий и видов работ.";
@@ -574,7 +574,7 @@ function renderInstructionsCatalogPage(req, instructions, query = "") {
         "@type": "CollectionPage",
         "@id": canonical,
         url: canonical,
-        name: "нструкции по охране труда",
+        name: "Инструкции по охране труда",
         description,
         inLanguage: "ru-RU",
         isPartOf: {
@@ -686,7 +686,7 @@ function renderInstructionPage(req, instruction) {
           {
             "@type": "ListItem",
             position: 2,
-            name: "нструкции по охране труда",
+            name: "Инструкции по охране труда",
             item: `${siteUrl}/instrukcii-po-ohrane-truda`,
           },
           {

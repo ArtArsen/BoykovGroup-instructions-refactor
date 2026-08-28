@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Backend API всегда оставляем Passenger / Node.js
+RewriteRule ^api(?:/|$) - [L,NC]
+
+# Существующие файлы и каталоги отдаём напрямую
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Несуществующие файлы с расширением не превращаем в SPA
+# Например /favicon.ico или /missing.js должны остаться 404
+RewriteCond %{REQUEST_URI} \.[^/]+$ [NC]
+RewriteRule ^ - [L]
+
+# React Router: все остальные маршруты открываем через index.html
+RewriteRule ^ index.html [L]

@@ -1,3 +1,8 @@
+import {
+  createGenerationUsageId,
+  recordGenerationUsageCall
+} from "./generationUsageService.js";
+
 import fetch from "node-fetch";
 
 const URL = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion";
@@ -13,6 +18,9 @@ export function isFormatterConfigured(){
 
 export async function formatInstructionDocument(text, filename=""){
  const c=config();
+
+ const generationId =
+  createGenerationUsageId("import");
  if(!c.apiKey || !c.folderId) throw new Error("YandexGPT не настроен");
  const prompt=`Ты редактор документации по охране труда. Приведи документ к стандартной инструкции. Удали реквизиты, подписи, даты, ООО, ИП, адреса, шаблонные поля. Определи профессию. Верни только JSON без markdown.
 Формат:
@@ -24,6 +32,47 @@ ${text.slice(0,30000)}`;
  if(!r.ok) throw new Error(`YandexGPT ${r.status}`);
  const data=await r.json();
  const out=data?.result?.alternatives?.[0]?.message?.text;
- if(!out) throw new Error('Пустой ответ YandexGPT');
- return JSON.parse(out.replace(/```json|```/g,'').trim());
+
+ let formatted=null;
+ let parseError=null;
+
+ if(out){
+  try{
+   formatted=JSON.parse(
+    out.replace(/```json|```/g,'').trim()
+   );
+  }
+  catch(error){
+   parseError=error;
+  }
+ }
+
+ /*
+  * Учитываем сам API-вызов независимо от того,
+  * удалось ли затем разобрать JSON.
+  */
+ recordGenerationUsageCall({
+  generationId,
+  profession:
+   formatted?.profession ||
+   filename ||
+   "Импорт документа",
+  source:"import",
+  model:c.model,
+  sectionNumber:null,
+  attempt:1,
+  usage:data?.result?.usage
+ });
+
+ if(!out){
+  throw new Error(
+   'Пустой ответ YandexGPT'
+  );
+ }
+
+ if(parseError){
+  throw parseError;
+ }
+
+ return formatted;
 }

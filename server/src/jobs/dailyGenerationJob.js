@@ -1,53 +1,94 @@
 import cron from "node-cron";
-import { runScheduledGeneration } from "../services/scheduledGenerationService.js";
 
-//       (24   , ~20-30  
-// ),        .
-//   DAILY_GENERATION_CRON  server/.env (   cron-).
-const DAILY_CRON_EXPRESSION = process.env.DAILY_GENERATION_CRON || "0 * * * *";
+import {
+  runScheduledGeneration
+} from "../services/scheduledGenerationService.js";
 
-/**    :   ~24      . */
+
+const DAILY_CRON_EXPRESSION =
+  process.env.DAILY_GENERATION_CRON ||
+  "0 * * * *";
+
+
+/**
+ * Запускает автогенерацию только по cron.
+ *
+ * ВАЖНО:
+ * при старте/restart Passenger генерация
+ * больше не запускается автоматически.
+ */
 export function startDailyGenerationJob() {
-  if (!cron.validate(DAILY_CRON_EXPRESSION)) {
+
+  if (
+    !cron.validate(
+      DAILY_CRON_EXPRESSION
+    )
+  ) {
+
     console.error(
-      `[-]  cron- DAILY_GENERATION_CRON="${DAILY_CRON_EXPRESSION}"    .`
+      `[ScheduledGeneration] Некорректный cron: "${DAILY_CRON_EXPRESSION}"`
     );
+
     return;
   }
 
-  cron.schedule(DAILY_CRON_EXPRESSION, async () => {
-    console.log("[-]     ...");
-    const result = await runScheduledGeneration();
-    if (result.status === "skipped") {
-      console.log(`[-] : ${result.reason}`);
-    } else if (result.status === "error") {
-      console.error(`[-] : ${result.reason}`);
-    }
-  });
 
-  console.log(
-    `[-]   (cron: "${DAILY_CRON_EXPRESSION}"). ` +
-      " ,     ."
+  cron.schedule(
+    DAILY_CRON_EXPRESSION,
+    async () => {
+
+      console.log(
+        "[ScheduledGeneration] Cron trigger"
+      );
+
+      const result =
+        await runScheduledGeneration();
+
+
+      if (
+        result.status === "generated"
+      ) {
+
+        console.log(
+          `[ScheduledGeneration] Создано: ${result.instruction.title}`
+        );
+
+        return;
+      }
+
+
+      if (
+        result.status === "skipped"
+      ) {
+
+        console.log(
+          `[ScheduledGeneration] Пропуск: ${result.reason}`
+        );
+
+        return;
+      }
+
+
+      console.error(
+        `[ScheduledGeneration] Ошибка: ${result.reason}`
+      );
+
+    }
   );
 
-  // Cron          
-  //  ,       (    2-3 
-  //   )     .   
-  //     ,     
-  //   ,       
-  //     cron-.
-  console.log("[-]    (  )...");
-  runScheduledGeneration()
-    .then((result) => {
-      if (result.status === "generated") {
-        console.log(`[-]  :  ${result.instruction.title}`);
-      } else if (result.status === "skipped") {
-        console.log(`[-]   : ${result.reason}`);
-      } else {
-        console.error(`[-]   : ${result.reason}`);
-      }
-    })
-    .catch((err) => {
-      console.error("[-]    :", err);
-    });
+
+  console.log(
+    `[ScheduledGeneration] Cron зарегистрирован: "${DAILY_CRON_EXPRESSION}"`
+  );
+
+  /*
+   * НИЧЕГО здесь сразу не генерируем.
+   *
+   * Раньше здесь был:
+   *
+   * runScheduledGeneration()
+   *
+   * Из-за этого каждый restart Passenger
+   * запускал новую платную генерацию.
+   */
 }

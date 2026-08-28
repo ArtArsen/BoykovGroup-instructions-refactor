@@ -23,6 +23,8 @@
     "nanoid": "^5.0.7",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
-    "pdf-parse": "^1.1.1"
+    "nodemailer": "^9.0.5",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.20.1"
   }
 }

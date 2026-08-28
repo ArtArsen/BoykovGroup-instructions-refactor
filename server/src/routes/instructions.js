@@ -1,3 +1,31 @@
+import {
+  saveInstructionSnapshot,
+  rollbackInstruction,
+  getInstructionHistoryInfo
+} from "../services/instructionHistoryService.js";
+
+import {
+  bulkImportUpload,
+  cleanupBulkUploadFiles,
+  BULK_UPLOAD_CHUNK_SIZE
+} from "../middleware/bulkImportUpload.js";
+
+import {
+  createBulkImportBatch,
+  getBulkImportBatch,
+  registerBulkImportFiles,
+  startBulkImportBatch,
+  pauseBulkImportBatch,
+  resumeBulkImportBatch,
+  getBulkImportProgress,
+  getBulkImportFiles,
+  listBulkImportBatches
+} from "../services/bulkImportBatchService.js";
+
+import {
+  ensureBulkImportWorker
+} from "../services/bulkImportWorkerService.js";
+
 import { Router } from "express";
 import multer from "multer";
 
@@ -47,9 +75,32 @@ import {
 } from "../middleware/auth.js";
 
 import {
+  getGenerationStats
+} from "../services/generationUsageService.js";
+
+import {
   runExclusive
 } from "../services/generationLock.js";
 
+
+import {
+  getAutoGenerationSettings,
+  setAutoGenerationEnabled
+} from "../services/autoGenerationSettingsService.js";
+
+// ============================================================
+// BULK IMPORT STARTUP RECOVERY
+// ============================================================
+//
+// Passenger может завершить процесс во время импорта.
+// Состояние batch хранится на диске.
+//
+// При загрузке приложения проверяем незавершённые batch.
+// Глобальный filesystem lock в bulkImportWorkerService
+// гарантирует, что очередь одновременно обрабатывает
+// только один Passenger process.
+//
+void ensureBulkImportWorker();
 
 export const instructionsRouter =
   Router();
@@ -107,6 +158,14 @@ instructionsRouter.get(
       10
     ) || 6;
 
+/*
+ * INSTRUCTION_SORTING_V3
+ */
+const sort =
+  req.query.sort === "popular"
+    ? "popular"
+    : "newest";
+
 
 
   res.json(
@@ -114,7 +173,8 @@ instructionsRouter.get(
       q,
       {
         page,
-        pageSize
+        pageSize,
+        sort
       }
     )
   );
@@ -170,9 +230,395 @@ res.json(
 
 
 
+
+// =========================
+// GENERATION STATS
+// =========================
+
+instructionsRouter.get(
+  "/generation-stats",
+  requireAdmin,
+  (req, res) => {
+
+    res.json(
+      getGenerationStats()
+    );
+
+  }
+);
+
+// =========================
+// AUTO GENERATION SETTINGS
+// =========================
+
+instructionsRouter.get(
+  "/auto-generation",
+  requireAdmin,
+  (req, res) => {
+
+    res.json(
+      getAutoGenerationSettings()
+    );
+
+  }
+);
+
+
+instructionsRouter.patch(
+  "/auto-generation",
+  requireAdmin,
+  (req, res) => {
+
+    if (
+      typeof req.body?.enabled !==
+      "boolean"
+    ) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Поле enabled должно быть boolean"
+        });
+    }
+
+    const settings =
+      setAutoGenerationEnabled(
+        req.body.enabled
+      );
+
+    res.json(
+      settings
+    );
+
+  }
+);
+
+
 // =========================
 // GET ONE
 // =========================
+
+// ============================================================
+// BULK IMPORT 1000+ FILES
+// ============================================================
+
+instructionsRouter.get(
+  "/import-batches",
+  requireAdmin,
+  async (req, res) => {
+    res.json(
+      await listBulkImportBatches()
+    );
+  }
+);
+
+
+instructionsRouter.post(
+  "/import-batches",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const batch =
+        await createBulkImportBatch({
+          expectedTotal:
+            req.body?.total
+        });
+
+      res
+        .status(201)
+        .json(
+          await getBulkImportProgress(
+            batch.id
+          )
+        );
+    }
+    catch (error) {
+      res
+        .status(400)
+        .json({
+          error:
+            error.message
+        });
+    }
+  }
+);
+
+
+instructionsRouter.post(
+  "/import-batches/:id/files",
+  requireAdmin,
+  async (req, res) => {
+
+    const batch =
+      await getBulkImportBatch(
+        req.params.id
+      );
+
+    if (!batch) {
+      return res
+        .status(404)
+        .json({
+          error:
+            "Пакетный импорт не найден"
+        });
+    }
+
+    if (
+      batch.status !==
+      "uploading"
+    ) {
+      return res
+        .status(409)
+        .json({
+          error:
+            "Импорт уже запущен"
+        });
+    }
+
+    bulkImportUpload.array(
+      "files",
+      BULK_UPLOAD_CHUNK_SIZE
+    )(
+      req,
+      res,
+      async error => {
+
+        if (error) {
+          await cleanupBulkUploadFiles(
+            req.files || []
+          );
+
+          return res
+            .status(400)
+            .json({
+              error:
+                error.message
+            });
+        }
+
+        try {
+          if (
+            !req.files?.length
+          ) {
+            return res
+              .status(400)
+              .json({
+                error:
+                  "Файлы не переданы"
+              });
+          }
+
+          await registerBulkImportFiles(
+            req.params.id,
+            req.files
+          );
+
+          return res
+            .status(202)
+            .json(
+              await getBulkImportProgress(
+                req.params.id
+              )
+            );
+        }
+        catch (registerError) {
+          await cleanupBulkUploadFiles(
+            req.files || []
+          );
+
+          return res
+            .status(400)
+            .json({
+              error:
+                registerError.message
+            });
+        }
+      }
+    );
+  }
+);
+
+
+instructionsRouter.post(
+  "/import-batches/:id/start",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const batch =
+        await startBulkImportBatch(
+          req.params.id
+        );
+
+      if (!batch) {
+        return res
+          .status(404)
+          .json({
+            error:
+              "Пакетный импорт не найден"
+          });
+      }
+
+      void ensureBulkImportWorker();
+
+      res
+        .status(202)
+        .json(
+          await getBulkImportProgress(
+            req.params.id
+          )
+        );
+    }
+    catch (error) {
+      res
+        .status(409)
+        .json({
+          error:
+            error.message
+        });
+    }
+  }
+);
+
+
+instructionsRouter.post(
+  "/import-batches/:id/stop",
+  requireAdmin,
+  async (req, res) => {
+    const batch =
+      await pauseBulkImportBatch(
+        req.params.id
+      );
+
+    if (!batch) {
+      return res
+        .status(404)
+        .json({
+          error:
+            "Пакетный импорт не найден"
+        });
+    }
+
+    res.json(
+      await getBulkImportProgress(
+        req.params.id
+      )
+    );
+  }
+);
+
+
+instructionsRouter.post(
+  "/import-batches/:id/resume",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const batch =
+        await resumeBulkImportBatch(
+          req.params.id
+        );
+
+      if (!batch) {
+        return res
+          .status(404)
+          .json({
+            error:
+              "Пакетный импорт не найден"
+          });
+      }
+
+      void ensureBulkImportWorker();
+
+      res.json(
+        await getBulkImportProgress(
+          req.params.id
+        )
+      );
+    }
+    catch (error) {
+      res
+        .status(409)
+        .json({
+          error:
+            error.message
+        });
+    }
+  }
+);
+
+
+instructionsRouter.get(
+  "/import-batches/:id",
+  requireAdmin,
+  async (req, res) => {
+
+    const progress =
+      await getBulkImportProgress(
+        req.params.id
+      );
+
+    if (!progress) {
+      return res
+        .status(404)
+        .json({
+          error:
+            "Пакетный импорт не найден"
+        });
+    }
+
+    /*
+     * Важный механизм восстановления:
+     *
+     * после Passenger restart следующий
+     * polling progress снова запускает worker.
+     */
+    if (
+      progress.status ===
+      "running"
+    ) {
+      void ensureBulkImportWorker();
+    }
+
+    res.json(progress);
+  }
+);
+
+
+instructionsRouter.get(
+  "/import-batches/:id/files",
+  requireAdmin,
+  async (req, res) => {
+
+    const result =
+      await getBulkImportFiles(
+        req.params.id,
+        {
+          status:
+            typeof req.query.status ===
+            "string"
+              ? req.query.status
+              : null,
+
+          offset:
+            req.query.offset,
+
+          limit:
+            req.query.limit
+        }
+      );
+
+    if (!result) {
+      return res
+        .status(404)
+        .json({
+          error:
+            "Пакетный импорт не найден"
+        });
+    }
+
+    res.json(result);
+  }
+);
+
 
 instructionsRouter.get(
 "/:id",
@@ -813,6 +1259,11 @@ requireAdmin,
 
 
 
+  saveInstructionSnapshot(
+    existing
+  );
+
+
   instructionsRepository.save(
     updated
   );
@@ -832,6 +1283,114 @@ requireAdmin,
 
 
 // =========================
+
+// =========================
+// INSTRUCTION HISTORY
+// =========================
+
+instructionsRouter.get(
+  "/:id/history",
+  requireAdmin,
+  (req, res) => {
+
+    const existing =
+      instructionsRepository.getById(
+        req.params.id
+      );
+
+
+    if (!existing) {
+
+      return res
+        .status(404)
+        .json({
+          error:
+            "Инструкция не найдена"
+        });
+
+    }
+
+
+    return res.json(
+      getInstructionHistoryInfo(
+        req.params.id
+      )
+    );
+
+  }
+);
+
+
+instructionsRouter.post(
+  "/:id/rollback",
+  requireAdmin,
+  (req, res) => {
+
+    try {
+
+      const restored =
+        rollbackInstruction(
+          req.params.id
+        );
+
+
+      return res.json({
+        ok: true,
+        instruction: restored
+      });
+
+    }
+    catch (error) {
+
+      if (
+        error?.code ===
+        "INSTRUCTION_NOT_FOUND"
+      ) {
+
+        return res
+          .status(404)
+          .json({
+            error:
+              error.message
+          });
+
+      }
+
+
+      if (
+        error?.code ===
+        "NO_HISTORY"
+      ) {
+
+        return res
+          .status(409)
+          .json({
+            error:
+              error.message
+          });
+
+      }
+
+
+      console.error(
+        "Instruction rollback error:",
+        error
+      );
+
+
+      return res
+        .status(500)
+        .json({
+          error:
+            "Не удалось выполнить откат инструкции"
+        });
+
+    }
+
+  }
+);
+
+
 // DELETE
 // =========================
 
@@ -896,7 +1455,7 @@ async(req,res)=>{
 
 
   const result =
-    await runScheduledGeneration();
+    await runScheduledGeneration({ force: true });
 
 
 
