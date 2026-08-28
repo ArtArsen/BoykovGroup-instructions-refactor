@@ -70,7 +70,6 @@ server/}
 server/},
 
 # Runtime generation queue
-server/src/data/professionQueue.json
 
 # ============================================================
 # BOYKOVDOCS PRIVATE USER DATA
