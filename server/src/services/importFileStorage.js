@@ -1,3 +1,7 @@
+import {
+  normalizeUploadedFilename
+} from "../utils/uploadedFilename.js";
+
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -34,7 +38,9 @@ export async function saveImportFile(
   const filePath =
     path.join(
       folder,
-      file.originalname
+      normalizeUploadedFilename(
+        file.originalname
+      )
     );
 
 

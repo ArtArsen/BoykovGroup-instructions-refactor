@@ -11,8 +11,7 @@ import {
 } from "./importFileStorage.js";
 
 import {
-  extractTextFromUpload,
-  splitIntoParagraphs
+  extractTextFromUpload
 } from "./documentTextExtractor.js";
 
 import {
@@ -21,18 +20,17 @@ import {
   buildInstructionTitle
 } from "./documentCleanerService.js";
 
+
+
 import {
-  formatInstructionDocument,
-  isFormatterConfigured
-} from "./instructionFormatterService.js";
+  parseImportedInstruction
+} from "./importedInstructionParser.js";
 
 import {
   assertInstructionQuality
 } from "./instructionQualityChecker.js";
 
-import {
-  repairInstruction
-} from "./instructionRepairService.js";
+
 
 import {
   instructionsRepository
@@ -130,22 +128,6 @@ export async function retryFailedImport(importId){
 
 
 
-      const paragraphs =
-        splitIntoParagraphs(
-          cleanedText
-        );
-
-
-
-      if(!paragraphs.length){
-
-        throw new Error(
-          "Не удалось извлечь текст"
-        );
-
-      }
-
-
 
 
 
@@ -157,27 +139,22 @@ export async function retryFailedImport(importId){
 
 
 
-      let formatted = null;
+      const parsed =
+        parseImportedInstruction(
+          cleanedText
+        );
 
-
-
-      if(isFormatterConfigured()){
-
-        formatted =
-          await formatInstructionDocument(
-            cleanedText,
-            file.name
-          );
-
+      if (
+        !parsed.sections.length
+      ) {
+        throw new Error(
+          "Не удалось распознать разделы и нумерованные пункты инструкции"
+        );
       }
 
-
-
-
       const finalProfession =
-        formatted?.profession
-        ||
         profession;
+
 
 
 
@@ -193,8 +170,6 @@ export async function retryFailedImport(importId){
 
 
         title:
-        formatted?.title
-        ||
         buildInstructionTitle(
           finalProfession
         ),
@@ -212,18 +187,9 @@ export async function retryFailedImport(importId){
 
 
         sections:
-        formatted?.sections?.length
-        ?
-        formatted.sections
-        :
-        [
-          {
-            number:1,
-            heading:
-            "Общие требования охраны труда",
-            paragraphs
-          }
-        ],
+        parsed.sections,
+
+
 
 
 
@@ -255,44 +221,35 @@ export async function retryFailedImport(importId){
 
 
 
-      let finalInstruction =
-        instruction;
-
-
-
-      try{
-
+      try {
 
         assertInstructionQuality(
-          finalInstruction
+          instruction
         );
-
 
       }
-      catch(error){
+      catch(error) {
 
+        const details =
+          Array.isArray(
+            error?.qualityErrors
+          )
+            ? error.qualityErrors.join("; ")
+            : error.message;
 
-        finalInstruction =
-          await repairInstruction(
-            finalInstruction,
-            error.qualityErrors
-          );
-
-
-        assertInstructionQuality(
-          finalInstruction
+        console.warn(
+          `[Retry import quality warning] ${file.name}: ${details}`
         );
-
 
       }
 
-
-
-
-
-
+      /*
+       * ВАЖНО:
+       * импортированный документ не ремонтируем
+       * и ничего в него через AI не дописываем.
+       */
       instructionsRepository.save(
-        finalInstruction
+        instruction
       );
 
 
@@ -305,7 +262,7 @@ export async function retryFailedImport(importId){
         {
           status:"completed",
           instructionId:
-            finalInstruction.id,
+            instruction.id,
           finishedAt:
             new Date().toISOString()
         }

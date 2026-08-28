@@ -1,0 +1,1252 @@
+/*
+ * ============================================================
+ * BOYKOVDOCS DESIGN FOUNDATION V1
+ * ============================================================
+ *
+ * Design direction:
+ *
+ * - existing header = reference
+ * - existing search = reference
+ * - profession/work cards = reference
+ * - light cold surfaces
+ * - navy typography
+ * - one primary blue
+ * - thin borders
+ * - sharp blue shadows
+ * - restrained motion
+ * - consistent radii and spacing
+ */
+
+
+/*
+ * ============================================================
+ * 01. DESIGN TOKENS
+ * ============================================================
+ */
+
+:root {
+
+  /*
+   * Backgrounds
+   */
+
+  --bd-bg:
+    #f6f8fb;
+
+  --bd-bg-soft:
+    #f1f5fa;
+
+  --bd-surface:
+    #ffffff;
+
+  --bd-surface-soft:
+    #f7faff;
+
+  --bd-surface-blue:
+    #f3f7fd;
+
+
+  /*
+   * Typography
+   */
+
+  --bd-text:
+    #172b45;
+
+  --bd-text-soft:
+    #40556f;
+
+  --bd-text-secondary:
+    #687c96;
+
+  --bd-text-muted:
+    #8998ab;
+
+
+  /*
+   * Primary blue
+   */
+
+  --bd-blue:
+    #4278d3;
+
+  --bd-blue-hover:
+    #3268bd;
+
+  --bd-blue-dark:
+    #24589b;
+
+  --bd-blue-soft:
+    rgba(66, 120, 211, .075);
+
+
+  /*
+   * Borders
+   */
+
+  --bd-border:
+    rgba(38, 65, 101, .11);
+
+  --bd-border-soft:
+    rgba(38, 65, 101, .075);
+
+  --bd-border-blue:
+    rgba(66, 120, 211, .22);
+
+  --bd-border-blue-strong:
+    rgba(66, 120, 211, .46);
+
+
+  /*
+   * Sharp shadows
+   *
+   * Без размытого glow.
+   */
+
+  --bd-shadow-blue:
+    4px 4px 0
+    rgba(66, 120, 211, .11);
+
+  --bd-shadow-blue-hover:
+    5px 5px 0
+    rgba(66, 120, 211, .15);
+
+  --bd-shadow-soft:
+    0 8px 28px
+    rgba(40, 70, 110, .045);
+
+
+  /*
+   * Radius
+   */
+
+  --bd-radius-sm:
+    8px;
+
+  --bd-radius-md:
+    12px;
+
+  --bd-radius-lg:
+    16px;
+
+
+  /*
+   * Spacing
+   */
+
+  --bd-space-1:
+    8px;
+
+  --bd-space-2:
+    12px;
+
+  --bd-space-3:
+    16px;
+
+  --bd-space-4:
+    24px;
+
+  --bd-space-5:
+    32px;
+
+  --bd-space-6:
+    48px;
+
+  --bd-space-7:
+    64px;
+
+
+  /*
+   * Main content width
+   */
+
+  --bd-container:
+    1180px;
+
+  --bd-reading:
+    820px;
+
+
+  /*
+   * Motion
+   */
+
+  --bd-transition:
+    160ms ease;
+}
+
+
+/*
+ * ============================================================
+ * 02. PAGE FOUNDATION
+ * ============================================================
+ */
+
+html {
+  color-scheme: light;
+
+  scroll-behavior: smooth;
+}
+
+
+body {
+  color:
+    var(--bd-text);
+
+  background-color:
+    var(--bd-bg);
+
+  text-rendering:
+    optimizeLegibility;
+
+  -webkit-font-smoothing:
+    antialiased;
+
+  -moz-osx-font-smoothing:
+    grayscale;
+}
+
+
+::selection {
+  color: #fff;
+
+  background:
+    rgba(66, 120, 211, .88);
+}
+
+
+/*
+ * Не меняем фирменную гарнитуру сайта,
+ * но нормализуем читаемость.
+ */
+
+body,
+button,
+input,
+textarea,
+select {
+  line-height: 1.5;
+}
+
+
+/*
+ * ============================================================
+ * 03. TYPOGRAPHIC RHYTHM
+ * ============================================================
+ */
+
+main h1,
+main h2,
+main h3,
+main h4 {
+  color:
+    var(--bd-text);
+
+  text-wrap:
+    balance;
+}
+
+
+main h1 {
+  letter-spacing:
+    -.025em;
+}
+
+
+main h2 {
+  letter-spacing:
+    -.018em;
+}
+
+
+main p {
+  text-wrap:
+    pretty;
+}
+
+
+/*
+ * Вторичный текст не должен быть
+ * слишком бледным.
+ */
+
+main small {
+  color:
+    var(--bd-text-secondary);
+}
+
+
+/*
+ * ============================================================
+ * 04. LINKS
+ * ============================================================
+ */
+
+main a {
+  transition:
+    color var(--bd-transition),
+    border-color var(--bd-transition),
+    background-color var(--bd-transition),
+    box-shadow var(--bd-transition);
+}
+
+
+/*
+ * Не трогаем существующую навигацию
+ * и карточки.
+ */
+
+main p a:not([class]),
+main address a:not([class]) {
+  color:
+    var(--bd-blue);
+
+  text-decoration-color:
+    rgba(66, 120, 211, .32);
+
+  text-underline-offset:
+    3px;
+}
+
+
+main p a:not([class]):hover,
+main address a:not([class]):hover {
+  color:
+    var(--bd-blue-hover);
+}
+
+
+/*
+ * ============================================================
+ * 05. ACCESSIBILITY / FOCUS
+ * ============================================================
+ */
+
+:where(
+  a,
+  button,
+  input,
+  textarea,
+  select
+):focus-visible {
+
+  outline:
+    2px solid
+    rgba(66, 120, 211, .58);
+
+  outline-offset:
+    3px;
+}
+
+
+/*
+ * ============================================================
+ * 06. FORM FOUNDATION
+ *
+ * Search deliberately excluded.
+ * Existing search remains reference component.
+ * ============================================================
+ */
+
+main input:not(
+  [type="checkbox"]
+):not(
+  [type="radio"]
+):not(
+  [type="search"]
+):not(
+  [placeholder*="Поиск"]
+):not(
+  [placeholder*="поиск"]
+):not(
+  [placeholder*="професс"]
+),
+main textarea,
+main select {
+
+  border:
+    1px solid
+    var(--bd-border-blue);
+
+  border-radius:
+    var(--bd-radius-md);
+
+  background:
+    var(--bd-surface);
+
+  color:
+    var(--bd-text);
+
+  box-shadow:
+    3px 3px 0
+    rgba(66, 120, 211, .07);
+
+  transition:
+    border-color var(--bd-transition),
+    box-shadow var(--bd-transition),
+    background-color var(--bd-transition);
+}
+
+
+main input:not(
+  [type="checkbox"]
+):not(
+  [type="radio"]
+):not(
+  [type="search"]
+):focus,
+main textarea:focus,
+main select:focus {
+
+  border-color:
+    rgba(66, 120, 211, .52);
+
+  box-shadow:
+    4px 4px 0
+    rgba(66, 120, 211, .11);
+
+  outline: 0;
+}
+
+
+/*
+ * Placeholder
+ */
+
+main input::placeholder,
+main textarea::placeholder {
+  color:
+    #93a1b3;
+
+  opacity: 1;
+}
+
+
+/*
+ * ============================================================
+ * 07. BUTTON FOUNDATION
+ *
+ * Применяем только к явным обычным кнопкам.
+ * Header/search не переписываем.
+ * ============================================================
+ */
+
+main button:not(
+  .boykovInstructionSort__button
+) {
+
+  transition:
+    color var(--bd-transition),
+    background-color var(--bd-transition),
+    border-color var(--bd-transition),
+    box-shadow var(--bd-transition),
+    opacity var(--bd-transition);
+}
+
+
+main button:disabled {
+  cursor: not-allowed;
+
+  opacity: .5;
+}
+
+
+/*
+ * Не двигаем элементы вверх/вниз.
+ * Интерфейс должен быть спокойным.
+ */
+
+main button:hover {
+  transform: none;
+}
+
+
+/*
+ * ============================================================
+ * 08. COMMON PANELS
+ * ============================================================
+ */
+
+.bdSurface {
+  border:
+    1px solid
+    var(--bd-border-blue);
+
+  border-radius:
+    var(--bd-radius-lg);
+
+  background:
+    var(--bd-surface);
+
+  box-shadow:
+    var(--bd-shadow-blue);
+}
+
+
+/*
+ * ============================================================
+ * 09. SORTING
+ * ============================================================
+ *
+ * Убираем ощущение отдельного addon-widget.
+ */
+
+.boykovInstructionSort {
+  margin:
+    0
+    0
+    18px;
+
+  padding:
+    12px 0;
+
+  border-top:
+    1px solid
+    var(--bd-border-soft);
+
+  border-bottom:
+    1px solid
+    var(--bd-border-soft);
+
+  background:
+    transparent;
+}
+
+
+.boykovInstructionSort__label {
+  color:
+    var(--bd-text-muted);
+
+  font-size:
+    11px;
+}
+
+
+.boykovInstructionSort__label::before {
+  background:
+    var(--bd-blue);
+}
+
+
+.boykovInstructionSort__buttons {
+  padding: 0;
+
+  gap: 4px;
+
+  border: 0;
+
+  background:
+    transparent;
+}
+
+
+.boykovInstructionSort__button {
+  min-height:
+    34px;
+
+  padding:
+    8px
+    11px;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius:
+    var(--bd-radius-sm);
+
+  color:
+    var(--bd-text-secondary);
+
+  background:
+    transparent;
+
+  box-shadow:
+    none;
+
+  font-size:
+    11px;
+}
+
+
+.boykovInstructionSort__button:hover {
+  border-color:
+    var(--bd-border-blue);
+
+  color:
+    var(--bd-blue-hover);
+
+  background:
+    var(--bd-blue-soft);
+
+  transform:
+    none;
+}
+
+
+.boykovInstructionSort__button--active {
+  border-color:
+    var(--bd-border-blue);
+
+  color:
+    var(--bd-blue-dark);
+
+  background:
+    var(--bd-surface);
+
+  box-shadow:
+    3px 3px 0
+    rgba(66, 120, 211, .09);
+}
+
+
+.boykovInstructionSort__button--active::after {
+  display: none;
+}
+
+
+/*
+ * ============================================================
+ * 10. GENERATION CTA
+ * ============================================================
+ */
+
+.generationListCard,
+.generationCatalogStandalone,
+.generationCatalogCard {
+
+  transition:
+    border-color var(--bd-transition),
+    box-shadow var(--bd-transition),
+    background-color var(--bd-transition);
+}
+
+
+/*
+ * Специальная CTA:
+ * отличается от обычной инструкции,
+ * но остаётся частью дизайн-системы.
+ */
+
+.generationListCard,
+.generationCatalogStandalone {
+
+  border-color:
+    var(--bd-border-blue) !important;
+
+  background:
+    var(--bd-surface-blue) !important;
+
+  box-shadow:
+    var(--bd-shadow-blue) !important;
+}
+
+
+.generationListCard:hover,
+.generationCatalogStandalone:hover {
+
+  border-color:
+    var(--bd-border-blue-strong) !important;
+
+  box-shadow:
+    var(--bd-shadow-blue-hover) !important;
+}
+
+
+.generationListEyebrow,
+.generationCatalogEyebrow {
+  color:
+    var(--bd-blue);
+}
+
+
+.generationListText,
+.generationCatalogText {
+  color:
+    var(--bd-text-secondary);
+}
+
+
+/*
+ * ============================================================
+ * 11. PAGINATION
+ * ============================================================
+ */
+
+.realCatalogPagination {
+  margin-top:
+    var(--bd-space-4);
+
+  padding-top:
+    var(--bd-space-3);
+
+  border-top:
+    1px solid
+    var(--bd-border-soft);
+}
+
+
+.realCatalogPagination button,
+.realCatalogPagination a {
+
+  border-radius:
+    var(--bd-radius-sm);
+
+  transition:
+    color var(--bd-transition),
+    border-color var(--bd-transition),
+    background-color var(--bd-transition),
+    box-shadow var(--bd-transition);
+}
+
+
+/*
+ * ============================================================
+ * 12. LONG-FORM INSTRUCTION CONTENT
+ * ============================================================
+ *
+ * Не вмешиваемся в editor/admin.
+ * Только обычный контент внутри main.
+ */
+
+main article {
+  color:
+    var(--bd-text-soft);
+}
+
+
+main article p,
+main article li {
+  line-height:
+    1.72;
+}
+
+
+main article h2 {
+  margin-top:
+    var(--bd-space-6);
+
+  margin-bottom:
+    var(--bd-space-3);
+}
+
+
+main article h3 {
+  margin-top:
+    var(--bd-space-5);
+
+  margin-bottom:
+    var(--bd-space-2);
+}
+
+
+/*
+ * Horizontal separators
+ */
+
+main article hr {
+  height: 1px;
+
+  margin:
+    var(--bd-space-5)
+    0;
+
+  border: 0;
+
+  background:
+    var(--bd-border-soft);
+}
+
+
+/*
+ * ============================================================
+ * 13. TABLES
+ * ============================================================
+ */
+
+main table {
+  width: 100%;
+
+  border-collapse:
+    separate;
+
+  border-spacing: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    var(--bd-border);
+
+  border-radius:
+    var(--bd-radius-md);
+
+  background:
+    var(--bd-surface);
+}
+
+
+main th,
+main td {
+  padding:
+    11px
+    13px;
+
+  border-bottom:
+    1px solid
+    var(--bd-border-soft);
+
+  text-align: left;
+}
+
+
+main th {
+  color:
+    var(--bd-text-secondary);
+
+  background:
+    var(--bd-surface-soft);
+
+  font-size:
+    11px;
+}
+
+
+main tr:last-child td {
+  border-bottom: 0;
+}
+
+
+/*
+ * ============================================================
+ * 14. FOOTER
+ *
+ * Один общий container.
+ * Не три отдельные карточки.
+ * ============================================================
+ */
+
+.boykovFooterReq {
+  margin-top: 0;
+
+  padding:
+    28px
+    0
+    25px;
+
+  border-top: 0 !important;
+
+  border-bottom:
+    1px solid
+    var(--bd-border-soft);
+}
+
+
+.boykovFooterReq__inner {
+  width:
+    min(
+      calc(100% - 48px),
+      var(--bd-container)
+    );
+
+  margin:
+    0 auto;
+}
+
+
+.boykovFooterReq__head {
+  margin-bottom:
+    14px;
+}
+
+
+.boykovFooterReq__eyebrow {
+  color:
+    var(--bd-text-secondary);
+
+  font-size:
+    10px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    .075em;
+}
+
+
+.boykovFooterReq__eyebrow::before {
+  width: 5px;
+  height: 5px;
+
+  background:
+    var(--bd-blue);
+
+  box-shadow:
+    none;
+}
+
+
+/*
+ * One unified footer panel.
+ */
+
+.boykovFooterReq__grid {
+
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(0, 1.08fr)
+    minmax(0, .82fr)
+    minmax(0, 1.18fr);
+
+  gap: 0;
+
+  align-items:
+    stretch;
+
+  border:
+    1px solid
+    var(--bd-border-blue);
+
+  border-top:
+    2px solid
+    var(--bd-blue);
+
+  border-radius:
+    var(--bd-radius-lg);
+
+  background:
+    var(--bd-surface);
+
+  box-shadow:
+    var(--bd-shadow-blue);
+}
+
+
+/*
+ * Footer columns are not cards.
+ */
+
+.boykovFooterReq__column,
+.boykovFooterReq__column:first-child,
+.boykovFooterReq__column:last-child,
+.boykovFooterReq__column:nth-child(2),
+.boykovFooterReq__column:nth-child(3) {
+
+  min-width: 0;
+
+  height: auto;
+
+  margin: 0;
+
+  padding:
+    19px 21px
+    20px !important;
+
+  border: 0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+.boykovFooterReq__column::before {
+  display:
+    none !important;
+}
+
+
+.boykovFooterReq__column:hover {
+  border: 0 !important;
+
+  box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+.boykovFooterReq__column
++
+.boykovFooterReq__column {
+
+  border-left:
+    1px solid
+    var(--bd-border-soft) !important;
+}
+
+
+.boykovFooterReq__label {
+  color:
+    var(--bd-text-muted);
+
+  font-size:
+    9px;
+
+  font-weight:
+    600;
+}
+
+
+.boykovFooterReq__value {
+  color:
+    var(--bd-text-soft);
+
+  font-size:
+    11px;
+
+  line-height:
+    1.55;
+}
+
+
+strong.boykovFooterReq__value {
+  color:
+    var(--bd-text);
+
+  font-weight:
+    600;
+}
+
+
+.boykovFooterReq__link {
+  color:
+    var(--bd-blue-dark);
+
+  font-weight:
+    500;
+}
+
+
+.boykovFooterReq__link:hover {
+  color:
+    var(--bd-blue-hover);
+}
+
+
+.boykovFooterReq__numbers,
+.boykovFooterReq__contactRow {
+
+  padding-bottom:
+    13px;
+
+  border-bottom:
+    1px solid
+    var(--bd-border-soft);
+}
+
+
+/*
+ * ============================================================
+ * 15. GENERIC EMPTY / ERROR / STATUS ELEMENTS
+ * ============================================================
+ */
+
+[role="alert"] {
+  border-radius:
+    var(--bd-radius-md);
+}
+
+
+main [aria-busy="true"] {
+  opacity:
+    .72;
+}
+
+
+/*
+ * ============================================================
+ * 16. REDUCED MOTION
+ * ============================================================
+ */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  *,
+  *::before,
+  *::after {
+
+    scroll-behavior:
+      auto !important;
+
+    transition-duration:
+      .01ms !important;
+
+    animation-duration:
+      .01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * 17. TABLET
+ * ============================================================
+ */
+
+@media (
+  max-width: 900px
+) {
+
+  :root {
+    --bd-space-7:
+      48px;
+  }
+
+
+  .boykovFooterReq__grid {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+
+  .boykovFooterReq__column:nth-child(3) {
+    grid-column:
+      1 / -1;
+
+    border-left:
+      0 !important;
+
+    border-top:
+      1px solid
+      var(--bd-border-soft) !important;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * 18. MOBILE
+ * ============================================================
+ */
+
+@media (
+  max-width: 600px
+) {
+
+  :root {
+    --bd-space-6:
+      36px;
+
+    --bd-space-7:
+      44px;
+  }
+
+
+  .boykovInstructionSort {
+    margin-bottom:
+      14px;
+  }
+
+
+  .boykovFooterReq {
+    padding:
+      22px
+      0;
+  }
+
+
+  .boykovFooterReq__inner {
+    width:
+      calc(100% - 30px);
+  }
+
+
+  .boykovFooterReq__grid {
+    display:
+      block;
+
+    border-radius:
+      var(--bd-radius-md);
+  }
+
+
+  .boykovFooterReq__column,
+  .boykovFooterReq__column:first-child,
+  .boykovFooterReq__column:last-child,
+  .boykovFooterReq__column:nth-child(2),
+  .boykovFooterReq__column:nth-child(3) {
+
+    padding:
+      16px !important;
+
+    border:
+      0 !important;
+  }
+
+
+  .boykovFooterReq__column
+  +
+  .boykovFooterReq__column {
+
+    border-left:
+      0 !important;
+
+    border-top:
+      1px solid
+      var(--bd-border-soft) !important;
+  }
+
+
+  .boykovFooterReq__label {
+    font-size:
+      9px;
+  }
+
+
+  .boykovFooterReq__value {
+    font-size:
+      11px;
+  }
+
+}
+
+
+/*
+ * ============================================================
+ * 19. SMALL MOBILE
+ * ============================================================
+ */
+
+@media (
+  max-width: 390px
+) {
+
+  .boykovFooterReq__numbers,
+  .boykovFooterReq__contactRow {
+
+    grid-template-columns:
+      1fr;
+
+    gap:
+      11px;
+  }
+
+}

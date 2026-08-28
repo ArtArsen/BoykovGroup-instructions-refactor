@@ -1,0 +1,84 @@
+
+# ============================================================
+# BOYKOVDOCS PRODUCTION / RUNTIME
+# ============================================================
+
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+server/.env
+server/.env.*
+!server/.env.example
+!server/.env.*.example
+
+node_modules/
+server/node_modules/
+client/node_modules/
+
+tmp/
+server/tmp/
+logs/
+server/logs/
+*.log
+
+server/src/data/publicGenerationOrders/
+server/src/data/instructionViews.json
+server/src/data/autoGenerationSettings.json
+server/src/data/instructions/
+
+server/src/data/*usage*.json
+server/src/data/*Usage*.json
+server/src/data/*payment*.json
+server/src/data/*Payment*.json
+server/src/data/*order*.json
+server/src/data/*Order*.json
+server/src/data/*session*.json
+server/src/data/*Session*.json
+server/src/data/*token*.json
+server/src/data/*Token*.json
+server/src/data/*user*.json
+server/src/data/*User*.json
+
+backups/
+*.bak
+*.before-*
+*.broken-*
+*.old
+*~
+
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ============================================================
+# BOYKOVDOCS IMPORT RUNTIME
+# ============================================================
+
+# Uploaded source documents
+server/uploads/
+
+# Runtime YandexGPT usage accounting
+server/src/data/generationUsage.jsonl
+
+# Accidental console/paste artifacts
+server/userPrompt
+server/{
+server/}
+server/},
+
+# Runtime generation queue
+server/src/data/professionQueue.json
+
+# ============================================================
+# BOYKOVDOCS PRIVATE USER DATA
+# ============================================================
+
+server/data/users.json
+server/data/registration-consents.json
+
+# Development/repair backups
+*.backup
+*.empty-*

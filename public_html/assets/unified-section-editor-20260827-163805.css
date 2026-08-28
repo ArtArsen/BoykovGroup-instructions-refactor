@@ -1,0 +1,78 @@
+
+/* ===== ONE TEXTAREA PER SECTION ===== */
+
+.editorUnifiedSection {
+  margin-bottom: 28px;
+}
+
+
+.editorUnifiedSectionField {
+  display: block;
+  margin-top: 18px;
+}
+
+
+.editorUnifiedSectionLabel {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-weight: 700;
+}
+
+
+.editorUnifiedSectionTextarea {
+  display: block;
+
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: 420px;
+
+  padding: 16px;
+
+  border: 1px solid #cfd5dc;
+  border-radius: 10px;
+
+  resize: vertical;
+
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.65;
+
+  background: #fff;
+  color: #172033;
+
+  outline: none;
+}
+
+
+.editorUnifiedSectionTextarea:focus {
+  border-color: #397bd9;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(57,123,217,.10);
+}
+
+
+.editorUnifiedSectionHint {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #788395;
+
+  font-size: 12px;
+}
+
+
+@media (max-width: 700px) {
+
+  .editorUnifiedSectionTextarea {
+    min-height: 300px;
+  }
+
+}
+
+/* ===== /ONE TEXTAREA PER SECTION ===== */

@@ -1,38 +1,115 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "";
 
-async function request(path, options = {}) {
-  const { headers, ...rest } = options;
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json", ...headers },
-    ...rest,
-  });
+async function request(
+  path,
+  options = {}
+) {
+  const {
+    headers,
+    ...rest
+  } = options;
+
+  const response =
+    await fetch(
+      `${API_BASE_URL}${path}`,
+      {
+        headers: {
+          "Content-Type":
+            "application/json",
+          ...headers
+        },
+        ...rest
+      }
+    );
 
   if (!response.ok) {
-    let message = `Ошибка запроса (${response.status})`;
+    let message =
+      `Ошибка запроса (${response.status})`;
+
     try {
-      const data = await response.json();
-      if (data?.error) message = data.error;
+      const data =
+        await response.json();
+
+      if (data?.error) {
+        message =
+          data.error;
+      }
     } catch {
-      // тело ответа могло быть пустым — оставляем сообщение по умолчанию
+      // Оставляем стандартное сообщение.
     }
-    throw new Error(message);
+
+    throw new Error(
+      message
+    );
   }
 
-  if (response.status === 204) return null;
+  if (
+    response.status === 204
+  ) {
+    return null;
+  }
+
   return response.json();
 }
 
-/** Вход администратора по логину и паролю. Возвращает { token, user }. */
-export function login(loginValue, password) {
-  return request("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ login: loginValue, password }),
-  });
+
+/*
+ * Вход:
+ * - администратор — по существующему логину;
+ * - пользователь — по email.
+ */
+export function login(
+  loginValue,
+  password
+) {
+  return request(
+    "/api/auth/login",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        login:
+          loginValue,
+        password
+      })
+    }
+  );
 }
 
-/** Проверяет сохранённый токен и возвращает данные текущего пользователя. */
-export function fetchMe(token) {
-  return request("/api/auth/me", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+
+/*
+ * Регистрация обычного пользователя.
+ */
+export function register(
+  email,
+  password
+) {
+  return request(
+    "/api/auth/register",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }
+  );
+}
+
+
+/*
+ * Проверка сохранённого JWT.
+ */
+export function fetchMe(
+  token
+) {
+  return request(
+    "/api/auth/me",
+    {
+      headers: {
+        Authorization:
+          `Bearer ${token}`
+      }
+    }
+  );
 }
