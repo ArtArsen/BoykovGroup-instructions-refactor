@@ -81,3 +81,6 @@ server/data/registration-consents.json
 # Development/repair backups
 *.backup
 *.empty-*
+
+# Local server artifact
+scheduledGenerationService.js
