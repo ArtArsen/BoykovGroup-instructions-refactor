@@ -457,6 +457,27 @@ async function processClaim(
           "uploaded"
       });
 
+    /*
+     * Сохраняем происхождение новой импортированной
+     * инструкции непосредственно в её JSON.
+     *
+     * Для duplicate существующий документ не изменяем.
+     */
+    if (
+      result?.action === "new" &&
+      result?.instruction &&
+      typeof result.instruction === "object"
+    ) {
+      result.instruction.originalFilename =
+        file.name;
+
+      result.instruction.importBatchId =
+        batchId;
+
+      result.instruction.importFileId =
+        file.id;
+    }
+
     const instruction =
       await saveProcessedInstruction(
         result

@@ -292,3 +292,34 @@ export async function sendRegistrationNotification({
     ok: true
   };
 }
+
+
+/*
+ * SYSTEM_EMAIL_SENDER_V1
+ *
+ * Универсальная отправка системных писем
+ * через существующий SMTP BoykovDocs.
+ */
+export async function sendSystemEmail({
+  to,
+  subject,
+  text = "",
+  html = ""
+}) {
+  const transporter =
+    createTransporter();
+
+  return transporter.sendMail({
+    from:
+      process.env.SMTP_FROM
+      ||
+      process.env.SMTP_USER
+      ||
+      "bd@boykovdocs.ru",
+
+    to,
+    subject,
+    text,
+    html
+  });
+}

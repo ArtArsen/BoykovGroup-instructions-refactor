@@ -1,3 +1,4 @@
+import { rankInstructionsByQuery } from "../services/searchService.js";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -230,41 +231,74 @@ function getDateModified(instruction) {
 }
 
 function getIndexableInstructions(query = "") {
-  const result = instructionsRepository.getAll();
-  const instructions = Array.isArray(result)
-    ? result
-    : Array.isArray(result?.items)
-      ? result.items
-      : [];
+  const result =
+    instructionsRepository.getAll();
 
-  const normalizedQuery = String(query || "").trim().toLocaleLowerCase("ru");
+  const instructions =
+    Array.isArray(result)
+      ? result
+      : Array.isArray(result?.items)
+        ? result.items
+        : [];
 
-  return instructions
-    .filter((instruction) => instruction && instruction.id && instruction.title)
-    .filter(
-      (instruction) =>
-        !["draft", "noindex"].includes(
-          String(instruction.seoStatus || "").toLowerCase()
-        )
-    )
-    .filter((instruction) => {
-      if (!normalizedQuery) return true;
+  const normalizedQuery =
+    String(query || "")
+      .trim();
 
-      return [
-        instruction.title,
-        instruction.profession,
-        instruction.id,
-      ]
-        .filter(Boolean)
-        .some((value) =>
-          String(value).toLocaleLowerCase("ru").includes(normalizedQuery)
-        );
-    })
-    .sort((a, b) =>
-      String(a.title).localeCompare(String(b.title), "ru", {
-        sensitivity: "base",
-      })
+  const visible =
+    instructions
+      .filter(
+        instruction =>
+          instruction
+          &&
+          instruction.id
+          &&
+          instruction.title
+      )
+      .filter(
+        instruction =>
+          ![
+            "draft",
+            "noindex"
+          ].includes(
+            String(
+              instruction.seoStatus
+              || ""
+            ).toLowerCase()
+          )
+      );
+
+  /*
+   * SEO-поиск использует ту же
+   * релевантность, что и API.
+   */
+  if (normalizedQuery) {
+    return rankInstructionsByQuery(
+      visible,
+      normalizedQuery,
+      {
+        sort:
+          "relevance"
+      }
     );
+  }
+
+  return visible.sort(
+    (a, b) =>
+      String(
+        a.title
+      )
+        .localeCompare(
+          String(
+            b.title
+          ),
+          "ru",
+          {
+            sensitivity:
+              "base"
+          }
+        )
+  );
 }
 
 function makeDescription(instruction) {
@@ -273,7 +307,7 @@ function makeDescription(instruction) {
 
   const source = profession
     ? `${title}. Требования охраны труда, порядок безопасного выполнения работ и действия работника в аварийных ситуациях.`
-    : `${title}. Полный текст иИнструкции по охране труда.`;
+    : `${title}. Полный текст инструкции по охране труда.`;
 
   return source.length <= 165
     ? source
@@ -497,6 +531,56 @@ function renderSections(instruction) {
     .join("\n");
 }
 
+
+/* SEO_PRODUCTION_STYLES_V3 */
+
+/*
+ * Серверная SEO-страница должна использовать
+ * тот же набор CSS, который подключён
+ * в production public_html/index.html.
+ */
+function loadProductionStylesheetLinks() {
+  try {
+    const productionIndexUrl =
+      new URL(
+        "../../../public_html/index.html",
+        import.meta.url
+      );
+
+    const html =
+      fs.readFileSync(
+        productionIndexUrl,
+        "utf-8"
+      );
+
+    const links =
+      String(html).match(
+        /<link\b[^>]*>/giu
+      ) ?? [];
+
+    return links
+      .filter(
+        tag =>
+          /\brel=["']stylesheet["']/iu
+            .test(tag)
+      )
+      .filter(
+        tag =>
+          !/fonts\.googleapis\.com/iu
+            .test(tag)
+      )
+      .join("\n");
+  }
+  catch (error) {
+    console.error(
+      "[SEO] Production CSS load error:",
+      error
+    );
+
+    return "";
+  }
+}
+
 function renderHtmlHead({
   title,
   description,
@@ -505,6 +589,21 @@ function renderHtmlHead({
   robots = "index, follow, max-image-preview:large",
   ogType = "website",
 }) {
+  /*
+   * Production SPA CSS нужны только серверному каталогу.
+   *
+   * Страницы конкретных инструкций имеют собственную
+   * серверную разметку и EXACT_SITE_CSS. Подключение
+   * production CSS к ним ломает внешний вид при прямом
+   * открытии или обновлении страницы.
+   */
+  const productionStylesheetLinks =
+    /\/instrukcii-po-ohrane-truda\/?$/u.test(
+      String(canonical || "")
+    )
+      ? loadProductionStylesheetLinks()
+      : "";
+
   return `
 <head>
   <meta charset="UTF-8">
@@ -533,6 +632,7 @@ function renderHtmlHead({
   <script type="application/ld+json">${jsonForHtml(schema)}</script>
 
   <style>${EXACT_SITE_CSS}</style>
+  ${productionStylesheetLinks}
 </head>`;
 }
 
@@ -588,42 +688,176 @@ function renderInstructionsCatalogPage(req, instructions, query = "") {
     ],
   };
 
-  return `<!doctype html>
-<html lang="ru">
-${renderHtmlHead({
-  title: pageTitle,
-  description,
-  canonical,
-  schema,
-  robots: hasQuery ? "noindex, follow" : "index, follow, max-image-preview:large",
-})}
-<body>
-  <div class="App_page">
-    ${renderHeader(query)}
-    ${renderCategoryNav()}
-    ${renderMainHero({ headingTag: "h1" })}
+  /*
+   * SEO_CATALOG_PRODUCTION_SHELL_V1
+   *
+   * Каталог для пользователя отображается
+   * настоящим production React-приложением.
+   *
+   * Сервер подменяет только SEO-данные head.
+   */
+  const productionIndexUrl =
+    new URL(
+      "../../../public_html/index.html",
+      import.meta.url
+    );
 
-    <main>
-      <div class="App_resultsHead">
-        <span class="App_count">найдено: ${instructions.length}</span>
-      </div>
+  let productionHtml =
+    fs.readFileSync(
+      productionIndexUrl,
+      "utf-8"
+    );
 
-      ${
-        instructions.length
-          ? `<ul class="InstructionList_list">${renderInstructionCards(instructions)}</ul>`
-          : `<p class="seo-empty-query">По вашему запросу инструкции не найдены.</p>`
-      }
-    </main>
-  </div>
-</body>
-</html>`;
+  if (
+    !/id=["']root["']/iu.test(
+      productionHtml
+    )
+  ) {
+    throw new Error(
+      "[SEO] Production index.html does not contain #root"
+    );
+  }
+
+  if (
+    !/<title>[\s\S]*?<\/title>/iu.test(
+      productionHtml
+    )
+  ) {
+    throw new Error(
+      "[SEO] Production index.html does not contain <title>"
+    );
+  }
+
+  /*
+   * Title заменяем, а старые SEO-теги
+   * удаляем перед добавлением актуальных,
+   * чтобы не было дублей.
+   */
+  productionHtml =
+    productionHtml.replace(
+      /<title>[\s\S]*?<\/title>/iu,
+      `<title>${escapeHtml(pageTitle)}</title>`
+    );
+
+  productionHtml =
+    productionHtml
+      .replace(
+        /<meta\b[^>]*name=["']description["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*name=["']robots["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<link\b[^>]*rel=["']canonical["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:type["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:locale["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:title["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:description["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:url["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:site_name["'][^>]*>/giu,
+        ""
+      );
+
+  const robotsValue =
+    hasQuery
+      ? "noindex, follow"
+      : "index, follow, max-image-preview:large";
+
+  const seoHead = `
+  <!-- SEO_CATALOG_PRODUCTION_SHELL_V1 -->
+
+  <meta
+    name="description"
+    content="${escapeHtml(description)}"
+  >
+
+  <meta
+    name="robots"
+    content="${escapeHtml(robotsValue)}"
+  >
+
+  <link
+    rel="canonical"
+    href="${escapeHtml(canonical)}"
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <meta
+    property="og:locale"
+    content="ru_RU"
+  >
+
+  <meta
+    property="og:title"
+    content="${escapeHtml(pageTitle)}"
+  >
+
+  <meta
+    property="og:description"
+    content="${escapeHtml(description)}"
+  >
+
+  <meta
+    property="og:url"
+    content="${escapeHtml(canonical)}"
+  >
+
+  <meta
+    property="og:site_name"
+    content="${escapeHtml(BRAND_NAME)}"
+  >
+
+  <script type="application/ld+json">${jsonForHtml(schema)}</script>
+`;
+
+  if (
+    !/<\/head>/iu.test(
+      productionHtml
+    )
+  ) {
+    throw new Error(
+      "[SEO] Production index.html does not contain </head>"
+    );
+  }
+
+  productionHtml =
+    productionHtml.replace(
+      /<\/head>/iu,
+      `${seoHead}\n</head>`
+    );
+
+  return productionHtml;
 }
 
 function renderInstructionPage(req, instruction) {
   const siteUrl = getSiteUrl(req);
   const canonical = getInstructionUrl(req, instruction);
   const title = String(
-    instruction.title || "нструкция по охране труда"
+    instruction.title || "Инструкция по охране труда"
   ).trim();
   const description = makeDescription(instruction);
   const modified = getDateModified(instruction);
@@ -700,51 +934,168 @@ function renderInstructionPage(req, instruction) {
     ],
   };
 
-  return `<!doctype html>
-<html lang="ru">
-${renderHtmlHead({
-  title: `${title} | ${BRAND_NAME}`,
-  description,
-  canonical,
-  schema,
-  ogType: "article",
-})}
-<body>
-  <div class="App_page">
-    ${renderHeader("")}
-    ${renderCategoryNav()}
+  /*
+   * SEO_INSTRUCTION_PRODUCTION_SHELL_V1
+   *
+   * При прямом открытии или F5
+   * используем настоящий production React shell.
+   *
+   * SEO-метаданные конкретной инструкции
+   * остаются серверными.
+   */
+  const productionIndexUrl =
+    new URL(
+      "../../../public_html/index.html",
+      import.meta.url
+    );
 
-    <!-- Визуально тот же hero, что на главной. H1 оставляем самой инструкции ниже. -->
-    ${renderMainHero({ headingTag: "div" })}
+  let productionHtml =
+    fs.readFileSync(
+      productionIndexUrl,
+      "utf-8"
+    );
 
-    <main>
-      <div class="App_resultsHead">
-        <span class="App_count">инструкция</span>
-      </div>
+  if (
+    !/id=["']root["']/iu.test(
+      productionHtml
+    )
+  ) {
+    throw new Error(
+      "[SEO] Production index.html does not contain #root"
+    );
+  }
 
-      <div class="seo-article-wrap">
-        <article class="InstructionModal_modal">
-          <a
-            class="InstructionModal_close"
-            href="/instrukcii-po-ohrane-truda"
-            aria-label="Закрыть и вернуться к списку инструкций"
-          >×</a>
+  if (
+    !/<title>[\s\S]*?<\/title>/iu.test(
+      productionHtml
+    )
+  ) {
+    throw new Error(
+      "[SEO] Production index.html does not contain title"
+    );
+  }
 
-          <h1 class="InstructionModal_title">${escapeHtml(title)}</h1>
+  /*
+   * Title конкретной инструкции.
+   */
+  productionHtml =
+    productionHtml.replace(
+      /<title>[\s\S]*?<\/title>/iu,
+      `<title>${escapeHtml(title)} | ${escapeHtml(BRAND_NAME)}</title>`
+    );
 
-          ${
-            instruction.intro
-              ? `<p class="InstructionModal_intro">${escapeHtml(instruction.intro)}</p>`
-              : ""
-          }
+  /*
+   * Убираем SEO-теги главной страницы,
+   * чтобы ниже вставить данные инструкции
+   * без дублей.
+   */
+  productionHtml =
+    productionHtml
+      .replace(
+        /<meta\b[^>]*name=["']description["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*name=["']robots["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<link\b[^>]*rel=["']canonical["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:type["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:locale["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:title["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:description["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:url["'][^>]*>/giu,
+        ""
+      )
+      .replace(
+        /<meta\b[^>]*property=["']og:site_name["'][^>]*>/giu,
+        ""
+      );
 
-          ${renderSections(instruction)}
-        </article>
-      </div>
-    </main>
-  </div>
-</body>
-</html>`;
+  const seoHead = `
+  <!-- SEO_INSTRUCTION_PRODUCTION_SHELL_V1 -->
+
+  <meta
+    name="description"
+    content="${escapeHtml(description)}"
+  >
+
+  <meta
+    name="robots"
+    content="index, follow, max-image-preview:large"
+  >
+
+  <link
+    rel="canonical"
+    href="${escapeHtml(canonical)}"
+  >
+
+  <meta
+    property="og:type"
+    content="article"
+  >
+
+  <meta
+    property="og:locale"
+    content="ru_RU"
+  >
+
+  <meta
+    property="og:title"
+    content="${escapeHtml(title)}"
+  >
+
+  <meta
+    property="og:description"
+    content="${escapeHtml(description)}"
+  >
+
+  <meta
+    property="og:url"
+    content="${escapeHtml(canonical)}"
+  >
+
+  <meta
+    property="og:site_name"
+    content="${escapeHtml(BRAND_NAME)}"
+  >
+
+  <script type="application/ld+json">${jsonForHtml(schema)}</script>
+`;
+
+  if (
+    !/<\/head>/iu.test(
+      productionHtml
+    )
+  ) {
+    throw new Error(
+      "[SEO] Production index.html does not contain </head>"
+    );
+  }
+
+  productionHtml =
+    productionHtml.replace(
+      /<\/head>/iu,
+      `${seoHead}\n</head>`
+    );
+
+  return productionHtml;
 }
 
 function renderNotFoundPage(req) {
@@ -756,7 +1107,7 @@ function renderNotFoundPage(req) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, follow">
-  <title>нструкция не найдена | ${BRAND_NAME}</title>
+  <title>Инструкция не найдена | ${BRAND_NAME}</title>
   <style>${EXACT_SITE_CSS}</style>
 </head>
 <body>
@@ -774,7 +1125,7 @@ function renderNotFoundPage(req) {
             aria-label="Вернуться к списку инструкций"
           >×</a>
 
-          <h1 class="InstructionModal_title">нструкция не найдена</h1>
+          <h1 class="InstructionModal_title">Инструкция не найдена</h1>
           <p class="InstructionModal_intro">
             Такой инструкции нет в базе или её адрес был изменён.
           </p>

@@ -1,3 +1,4 @@
+import { startDailySiteStatsEmailJob } from "./jobs/dailySiteStatsEmailJob.js";
 import { thanksRouter } from "./routes/thanks.js";
 import "dotenv/config";
 import express from "express";
@@ -6,6 +7,7 @@ import morgan from "morgan";
 import { instructionsRouter } from "./routes/instructions.js";
 import { instructionViewsRouter } from "./routes/instructionViews.js";
 import { instructionPopularityRouter } from "./routes/instructionPopularity.js";
+import { visitorStatsRouter } from "./routes/visitorStats.js";
 import { instructionPdfRouter } from "./routes/instructionPdf.js";
 import { cloudPaymentsWebhookRouter } from "./routes/cloudPaymentsWebhook.js";
 import { recoverPublicGenerationOrders } from "./services/publicPaidGenerationService.js";
@@ -53,6 +55,7 @@ app.use("/api/public-generation", publicGenerationCheckoutRouter);
 app.use("/api/public-generation", publicGenerationRouter);
 app.use("/api/instructions", instructionPdfRouter);
 app.use("/api/admin/instruction-popularity", instructionPopularityRouter);
+app.use("/api/visitor-stats", visitorStatsRouter);
 app.use("/api/instructions", instructionViewsRouter);
 app.use("/api/instructions", instructionsRouter);
 app.use("/", sitemapRouter);
@@ -145,4 +148,5 @@ app.listen(PORT, () => {
   }
 
   startDailyGenerationJob();
+startDailySiteStatsEmailJob();
 });

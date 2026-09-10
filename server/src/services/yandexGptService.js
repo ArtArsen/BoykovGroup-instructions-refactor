@@ -974,27 +974,98 @@ export async function generateInstructionWithYandexGpt(
     sections.push(result.section);
   }
 
-  const professionGenitive =
+  /*
+   * FINAL_SCOPE_TITLE_V2
+   *
+   * Вход может быть:
+   *
+   * 1. профессией / должностью:
+   *    "электромонтер"
+   *
+   * 2. видом работ:
+   *    "при работе на высоте"
+   *    "при эксплуатации оборудования"
+   *    "при выполнении погрузочно-разгрузочных работ"
+   *
+   * Виды работ нельзя пропускать через
+   * getProfessionGenitive(), поскольку это
+   * не название профессии.
+   */
+  const normalizedSubject =
     String(
-      getProfessionGenitive(profession) ?? profession
+      profession ?? ""
     )
-      .trim()
-      /*
-       * getProfessionGenitive должен возвращать только форму профессии,
-       * но дополнительно защищаем title от:
-       *
-       * "для агронома"
-       * "для для агронома"
-       */
-      .replace(/^(?:для\\s+)+/iu, "")
+      .replace(
+        /\s+/g,
+        " "
+      )
       .trim();
 
+  const isWorkScope =
+    /^при(?=\s|$)/iu.test(
+      normalizedSubject
+    );
+
+  let finalTitle;
+
+  if (isWorkScope) {
+    /*
+     * Вид работ уже находится в нужной
+     * грамматической форме:
+     *
+     * при работе...
+     * при эксплуатации...
+     * при выполнении...
+     */
+    finalTitle =
+      `Инструкция по охране труда ${normalizedSubject}`;
+  }
+  else {
+    /*
+     * Для профессии / должности сохраняем
+     * существующую логику склонения.
+     */
+    const professionGenitive =
+      String(
+        getProfessionGenitive(
+          normalizedSubject
+        )
+        ??
+        normalizedSubject
+      )
+        .trim()
+        .replace(
+          /^(?:для\s+)+/iu,
+          ""
+        )
+        .trim();
+
+    finalTitle =
+      `Инструкция по охране труда для ${professionGenitive}`;
+  }
+
+  /*
+   * Intro строится ТОЛЬКО из окончательного
+   * заголовка.
+   *
+   * Благодаря этому один helper корректно
+   * работает и для профессии, и для вида работ.
+   */
+  const finalIntro =
+    buildInstructionIntro(
+      finalTitle
+    );
+
   return {
-    title: `Инструкция по охране труда для ${professionGenitive}`,
-    profession,
+    title:
+      finalTitle,
+
+    profession:
+      normalizedSubject,
+
     intro:
- intro ||
-`Инструкция по охране труда разработана для работника, выполняющего работы по профессии ${professionGenitive}.`,
+      finalIntro,
+
     sections,
   };
 }

@@ -21,6 +21,11 @@ import {
 } from "../services/instructionPdfService.js";
 
 
+
+import {
+  recordInstructionDownload
+} from "../services/downloadStatsService.js";
+
 export const instructionPdfRouter =
   Router();
 
@@ -213,6 +218,75 @@ instructionPdfRouter.get(
      * PDF
      * ======================================================
      */
+
+
+    /*
+     * PDF_DOWNLOAD_STATS_V1
+     *
+     * Фиксируем только успешно
+     * отправленный PDF обычному
+     * пользователю.
+     *
+     * Администраторские скачивания
+     * не считаются.
+     */
+    if (
+      req.user?.role ===
+      "user"
+    ) {
+      const downloadMeta = {
+        instructionId:
+          instruction.id
+          ??
+          instruction._id
+          ??
+          req.params.id,
+
+        title:
+          instruction.title,
+
+        userId:
+          req.user.sub
+      };
+
+      res.once(
+        "finish",
+        () => {
+          const contentType =
+            String(
+              res.getHeader(
+                "content-type"
+              )
+              ??
+              ""
+            )
+              .toLowerCase();
+
+          if (
+            res.statusCode >= 200
+            &&
+            res.statusCode < 300
+            &&
+            contentType.includes(
+              "application/pdf"
+            )
+          ) {
+            try {
+              recordInstructionDownload(
+                downloadMeta
+              );
+            }
+            catch (error) {
+              console.error(
+                "PDF download stats error:",
+                error
+              );
+            }
+          }
+        }
+      );
+    }
+
 
     let stage =
       "before-generation";

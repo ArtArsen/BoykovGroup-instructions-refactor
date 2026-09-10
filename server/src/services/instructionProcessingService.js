@@ -430,6 +430,107 @@ function normalizeImportedSections(sections = []) {
   });
 }
 
+
+/*
+ * Проверка профессии / вида работ,
+ * извлечённых из импортируемого DOCX.
+ *
+ * Это НЕ whitelist:
+ * редкие профессии и инструкции
+ * "при работе...", "при выполнении..."
+ * должны продолжать импортироваться.
+ */
+function getSuspiciousImportedProfessionReason(
+  value = ""
+) {
+  const profession =
+    String(value ?? "")
+      .toLocaleLowerCase("ru-RU")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  if (!profession) {
+    return (
+      "не удалось определить профессию " +
+      "или вид работ"
+    );
+  }
+
+  /*
+   * Уже обнаруженные реальные мусорные
+   * значения из массового импорта.
+   */
+  const blockedPatterns = [
+    {
+      pattern:
+        /(?:^|\s)приколист(?:а|у|ом|е)?(?:\s|$)/iu,
+
+      reason:
+        "некорректное название «приколист»"
+    },
+
+    {
+      pattern:
+        /уборк\p{L}*\s+в\s+ноль/iu,
+
+      reason:
+        "некорректное выражение «уборка в ноль»"
+    }
+  ];
+
+  for (const item of blockedPatterns) {
+    if (
+      item.pattern.test(
+        profession
+      )
+    ) {
+      return item.reason;
+    }
+  }
+
+  /*
+   * Явный технический мусор.
+   */
+  if (
+    /https?:\/\/|www\./iu.test(
+      profession
+    )
+  ) {
+    return "в названии обнаружена ссылка";
+  }
+
+  if (
+    /[<>{}\[\]]|={2,}|_{3,}/u.test(
+      profession
+    )
+  ) {
+    return (
+      "в названии обнаружены " +
+      "служебные символы"
+    );
+  }
+
+  /*
+   * На этом этапе "для для жестянщика"
+   * уже должен быть нормализован в
+   * "жестянщика".
+   *
+   * Если повтор всё же сохранился,
+   * считаем это ошибкой.
+   */
+  if (
+    /\b(?:для\s+){2,}/iu.test(
+      profession
+    )
+  ) {
+    return (
+      "обнаружен повтор предлога «для»"
+    );
+  }
+
+  return null;
+}
+
 export async function processInstructionFile({
   buffer,
   filename,
@@ -531,6 +632,27 @@ const finalProfession =
         ""
       )
       .trim();
+
+const suspiciousProfessionReason =
+  getSuspiciousImportedProfessionReason(
+    finalProfession
+  );
+
+if (
+  suspiciousProfessionReason
+) {
+  const error =
+    new Error(
+      `Импорт требует проверки: ${suspiciousProfessionReason}. ` +
+      `Извлечено: «${finalProfession}». ` +
+      `Файл: «${filename}»`
+    );
+
+  error.code =
+    "IMPORT_REVIEW_REQUIRED";
+
+  throw error;
+}
 
 const isWorkScope =
     /^при(?=\s|$)/iu
