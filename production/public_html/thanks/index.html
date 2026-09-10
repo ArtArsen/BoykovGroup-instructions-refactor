@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="robots"
+    content="noindex,nofollow"
+  >
+
+  <title>
+    Спасибо за оплату — БОЙКОВДОКС
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/assets/payment-thanks-page-20260827-172926.css"
+  >
+</head>
+
+<body>
+
+  <header class="thanksHeader">
+
+    <a
+      href="/"
+      class="thanksLogo"
+    >
+      БОЙКОВДОКС
+    </a>
+
+    <a
+      href="/"
+      class="thanksBack"
+    >
+      На главную
+    </a>
+
+  </header>
+
+
+  <main class="thanksMain">
+
+    <section class="thanksHero">
+
+      <div class="thanksSuccess">
+
+        <div
+          class="thanksSuccess__icon"
+          aria-hidden="true"
+        >
+          ✓
+        </div>
+
+        <div>
+
+          <div class="thanksEyebrow">
+            ОПЛАТА УСПЕШНА
+          </div>
+
+          <h1 class="thanksTitle">
+            Спасибо за заказ!
+          </h1>
+
+        </div>
+
+      </div>
+
+
+      <p class="thanksLead">
+        Оплата успешно подтверждена.
+        Мы уже готовим вашу инструкцию по охране труда.
+        Оставаться на этой странице необязательно —
+        состояние заказа сохраняется в текущей вкладке.
+      </p>
+
+
+      <div class="thanksOrder">
+
+        Инструкция:
+
+        <strong id="thanks-profession">
+          получаем данные заказа...
+        </strong>
+
+      </div>
+
+
+      <div
+        id="thanks-status"
+        class="thanksStatus"
+        aria-live="polite"
+      >
+        Получаем состояние заказа...
+      </div>
+
+    </section>
+
+
+    <div
+      id="thanks-instruction"
+      class="thanksResult"
+    ></div>
+
+  </main>
+
+
+  <div
+    id="thanks-loading-modal"
+    class="thanksModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="thanks-modal-title"
+  >
+
+    <div class="thanksModal__card">
+
+      <div
+        id="thanks-modal-spinner"
+        class="thanksModal__spinner"
+        aria-hidden="true"
+      ></div>
+
+      <h2
+        id="thanks-modal-title"
+        class="thanksModal__title"
+      >
+        Готовим вашу инструкцию
+      </h2>
+
+      <p
+        id="thanks-modal-text"
+        class="thanksModal__text"
+      >
+        Оплата подтверждена.
+        Сейчас формируем документ.
+      </p>
+
+      <p class="thanksModal__note">
+        Повторно оплачивать заказ не нужно.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <script
+    src="/assets/payment-thanks-page-20260827-172926.js"
+    defer
+  ></script>
+
+</body>
+</html>
