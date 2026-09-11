@@ -13,6 +13,13 @@ const CLIENT_SRC_DIR = path.join(PROJECT_ROOT, "client", "src");
 const CLIENT_PUBLIC_DIR = path.join(PROJECT_ROOT, "client", "public");
 
 const BRAND_NAME = "БОЙКОВГРУПП";
+
+const INSTRUCTION_REDIRECTS = new Map([
+  [
+    "sistemnyy-administrator",
+    "instruktsiya-po-ohrane-truda-dlya-sistemnogo-administratora-CfhwZb",
+  ],
+]);
 const COMPANY_SITE_URL =
   String(process.env.COMPANY_SITE_URL || "https://boykovgroup.ru").trim().replace(/\/+$/, "");
 
@@ -976,6 +983,17 @@ function renderInstructionPage(req, instruction) {
   const description = makeDescription(instruction);
   const modified = getDateModified(instruction);
 
+  const seoStatus = String(
+    instruction.seoStatus || ""
+  ).toLowerCase();
+
+  const robots = [
+    "draft",
+    "noindex",
+  ].includes(seoStatus)
+    ? "noindex, follow"
+    : "index, follow, max-image-preview:large";
+
   const articleSchema = {
     "@type": "Article",
     "@id": `${canonical}#article`,
@@ -1152,7 +1170,7 @@ function renderInstructionPage(req, instruction) {
 
   <meta
     name="robots"
-    content="index, follow, max-image-preview:large"
+    content="${escapeHtml(robots)}"
   >
 
   <link
@@ -1292,6 +1310,17 @@ router.get("/instrukcii-po-ohrane-truda", (req, res, next) => {
 });
 
 router.get("/instrukciya-po-ohrane-truda/:id", (req, res, next) => {
+  const redirectId =
+    INSTRUCTION_REDIRECTS.get(req.params.id);
+
+  if (redirectId) {
+    const target =
+      `${getSiteUrl(req)}/instrukciya-po-ohrane-truda/` +
+      encodeURIComponent(redirectId);
+
+    return res.redirect(301, target);
+  }
+
   if (redirectTrailingSlash(req, res)) return;
 
   try {
