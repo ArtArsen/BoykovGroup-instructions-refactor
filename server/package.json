@@ -14,7 +14,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.19.2",
-    "fuse.js": "^7.0.0",
     "iconv-lite": "^0.7.3",
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.8.0",
