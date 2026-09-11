@@ -532,6 +532,130 @@ function renderSections(instruction) {
 }
 
 
+
+/*
+ * HTML, который поисковый робот получает до выполнения React.
+ * После запуска React createRoot заменяет эту разметку приложением.
+ */
+function injectProductionRoot(productionHtml, content) {
+  const rootPattern =
+    /<div\b[^>]*\bid=["']root["'][^>]*>[\s\S]*?<\/div>/iu;
+
+  if (!rootPattern.test(productionHtml)) {
+    throw new Error(
+      "[SEO] Production index.html does not contain replaceable #root"
+    );
+  }
+
+  return productionHtml.replace(
+    rootPattern,
+    `<div id="root">${content}</div>`
+  );
+}
+
+
+function renderCatalogSeoBody(instructions, query = "") {
+  const hasQuery = Boolean(String(query || "").trim());
+
+  const heading = hasQuery
+    ? `Результаты поиска: ${query}`
+    : "Каталог инструкций по охране труда";
+
+  return `
+    <main class="SeoPrerender_catalog">
+      ${renderMainHero({ headingTag: "h1" })}
+
+      <section aria-labelledby="seo-catalog-heading">
+        <h2 id="seo-catalog-heading">
+          ${escapeHtml(heading)}
+        </h2>
+
+        <ul class="SeoPrerender_instructionList">
+          ${instructions
+            .map(
+              (instruction) => `
+                <li>
+                  <a href="/instrukciya-po-ohrane-truda/${encodeURIComponent(instruction.id)}">
+                    ${escapeHtml(instruction.title)}
+                  </a>
+                </li>`
+            )
+            .join("\n")}
+        </ul>
+      </section>
+    </main>`;
+}
+
+
+function renderInstructionSeoBody(instruction) {
+  const title = String(
+    instruction.title || "Инструкция по охране труда"
+  ).trim();
+
+  const intro = String(
+    instruction.intro || ""
+  ).trim();
+
+  return `
+    <main class="SeoPrerender_instruction">
+      <nav aria-label="Хлебные крошки">
+        <a href="/">Главная</a>
+        <span aria-hidden="true"> → </span>
+        <a href="/instrukcii-po-ohrane-truda">
+          Инструкции по охране труда
+        </a>
+      </nav>
+
+      <article>
+        <h1>${escapeHtml(title)}</h1>
+
+        ${
+          intro
+            ? `<p>${escapeHtml(intro)}</p>`
+            : ""
+        }
+
+        ${renderSections(instruction)}
+      </article>
+    </main>`;
+}
+
+
+/*
+ * Express по умолчанию считает URL со слешем и без него
+ * одним маршрутом. Для SEO оставляем единственный вариант
+ * без завершающего слеша.
+ */
+function redirectTrailingSlash(req, res) {
+  if (
+    req.path === "/" ||
+    !req.path.endsWith("/")
+  ) {
+    return false;
+  }
+
+  const originalUrl = String(req.originalUrl || req.url || "");
+  const queryIndex = originalUrl.indexOf("?");
+
+  const pathname =
+    queryIndex === -1
+      ? originalUrl
+      : originalUrl.slice(0, queryIndex);
+
+  const search =
+    queryIndex === -1
+      ? ""
+      : originalUrl.slice(queryIndex);
+
+  const target =
+    `${getSiteUrl(req)}${pathname.replace(/\/+$/u, "")}${search}`;
+
+  res.redirect(301, target);
+
+  return true;
+}
+
+
 /* SEO_PRODUCTION_STYLES_V3 */
 
 /*
@@ -648,18 +772,6 @@ function renderInstructionsCatalogPage(req, instructions, query = "") {
   const description =
     "Каталог инструкций по охране труда для работников различных профессий и видов работ.";
 
-  const itemList = {
-    "@type": "ItemList",
-    "@id": `${canonical}#itemlist`,
-    numberOfItems: instructions.length,
-    itemListElement: instructions.map((instruction, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: instruction.title,
-      url: getInstructionUrl(req, instruction),
-    })),
-  };
-
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -680,11 +792,8 @@ function renderInstructionsCatalogPage(req, instructions, query = "") {
         isPartOf: {
           "@id": `${siteUrl}/#website`,
         },
-        mainEntity: {
-          "@id": `${canonical}#itemlist`,
-        },
       },
-      itemList,
+
     ],
   };
 
@@ -849,6 +958,11 @@ function renderInstructionsCatalogPage(req, instructions, query = "") {
       /<\/head>/iu,
       `${seoHead}\n</head>`
     );
+
+  productionHtml = injectProductionRoot(
+    productionHtml,
+    renderCatalogSeoBody(instructions, query)
+  );
 
   return productionHtml;
 }
@@ -1095,6 +1209,11 @@ function renderInstructionPage(req, instruction) {
       `${seoHead}\n</head>`
     );
 
+  productionHtml = injectProductionRoot(
+    productionHtml,
+    renderInstructionSeoBody(instruction)
+  );
+
   return productionHtml;
 }
 
@@ -1156,6 +1275,8 @@ for (const [urlPath, filePath] of PUBLIC_ASSETS) {
 }
 
 router.get("/instrukcii-po-ohrane-truda", (req, res, next) => {
+  if (redirectTrailingSlash(req, res)) return;
+
   try {
     const query = String(req.query.q || "").trim();
     const instructions = getIndexableInstructions(query);
@@ -1171,6 +1292,8 @@ router.get("/instrukcii-po-ohrane-truda", (req, res, next) => {
 });
 
 router.get("/instrukciya-po-ohrane-truda/:id", (req, res, next) => {
+  if (redirectTrailingSlash(req, res)) return;
+
   try {
     const instruction = instructionsRepository.getById(req.params.id);
 

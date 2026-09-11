@@ -243,7 +243,7 @@ export default function InstructionPage() {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Главная",
-                "item": "https://boykovgroup.ru/"
+                "item": "https://boykovdocs.ru/"
             },
 
 
@@ -251,7 +251,7 @@ export default function InstructionPage() {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Инструкции по охране труда",
-                "item": "https://boykovgroup.ru/instrukcii-po-ohrane-truda"
+                "item": "https://boykovdocs.ru/instrukcii-po-ohrane-truda"
             },
 
 
@@ -260,7 +260,7 @@ export default function InstructionPage() {
                 "position": 3,
                 "name": instruction.title,
                 "item":
-                    `https://boykovgroup.ru/instrukciya-po-ohrane-truda/${instruction.id}`
+                    `https://boykovdocs.ru/instrukciya-po-ohrane-truda/${instruction.id}`
             }
 
         ]

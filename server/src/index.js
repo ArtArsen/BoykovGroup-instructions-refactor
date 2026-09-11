@@ -18,10 +18,8 @@ import { attachUser } from "./middleware/auth.js";
 import { isYandexGptConfigured } from "./services/yandexGptService.js";
 import { isAdminConfigured } from "./services/authService.js";
 import { startDailyGenerationJob } from "./jobs/dailyGenerationJob.js";
-import robotsRouter from "./routes/robots.js";
 import { importsRouter } from "./routes/imports.js";
 
-import sitemapRouter from "./routes/sitemap.js";
 import seoRouter from "./routes/seo.js";
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -36,7 +34,6 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(attachUser);
-app.use("/", robotsRouter);
 app.use(
  "/api/imports",
  importsRouter
@@ -58,7 +55,6 @@ app.use("/api/admin/instruction-popularity", instructionPopularityRouter);
 app.use("/api/visitor-stats", visitorStatsRouter);
 app.use("/api/instructions", instructionViewsRouter);
 app.use("/api/instructions", instructionsRouter);
-app.use("/", sitemapRouter);
 app.use("/", seoRouter);
 
 app.use("/", thanksRouter);
