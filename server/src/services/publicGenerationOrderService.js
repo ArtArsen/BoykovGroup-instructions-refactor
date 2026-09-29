@@ -24,7 +24,7 @@ const ORDERS_DIR =
 
 
 export const PUBLIC_GENERATION_PRICE_RUB =
-  50;
+  500;
 
 
 export const PUBLIC_GENERATION_CURRENCY =

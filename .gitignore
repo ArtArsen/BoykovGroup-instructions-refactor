@@ -84,3 +84,6 @@ server/data/registration-consents.json
 
 # Local server artifact
 scheduledGenerationService.js
+
+# Production scratch / backup artifacts
+*.final-backup-*
