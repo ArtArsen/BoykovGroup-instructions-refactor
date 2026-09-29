@@ -19,6 +19,7 @@ import { isYandexGptConfigured } from "./services/yandexGptService.js";
 import { isAdminConfigured } from "./services/authService.js";
 import { startDailyGenerationJob } from "./jobs/dailyGenerationJob.js";
 import { importsRouter } from "./routes/imports.js";
+import { promoCodesRouter } from "./routes/promoCodes.js";
 
 import seoRouter from "./routes/seo.js";
 const app = express();
@@ -48,6 +49,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/promo-codes", promoCodesRouter);
 app.use("/api/public-generation", publicGenerationCheckoutRouter);
 app.use("/api/public-generation", publicGenerationRouter);
 app.use("/api/instructions", instructionPdfRouter);

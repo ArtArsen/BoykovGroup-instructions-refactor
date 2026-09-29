@@ -180,11 +180,76 @@ export function getPublicGenerationOrder(
 
 
 export function createPublicGenerationOrder(
-  profession
+  profession,
+  pricing = {}
 ) {
 
   const now =
     new Date();
+
+
+  const originalAmount =
+    Number(
+      pricing.originalAmount ??
+      PUBLIC_GENERATION_PRICE_RUB
+    );
+
+
+  const amount =
+    Number(
+      pricing.amount ??
+      originalAmount
+    );
+
+
+  if (
+    !Number.isFinite(originalAmount) ||
+    originalAmount <= 0 ||
+    !Number.isFinite(amount) ||
+    amount <= 0 ||
+    amount > originalAmount
+  ) {
+
+    throw new Error(
+      "Некорректная стоимость заказа"
+    );
+
+  }
+
+
+  const promo =
+    pricing.promo
+      ? {
+          id:
+            String(
+              pricing.promo.id ?? ""
+            ),
+
+          code:
+            String(
+              pricing.promo.code ?? ""
+            ),
+
+          type:
+            String(
+              pricing.promo.type ?? ""
+            ),
+
+          value:
+            Number(
+              pricing.promo.value
+            ),
+
+          discountAmount:
+            Math.round(
+              (
+                originalAmount -
+                amount
+              ) *
+              100
+            ) / 100
+        }
+      : null;
 
 
   const order = {
@@ -199,8 +264,14 @@ export function createPublicGenerationOrder(
         profession ?? ""
       ).trim(),
 
-    amount:
-      PUBLIC_GENERATION_PRICE_RUB,
+    originalAmount,
+
+    amount,
+
+    promo,
+
+    promoUsedRecorded:
+      false,
 
     currency:
       PUBLIC_GENERATION_CURRENCY,
@@ -319,8 +390,16 @@ export function updatePublicGenerationOrder(
     profession:
       current.profession,
 
+    originalAmount:
+      current.originalAmount ??
+      current.amount,
+
     amount:
       current.amount,
+
+    promo:
+      current.promo ??
+      null,
 
     currency:
       current.currency,
@@ -413,8 +492,29 @@ export function getPublicGenerationOrderView(
     profession:
       order.profession,
 
+    originalAmount:
+      order.originalAmount ??
+      order.amount,
+
     amount:
       order.amount,
+
+    promo:
+      order.promo
+        ? {
+            code:
+              order.promo.code,
+
+            type:
+              order.promo.type,
+
+            value:
+              order.promo.value,
+
+            discountAmount:
+              order.promo.discountAmount
+          }
+        : null,
 
     currency:
       order.currency,

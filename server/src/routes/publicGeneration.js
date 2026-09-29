@@ -33,6 +33,11 @@ import {
   requireAdmin
 } from "../middleware/auth.js";
 
+import {
+  resolvePromoCode,
+  markPromoCodeUsed
+} from "../services/promoCodeService.js";
+
 
 export const publicGenerationRouter =
   Router();
@@ -252,9 +257,72 @@ publicGenerationRouter.post(
     }
 
 
+    const rawPromoCode =
+      String(
+        req.body?.promoCode ??
+        ""
+      )
+      .trim();
+
+
+    let pricing = {
+      originalAmount:
+        PUBLIC_GENERATION_PRICE_RUB,
+
+      amount:
+        PUBLIC_GENERATION_PRICE_RUB,
+
+      promo:
+        null
+    };
+
+
+    if (rawPromoCode) {
+
+      const promoResult =
+        resolvePromoCode(
+          rawPromoCode,
+          PUBLIC_GENERATION_PRICE_RUB
+        );
+
+
+      if (!promoResult.ok) {
+
+        return res
+          .status(422)
+          .json({
+            code:
+              promoResult.code,
+
+            error:
+              promoResult.error
+          });
+
+      }
+
+
+      pricing = {
+        originalAmount:
+          promoResult.originalAmount,
+
+        amount:
+          promoResult.amount,
+
+        promo: {
+          ...promoResult.promo,
+
+          discountAmount:
+            promoResult.discountAmount
+        }
+      };
+
+    }
+
+
     const order =
       createPublicGenerationOrder(
-        profession
+        profession,
+        pricing
       );
 
 
@@ -273,8 +341,29 @@ publicGenerationRouter.post(
         profession:
           order.profession,
 
+        originalAmount:
+          order.originalAmount ??
+          order.amount,
+
         amount:
           order.amount,
+
+        promo:
+          order.promo
+            ? {
+                code:
+                  order.promo.code,
+
+                type:
+                  order.promo.type,
+
+                value:
+                  order.promo.value,
+
+                discountAmount:
+                  order.promo.discountAmount
+              }
+            : null,
 
         currency:
           order.currency,
@@ -716,6 +805,18 @@ publicGenerationRouter.post(
       );
 
 
+      if (
+        order.promo?.id
+      ) {
+
+        markPromoCodeUsed(
+          order.promo.id,
+          order.id
+        );
+
+      }
+
+
       console.log(
         "[PublicGeneration Confirm] test payment:",
         order.id,
@@ -749,6 +850,18 @@ publicGenerationRouter.post(
           null
       }
     );
+
+
+    if (
+      order.promo?.id
+    ) {
+
+      markPromoCodeUsed(
+        order.promo.id,
+        order.id
+      );
+
+    }
 
 
     /*

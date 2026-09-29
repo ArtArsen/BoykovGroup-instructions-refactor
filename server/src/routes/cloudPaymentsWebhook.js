@@ -26,6 +26,10 @@ import {
   normalizeProfessionKey
 } from "../services/professionNormalizer.js";
 
+import {
+  markPromoCodeUsed
+} from "../services/promoCodeService.js";
+
 
 export const cloudPaymentsWebhookRouter =
   Router();
@@ -752,6 +756,18 @@ cloudPaymentsWebhookRouter.post(
       );
 
 
+      if (
+        order.promo?.id
+      ) {
+
+        markPromoCodeUsed(
+          order.promo.id,
+          order.id
+        );
+
+      }
+
+
       return res.json({
         code:
           0
@@ -779,6 +795,18 @@ cloudPaymentsWebhookRouter.post(
           null
       }
     );
+
+
+    if (
+      order.promo?.id
+    ) {
+
+      markPromoCodeUsed(
+        order.promo.id,
+        order.id
+      );
+
+    }
 
 
     /*
