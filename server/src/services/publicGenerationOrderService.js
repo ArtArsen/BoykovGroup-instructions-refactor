@@ -24,7 +24,7 @@ const ORDERS_DIR =
 
 
 export const PUBLIC_GENERATION_PRICE_RUB =
-  50;
+  500;
 
 
 export const PUBLIC_GENERATION_CURRENCY =
@@ -180,11 +180,77 @@ export function getPublicGenerationOrder(
 
 
 export function createPublicGenerationOrder(
-  profession
+  profession,
+  pricing = {},
+  owner = {}
 ) {
 
   const now =
     new Date();
+
+
+  const originalAmount =
+    Number(
+      pricing.originalAmount ??
+      PUBLIC_GENERATION_PRICE_RUB
+    );
+
+
+  const amount =
+    Number(
+      pricing.amount ??
+      originalAmount
+    );
+
+
+  if (
+    !Number.isFinite(originalAmount) ||
+    originalAmount <= 0 ||
+    !Number.isFinite(amount) ||
+    amount <= 0 ||
+    amount > originalAmount
+  ) {
+
+    throw new Error(
+      "Некорректная стоимость заказа"
+    );
+
+  }
+
+
+  const promo =
+    pricing.promo
+      ? {
+          id:
+            String(
+              pricing.promo.id ?? ""
+            ),
+
+          code:
+            String(
+              pricing.promo.code ?? ""
+            ),
+
+          type:
+            String(
+              pricing.promo.type ?? ""
+            ),
+
+          value:
+            Number(
+              pricing.promo.value
+            ),
+
+          discountAmount:
+            Math.round(
+              (
+                originalAmount -
+                amount
+              ) *
+              100
+            ) / 100
+        }
+      : null;
 
 
   const order = {
@@ -194,13 +260,43 @@ export function createPublicGenerationOrder(
     accessToken:
       createAccessToken(),
 
+
+    /*
+     * ACCOUNT OWNERSHIP V1
+     *
+     * Для старых/анонимных заказов поля могут быть null.
+     * Позже новые платные заказы будем создавать только
+     * для авторизованных пользователей.
+     */
+    ownerUserId:
+      owner?.userId
+        ? String(
+            owner.userId
+          )
+        : null,
+
+    ownerEmail:
+      owner?.email
+        ? String(
+            owner.email
+          )
+          .trim()
+          .toLowerCase()
+        : null,
+
     profession:
       String(
         profession ?? ""
       ).trim(),
 
-    amount:
-      PUBLIC_GENERATION_PRICE_RUB,
+    originalAmount,
+
+    amount,
+
+    promo,
+
+    promoUsedRecorded:
+      false,
 
     currency:
       PUBLIC_GENERATION_CURRENCY,
@@ -319,8 +415,16 @@ export function updatePublicGenerationOrder(
     profession:
       current.profession,
 
+    originalAmount:
+      current.originalAmount ??
+      current.amount,
+
     amount:
       current.amount,
+
+    promo:
+      current.promo ??
+      null,
 
     currency:
       current.currency,
@@ -413,8 +517,29 @@ export function getPublicGenerationOrderView(
     profession:
       order.profession,
 
+    originalAmount:
+      order.originalAmount ??
+      order.amount,
+
     amount:
       order.amount,
+
+    promo:
+      order.promo
+        ? {
+            code:
+              order.promo.code,
+
+            type:
+              order.promo.type,
+
+            value:
+              order.promo.value,
+
+            discountAmount:
+              order.promo.discountAmount
+          }
+        : null,
 
     currency:
       order.currency,
@@ -461,6 +586,252 @@ export function getPublicGenerationOrderView(
     failureCode:
       order.failureCode
   };
+}
+
+
+export function listPublicGenerationOrdersByOwner(
+  ownerUserId
+) {
+
+  const target =
+    String(
+      ownerUserId ?? ""
+    ).trim();
+
+
+  if (!target) {
+    return [];
+  }
+
+
+  const result = [];
+
+
+  const files =
+    fs.readdirSync(
+      ORDERS_DIR
+    )
+    .filter(
+      name =>
+        name.endsWith(
+          ".json"
+        )
+    );
+
+
+  for (
+    const filename
+    of files
+  ) {
+
+    try {
+
+      const order =
+        JSON.parse(
+          fs.readFileSync(
+            path.join(
+              ORDERS_DIR,
+              filename
+            ),
+            "utf8"
+          )
+        );
+
+
+      if (
+        String(
+          order.ownerUserId ??
+          ""
+        ) !== target
+      ) {
+        continue;
+      }
+
+
+      /*
+       * В личном кабинете показываем только
+       * заказы с подтверждённой оплатой.
+       *
+       * pending_payment и просто созданные
+       * заявки пользователю не показываем.
+       */
+      if (!order.paidAt) {
+        continue;
+      }
+
+
+      result.push({
+        id:
+          order.id,
+
+        profession:
+          order.profession,
+
+        originalAmount:
+          order.originalAmount ??
+          order.amount,
+
+        amount:
+          order.amount,
+
+        currency:
+          order.currency,
+
+        status:
+          order.status,
+
+        instructionId:
+          order.instructionId ??
+          null,
+
+        hasInstruction:
+          Boolean(
+            order.generatedInstruction
+          ),
+
+        generatedAt:
+          order.generatedAt ??
+          null,
+
+        publicationStatus:
+          order.publicationStatus ??
+          null,
+
+        createdAt:
+          order.createdAt,
+
+        paidAt:
+          order.paidAt ??
+          null,
+
+        publishedAt:
+          order.publishedAt ??
+          null,
+
+        refundedAt:
+          order.refundedAt ??
+          null
+      });
+
+    }
+    catch(error) {
+
+      console.error(
+        "[PublicGenerationOrder] owner scan error:",
+        filename,
+        error.message
+      );
+
+    }
+
+  }
+
+
+  result.sort(
+    (a, b) =>
+      String(
+        b.createdAt ?? ""
+      ).localeCompare(
+        String(
+          a.createdAt ?? ""
+        )
+      )
+  );
+
+
+  return result;
+}
+
+
+export function getPublicGenerationOrderByOwnerView(
+  id,
+  ownerUserId
+) {
+
+  const target =
+    String(
+      ownerUserId ?? ""
+    ).trim();
+
+
+  if (!target) {
+    return null;
+  }
+
+
+  const order =
+    getPublicGenerationOrder(
+      id
+    );
+
+
+  if (
+    !order ||
+    String(
+      order.ownerUserId ??
+      ""
+    ) !== target
+  ) {
+    return null;
+  }
+
+
+  return {
+    id:
+      order.id,
+
+    profession:
+      order.profession,
+
+    originalAmount:
+      order.originalAmount ??
+      order.amount,
+
+    amount:
+      order.amount,
+
+    currency:
+      order.currency,
+
+    status:
+      order.status,
+
+    instructionId:
+      order.instructionId ??
+      null,
+
+    instruction:
+      order.generatedInstruction ??
+      null,
+
+    generatedAt:
+      order.generatedAt ??
+      null,
+
+    publicationStatus:
+      order.publicationStatus ??
+      null,
+
+    createdAt:
+      order.createdAt,
+
+    paidAt:
+      order.paidAt ??
+      null,
+
+    publishedAt:
+      order.publishedAt ??
+      null,
+
+    refundedAt:
+      order.refundedAt ??
+      null,
+
+    failureCode:
+      order.failureCode ??
+      null
+  };
+
 }
 
 
