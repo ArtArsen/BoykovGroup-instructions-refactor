@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <meta
+    name="robots"
+    content="noindex,nofollow"
+  >
+  <title>Личный кабинет | БОЙКОВГРУПП</title>
+
+  <link
+    rel="stylesheet"
+    href="/account/account-20260930.css"
+  >
+</head>
+
+<body>
+
+  <header class="accountHeader">
+    <a
+      class="accountLogo"
+      href="/"
+    >
+      БОЙКОВГРУПП
+    </a>
+
+    <a
+      class="accountBack"
+      href="/"
+    >
+      ← На сайт
+    </a>
+  </header>
+
+
+  <main class="accountPage">
+
+    <section class="accountHero">
+
+      <div>
+        <div class="accountEyebrow">
+          [ личный кабинет ]
+        </div>
+
+        <h1>
+          Мои инструкции
+        </h1>
+
+        <p class="accountLead">
+          Здесь хранятся ваши заказы и готовые инструкции.
+        </p>
+      </div>
+
+
+      <div
+        id="account-profile"
+        class="accountProfile"
+      >
+        Загружаем профиль...
+      </div>
+
+    </section>
+
+
+    <div
+      id="account-message"
+      class="accountMessage"
+      hidden
+    ></div>
+
+
+    <section class="accountOrders">
+
+      <div class="accountOrders__head">
+        <h2>
+          Заказы
+        </h2>
+
+        <a
+          href="/srochnaya-generaciya-instrukcii"
+          class="accountNewOrder"
+        >
+          + Новая инструкция
+        </a>
+      </div>
+
+
+      <div
+        id="account-orders"
+        class="accountOrders__list"
+      >
+        <div class="accountLoading">
+          Загружаем заказы...
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <div
+    id="instruction-modal"
+    class="instructionModal"
+    hidden
+  >
+    <div class="instructionModal__overlay"></div>
+
+    <div class="instructionModal__dialog">
+
+      <button
+        id="instruction-modal-close"
+        class="instructionModal__close"
+        type="button"
+        aria-label="Закрыть"
+      >
+        ×
+      </button>
+
+      <div
+        id="instruction-modal-content"
+        class="instructionModal__content"
+      ></div>
+
+    </div>
+  </div>
+
+
+  <script
+    src="/account/account-20260930.js"
+    defer
+  ></script>
+
+</body>
+</html>

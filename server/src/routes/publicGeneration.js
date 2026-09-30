@@ -8,7 +8,9 @@ import {
   getPublicGenerationOrderView,
   updatePublicGenerationOrder,
   findPublicGenerationOrderByTransactionId,
-    listPublicationInboxOrders,
+  listPublicGenerationOrdersByOwner,
+  getPublicGenerationOrderByOwnerView,
+  listPublicationInboxOrders,
   PUBLIC_GENERATION_PRICE_RUB,
   PUBLIC_GENERATION_CURRENCY
 } from "../services/publicGenerationOrderService.js";
@@ -16,6 +18,11 @@ import {
 import {
   instructionsRepository
 } from "../services/instructionsRepository.js";
+
+import {
+  createInstructionPdfBuffer
+} from "../services/instructionPdfService.js";
+
 
 import {
   normalizeProfessionKey
@@ -210,6 +217,32 @@ publicGenerationRouter.post(
 
   (req, res) => {
 
+    /*
+     * ACCOUNT PURCHASE OWNERSHIP
+     *
+     * Платный заказ нельзя создать анонимно.
+     * Иначе после оплаты его невозможно надёжно
+     * связать с личным кабинетом пользователя.
+     */
+    if (
+      !req.user ||
+      req.user.role !== "user" ||
+      !req.user.sub
+    ) {
+
+      return res
+        .status(401)
+        .json({
+          code:
+            "AUTH_REQUIRED",
+
+          error:
+            "Для покупки инструкции необходимо войти в аккаунт или зарегистрироваться."
+        });
+
+    }
+
+
     const validation =
       normalizeRequestedProfession(
         req.body?.profession
@@ -319,10 +352,33 @@ publicGenerationRouter.post(
     }
 
 
+    const owner =
+      (
+        req.user?.role ===
+          "user" &&
+        req.user?.sub
+      )
+        ? {
+            userId:
+              String(
+                req.user.sub
+              ),
+
+            email:
+              String(
+                req.user.email ??
+                req.user.login ??
+                ""
+              )
+          }
+        : null;
+
+
     const order =
       createPublicGenerationOrder(
         profession,
-        pricing
+        pricing,
+        owner
       );
 
 
@@ -888,6 +944,245 @@ publicGenerationRouter.post(
     );
   }
 );
+
+
+/*
+ * ============================================================
+ * USER ACCOUNT ORDERS
+ * ============================================================
+ */
+
+function requireUserAccount(
+  req,
+  res,
+  next
+) {
+
+  if (
+    !req.user ||
+    req.user.role !==
+      "user" ||
+    !req.user.sub
+  ) {
+
+    return res
+      .status(401)
+      .json({
+        error:
+          "Требуется авторизация пользователя"
+      });
+
+  }
+
+
+  return next();
+
+}
+
+
+publicGenerationRouter.get(
+  "/my-orders",
+
+  requireUserAccount,
+
+  (
+    req,
+    res
+  ) => {
+
+    return res.json({
+      items:
+        listPublicGenerationOrdersByOwner(
+          req.user.sub
+        )
+    });
+
+  }
+);
+
+
+publicGenerationRouter.get(
+  "/my-orders/:id",
+
+  requireUserAccount,
+
+  (
+    req,
+    res
+  ) => {
+
+    const order =
+      getPublicGenerationOrderByOwnerView(
+        req.params.id,
+        req.user.sub
+      );
+
+
+    /*
+     * Намеренно одинаковый 404 и для чужого заказа,
+     * и для несуществующего.
+     */
+    if (!order) {
+
+      return res
+        .status(404)
+        .json({
+          error:
+            "Заказ не найден"
+        });
+
+    }
+
+
+    return res.json(
+      order
+    );
+
+  }
+);
+
+
+
+/*
+ * ============================================================
+ * USER ACCOUNT PDF
+ * ============================================================
+ */
+publicGenerationRouter.get(
+  "/my-orders/:id/pdf",
+
+  requireUserAccount,
+
+  async (
+    req,
+    res
+  ) => {
+
+    const order =
+      getPublicGenerationOrderByOwnerView(
+        req.params.id,
+        req.user.sub
+      );
+
+
+    /*
+     * Не раскрываем существование чужого заказа.
+     */
+    if (!order) {
+
+      return res
+        .status(404)
+        .json({
+          error:
+            "Заказ не найден"
+        });
+
+    }
+
+
+    let instruction =
+      order.instruction ??
+      null;
+
+
+    /*
+     * Если приватной копии уже нет,
+     * но документ опубликован —
+     * используем опубликованную версию.
+     */
+    if (
+      !instruction &&
+      order.instructionId
+    ) {
+
+      instruction =
+        instructionsRepository
+          .getById(
+            order.instructionId
+          );
+
+    }
+
+
+    if (!instruction) {
+
+      return res
+        .status(409)
+        .json({
+          error:
+            "Инструкция ещё не готова"
+        });
+
+    }
+
+
+    try {
+
+      const pdf =
+        await createInstructionPdfBuffer(
+          instruction
+        );
+
+
+      const safeOrderId =
+        String(
+          order.id ??
+          "order"
+        )
+        .replace(
+          /[^a-zA-Z0-9_-]+/g,
+          "-"
+        )
+        .slice(
+          0,
+          100
+        );
+
+
+      res.set(
+        "Content-Type",
+        "application/pdf"
+      );
+
+      res.set(
+        "Content-Disposition",
+        `attachment; filename="instruction-${safeOrderId}.pdf"`
+      );
+
+      res.set(
+        "Cache-Control",
+        "private, no-store"
+      );
+
+
+      return res
+        .status(200)
+        .send(
+          pdf
+        );
+
+    }
+    catch(error) {
+
+      console.error(
+        "[Account PDF]",
+        order.id,
+        error
+      );
+
+
+      return res
+        .status(500)
+        .json({
+          error:
+            "Не удалось сформировать PDF"
+        });
+
+    }
+
+  }
+);
+
 
 
 /*

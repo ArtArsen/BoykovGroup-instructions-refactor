@@ -20,6 +20,112 @@ export const publicGenerationCheckoutRouter =
   Router();
 
 
+const RECOVERY_COOKIE =
+  "boykovdocs_order_recovery_v1";
+
+
+function encodeRecovery(
+  orderId,
+  orderToken
+) {
+
+  return Buffer
+    .from(
+      JSON.stringify({
+        orderId,
+        orderToken
+      }),
+      "utf8"
+    )
+    .toString(
+      "base64url"
+    );
+
+}
+
+
+function decodeRecovery(
+  value
+) {
+
+  try {
+
+    const data =
+      JSON.parse(
+        Buffer
+          .from(
+            String(value || ""),
+            "base64url"
+          )
+          .toString(
+            "utf8"
+          )
+      );
+
+
+    if (
+      !data?.orderId ||
+      !data?.orderToken
+    ) {
+      return null;
+    }
+
+
+    return data;
+
+  }
+  catch {
+
+    return null;
+
+  }
+
+}
+
+
+function readCookie(
+  req,
+  name
+) {
+
+  const cookieHeader =
+    String(
+      req.headers.cookie || ""
+    );
+
+
+  for (
+    const part
+    of cookieHeader.split(";")
+  ) {
+
+    const [
+      key,
+      ...rest
+    ] =
+      part
+        .trim()
+        .split("=");
+
+
+    if (
+      key === name
+    ) {
+
+      return decodeURIComponent(
+        rest.join("=")
+      );
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
 const OFFER_URL =
   "https://boykovdocs.ru/offer/";
 
@@ -184,6 +290,38 @@ publicGenerationCheckoutRouter.post(
 
           }
 
+
+          if (
+            payload?.orderId &&
+            payload?.orderToken
+          ) {
+
+            res.cookie(
+              RECOVERY_COOKIE,
+              encodeRecovery(
+                payload.orderId,
+                payload.orderToken
+              ),
+              {
+                httpOnly:
+                  true,
+
+                secure:
+                  true,
+
+                sameSite:
+                  "lax",
+
+                path:
+                  "/",
+
+                maxAge:
+                  24 * 60 * 60 * 1000
+              }
+            );
+
+          }
+
         }
 
 
@@ -195,6 +333,77 @@ publicGenerationCheckoutRouter.post(
 
 
     return next();
+
+  }
+);
+
+
+/*
+ * ============================================================
+ * PAID ORDER RECOVERY
+ * ============================================================
+ */
+publicGenerationCheckoutRouter.get(
+  "/recovery",
+
+  (
+    req,
+    res
+  ) => {
+
+    const recovery =
+      decodeRecovery(
+        readCookie(
+          req,
+          RECOVERY_COOKIE
+        )
+      );
+
+
+    if (!recovery) {
+
+      return res
+        .status(404)
+        .json({
+          error:
+            "Заказ для восстановления не найден"
+        });
+
+    }
+
+
+    const order =
+      getPublicGenerationOrderView(
+        recovery.orderId,
+        recovery.orderToken
+      );
+
+
+    if (!order) {
+
+      return res
+        .status(404)
+        .json({
+          error:
+            "Заказ для восстановления не найден"
+        });
+
+    }
+
+
+    return res.json({
+      orderId:
+        recovery.orderId,
+
+      orderToken:
+        recovery.orderToken,
+
+      status:
+        order.status,
+
+      profession:
+        order.profession
+    });
 
   }
 );

@@ -181,7 +181,8 @@ export function getPublicGenerationOrder(
 
 export function createPublicGenerationOrder(
   profession,
-  pricing = {}
+  pricing = {},
+  owner = {}
 ) {
 
   const now =
@@ -258,6 +259,30 @@ export function createPublicGenerationOrder(
 
     accessToken:
       createAccessToken(),
+
+
+    /*
+     * ACCOUNT OWNERSHIP V1
+     *
+     * Для старых/анонимных заказов поля могут быть null.
+     * Позже новые платные заказы будем создавать только
+     * для авторизованных пользователей.
+     */
+    ownerUserId:
+      owner?.userId
+        ? String(
+            owner.userId
+          )
+        : null,
+
+    ownerEmail:
+      owner?.email
+        ? String(
+            owner.email
+          )
+          .trim()
+          .toLowerCase()
+        : null,
 
     profession:
       String(
@@ -561,6 +586,252 @@ export function getPublicGenerationOrderView(
     failureCode:
       order.failureCode
   };
+}
+
+
+export function listPublicGenerationOrdersByOwner(
+  ownerUserId
+) {
+
+  const target =
+    String(
+      ownerUserId ?? ""
+    ).trim();
+
+
+  if (!target) {
+    return [];
+  }
+
+
+  const result = [];
+
+
+  const files =
+    fs.readdirSync(
+      ORDERS_DIR
+    )
+    .filter(
+      name =>
+        name.endsWith(
+          ".json"
+        )
+    );
+
+
+  for (
+    const filename
+    of files
+  ) {
+
+    try {
+
+      const order =
+        JSON.parse(
+          fs.readFileSync(
+            path.join(
+              ORDERS_DIR,
+              filename
+            ),
+            "utf8"
+          )
+        );
+
+
+      if (
+        String(
+          order.ownerUserId ??
+          ""
+        ) !== target
+      ) {
+        continue;
+      }
+
+
+      /*
+       * В личном кабинете показываем только
+       * заказы с подтверждённой оплатой.
+       *
+       * pending_payment и просто созданные
+       * заявки пользователю не показываем.
+       */
+      if (!order.paidAt) {
+        continue;
+      }
+
+
+      result.push({
+        id:
+          order.id,
+
+        profession:
+          order.profession,
+
+        originalAmount:
+          order.originalAmount ??
+          order.amount,
+
+        amount:
+          order.amount,
+
+        currency:
+          order.currency,
+
+        status:
+          order.status,
+
+        instructionId:
+          order.instructionId ??
+          null,
+
+        hasInstruction:
+          Boolean(
+            order.generatedInstruction
+          ),
+
+        generatedAt:
+          order.generatedAt ??
+          null,
+
+        publicationStatus:
+          order.publicationStatus ??
+          null,
+
+        createdAt:
+          order.createdAt,
+
+        paidAt:
+          order.paidAt ??
+          null,
+
+        publishedAt:
+          order.publishedAt ??
+          null,
+
+        refundedAt:
+          order.refundedAt ??
+          null
+      });
+
+    }
+    catch(error) {
+
+      console.error(
+        "[PublicGenerationOrder] owner scan error:",
+        filename,
+        error.message
+      );
+
+    }
+
+  }
+
+
+  result.sort(
+    (a, b) =>
+      String(
+        b.createdAt ?? ""
+      ).localeCompare(
+        String(
+          a.createdAt ?? ""
+        )
+      )
+  );
+
+
+  return result;
+}
+
+
+export function getPublicGenerationOrderByOwnerView(
+  id,
+  ownerUserId
+) {
+
+  const target =
+    String(
+      ownerUserId ?? ""
+    ).trim();
+
+
+  if (!target) {
+    return null;
+  }
+
+
+  const order =
+    getPublicGenerationOrder(
+      id
+    );
+
+
+  if (
+    !order ||
+    String(
+      order.ownerUserId ??
+      ""
+    ) !== target
+  ) {
+    return null;
+  }
+
+
+  return {
+    id:
+      order.id,
+
+    profession:
+      order.profession,
+
+    originalAmount:
+      order.originalAmount ??
+      order.amount,
+
+    amount:
+      order.amount,
+
+    currency:
+      order.currency,
+
+    status:
+      order.status,
+
+    instructionId:
+      order.instructionId ??
+      null,
+
+    instruction:
+      order.generatedInstruction ??
+      null,
+
+    generatedAt:
+      order.generatedAt ??
+      null,
+
+    publicationStatus:
+      order.publicationStatus ??
+      null,
+
+    createdAt:
+      order.createdAt,
+
+    paidAt:
+      order.paidAt ??
+      null,
+
+    publishedAt:
+      order.publishedAt ??
+      null,
+
+    refundedAt:
+      order.refundedAt ??
+      null,
+
+    failureCode:
+      order.failureCode ??
+      null
+  };
+
 }
 
 
