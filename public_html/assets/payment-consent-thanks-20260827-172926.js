@@ -191,6 +191,33 @@
   }
 
 
+  function getUserAuthToken() {
+
+    try {
+
+      const token =
+        window.localStorage
+          .getItem(
+            "boykovgroup_auth_token"
+          );
+
+
+      return token
+        ? String(
+            token
+          )
+        : null;
+
+    }
+    catch {
+
+      return null;
+
+    }
+
+  }
+
+
   function currentConsentsAccepted() {
 
     const root =
@@ -459,6 +486,20 @@
           "Content-Type",
           "application/json"
         );
+
+
+        const userToken =
+          getUserAuthToken();
+
+
+        if (userToken) {
+
+          headers.set(
+            "Authorization",
+            `Bearer ${userToken}`
+          );
+
+        }
 
 
         return baseFetch(

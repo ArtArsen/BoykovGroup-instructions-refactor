@@ -100,6 +100,66 @@
   }
 
 
+  async function recoverSessionFromServer() {
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/public-generation/recovery",
+          {
+            cache:
+              "no-store",
+
+            credentials:
+              "same-origin"
+          }
+        );
+
+
+      if (!response.ok) {
+        return null;
+      }
+
+
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (
+        !data?.orderId ||
+        !data?.orderToken
+      ) {
+        return null;
+      }
+
+
+      return {
+        orderId:
+          String(
+            data.orderId
+          ),
+
+        orderToken:
+          String(
+            data.orderToken
+          )
+      };
+
+    }
+    catch {
+
+      return null;
+
+    }
+
+  }
+
+
   function saveSession(
     order
   ) {
@@ -733,8 +793,21 @@
 
   async function start() {
 
-    const session =
+    let session =
       readSession();
+
+
+    if (!session) {
+
+      setStatus(
+        "Восстанавливаем оплаченный заказ..."
+      );
+
+
+      session =
+        await recoverSessionFromServer();
+
+    }
 
 
     if (!session) {
