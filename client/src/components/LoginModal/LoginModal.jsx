@@ -500,18 +500,6 @@ export default function LoginModal({
           </button>
         </form>
 
-        {mode ===
-          "login" && (
-          <p
-            className={
-              styles.adminHint
-            }
-          >
-            Администратор также
-            входит через эту форму
-            по своему логину.
-          </p>
-        )}
       </div>
     </div>
   );
