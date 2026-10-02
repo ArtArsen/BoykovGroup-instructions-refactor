@@ -1,4 +1,6 @@
 import {
+  useEffect,
+  useRef,
   useState
 } from "react";
 
@@ -22,6 +24,7 @@ import styles from
 
 
 export default function AuthControl() {
+
   const dispatch =
     useDispatch();
 
@@ -46,28 +49,130 @@ export default function AuthControl() {
   ] =
     useState(false);
 
+  const [
+    isMenuOpen,
+    setMenuOpen
+  ] =
+    useState(false);
+
+  const dropdownRef =
+    useRef(null);
+
+
+  useEffect(() => {
+
+    if (!isMenuOpen) {
+      return undefined;
+    }
+
+
+    function handleDocumentClick(
+      event
+    ) {
+
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(
+          event.target
+        )
+      ) {
+
+        setMenuOpen(
+          false
+        );
+
+      }
+
+    }
+
+
+    function handleKeyDown(
+      event
+    ) {
+
+      if (
+        event.key ===
+        "Escape"
+      ) {
+
+        setMenuOpen(
+          false
+        );
+
+      }
+
+    }
+
+
+    document.addEventListener(
+      "click",
+      handleDocumentClick
+    );
+
+    document.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+
+    return () => {
+
+      document.removeEventListener(
+        "click",
+        handleDocumentClick
+      );
+
+      document.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+
+    };
+
+  }, [
+    isMenuOpen
+  ]);
+
+
+  useEffect(() => {
+
+    setMenuOpen(
+      false
+    );
+
+  }, [
+    user
+  ]);
+
 
   if (isRestoring) {
     return null;
   }
 
 
-  if (user) {
+  /*
+   * Админскую панель не меняем.
+   */
+  if (
+    user &&
+    isAdmin
+  ) {
+
     return (
       <div
         className={
           styles.wrapper
         }
       >
+
         <span
           className={
             styles.badge
           }
         >
-          {isAdmin
-            ? `[ админ: ${user.login} ]`
-            : `[ ${user.email || user.login} ]`}
+          [ админ: {user.login} ]
         </span>
+
 
         <button
           type="button"
@@ -83,13 +188,190 @@ export default function AuthControl() {
         >
           выйти
         </button>
+
       </div>
     );
+
+  }
+
+
+  /*
+   * Обычный пользователь:
+   * нормальный React dropdown вместо
+   * production MutationObserver patch.
+   */
+  if (user) {
+
+    const accountName =
+      user.email ||
+      user.login ||
+      "аккаунт";
+
+
+    return (
+      <div
+        ref={
+          dropdownRef
+        }
+        className={
+          styles.accountDropdown
+        }
+      >
+
+        <button
+          type="button"
+          className={
+            styles.accountTrigger
+          }
+          aria-haspopup="menu"
+          aria-expanded={
+            isMenuOpen
+          }
+          onClick={
+            (event) => {
+
+              event.stopPropagation();
+
+              setMenuOpen(
+                current =>
+                  !current
+              );
+
+            }
+          }
+        >
+
+          <span
+            className={
+              styles.accountTriggerEmail
+            }
+          >
+            [ {accountName} ]
+          </span>
+
+
+          <span
+            className={
+              styles.accountTriggerChevron
+            }
+            aria-hidden="true"
+          >
+            ▾
+          </span>
+
+        </button>
+
+
+        <div
+          className={
+            styles.accountMenu
+          }
+          hidden={
+            !isMenuOpen
+          }
+          role="menu"
+        >
+
+          <div
+            className={
+              styles.accountMenuHead
+            }
+          >
+
+            <div
+              className={
+                styles.accountMenuLabel
+              }
+            >
+              АККАУНТ
+            </div>
+
+
+            <div
+              className={
+                styles.accountMenuEmail
+              }
+            >
+              {accountName}
+            </div>
+
+          </div>
+
+
+          <div
+            className={
+              styles.accountMenuDivider
+            }
+          />
+
+
+          <a
+            href="/account/"
+            className={
+              styles.accountMenuItem
+            }
+            role="menuitem"
+            onClick={
+              () =>
+                setMenuOpen(
+                  false
+                )
+            }
+          >
+
+            <span>
+              Личный кабинет
+            </span>
+
+
+            <span
+              className={
+                styles.accountMenuArrow
+              }
+            >
+              →
+            </span>
+
+          </a>
+
+
+          <button
+            type="button"
+            className={[
+              styles.accountMenuItem,
+              styles.accountMenuLogout
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            role="menuitem"
+            onClick={
+              () => {
+
+                setMenuOpen(
+                  false
+                );
+
+                dispatch(
+                  logout()
+                );
+
+              }
+            }
+          >
+            Выйти
+          </button>
+
+        </div>
+
+      </div>
+    );
+
   }
 
 
   return (
     <>
+
       <button
         type="button"
         className={
@@ -105,16 +387,22 @@ export default function AuthControl() {
         войти / регистрация
       </button>
 
-      {isModalOpen && (
-        <LoginModal
-          onClose={
-            () =>
-              setModalOpen(
-                false
-              )
-          }
-        />
-      )}
+
+      {
+        isModalOpen &&
+        (
+          <LoginModal
+            onClose={
+              () =>
+                setModalOpen(
+                  false
+                )
+            }
+          />
+        )
+      }
+
     </>
   );
+
 }
