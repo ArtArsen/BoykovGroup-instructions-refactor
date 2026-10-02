@@ -18,10 +18,17 @@ import {
   deleteInstruction,
 } from "./store/instructionsSlice.js";
 import Navigation from "./components/Navigation/Navigation.jsx";
-import { restoreSession, selectIsAdmin } from "./store/authSlice.js";
+import {
+  restoreSession,
+  selectAuthToken,
+  selectIsAdmin
+} from "./store/authSlice.js";
 import { PAGE_SIZE } from "./constants.js";
 import styles from "./App.module.css";
 import EditInstructionModal from "./components/EditInstructionModal/EditInstructionModal.jsx";
+import {
+  updateInstruction
+} from "./api/instructionsApi.js";
 
 import {
   Routes,
@@ -39,7 +46,16 @@ export default function App() {
 
   const location =
     useLocation();
-  const isAdmin = useSelector(selectIsAdmin);
+  const isAdmin =
+    useSelector(
+      selectIsAdmin
+    );
+
+  const authToken =
+    useSelector(
+      selectAuthToken
+    );
+
   const [importId,setImportId] = useState(null);
   const [queryInput, setQueryInput] = useState(
     () =>
@@ -502,40 +518,52 @@ loadMoreLockRef.current ||
 
   async function handleEditSave(updated) {
 
-  const response = await fetch(
-    `/api/instructions/${updated.id}`,
-    {
-      method: "PUT",
-
-     headers:{
-  "Content-Type":"application/json",
-  "Authorization": `Bearer ${localStorage.getItem("boykovgroup_admin_token")}`
-},
-
-      body: JSON.stringify(updated)
+    if (
+      !isAdmin ||
+      !authToken
+    ) {
+      return;
     }
-  );
 
 
-  if (response.ok) {
+    try {
 
-    const saved = await response.json();
+      await updateInstruction(
+        updated.id,
+        updated,
+        authToken
+      );
 
 
-    setEditingInstruction(null);
+      setEditingInstruction(
+        null
+      );
 
 
-    dispatch(
-      searchInstructions({
-        query: debouncedQuery,
-        page: 1,
-        pageSize: PAGE_SIZE
-      })
-    );
+      dispatch(
+        searchInstructions({
+          query:
+            debouncedQuery,
+
+          page:
+            1,
+
+          pageSize:
+            PAGE_SIZE
+        })
+      );
+
+    }
+    catch(error) {
+
+      console.error(
+        "Instruction save error:",
+        error
+      );
+
+    }
 
   }
-
-}
 
   const showEmptyState = !isSearching && !searchError && debouncedQuery.trim() && items.length === 0;
 

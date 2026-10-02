@@ -11,7 +11,17 @@ import InstructionSeoBlock from "../InstructionSeoBlock/InstructionSeoBlock.jsx"
 import RelatedInstructions from "../RelatedInstructions/RelatedInstructions.jsx";
 import EditInstructionModal from "../EditInstructionModal/EditInstructionModal.jsx";
 
-import { selectIsAdmin } from "../../store/authSlice.js";
+import {
+    selectAuthToken,
+    selectIsAdmin,
+    selectIsRestoringSession
+} from "../../store/authSlice.js";
+
+import {
+    getInstructionViews,
+    recordInstructionView,
+    updateInstruction
+} from "../../api/instructionsApi.js";
 
 import styles from "./InstructionPage.module.css";
 
@@ -93,7 +103,20 @@ export default function InstructionPage() {
 
     const { id } = useParams();
 
-    const isAdmin = useSelector(selectIsAdmin);
+    const isAdmin =
+        useSelector(
+            selectIsAdmin
+        );
+
+    const authToken =
+        useSelector(
+            selectAuthToken
+        );
+
+    const isRestoringSession =
+        useSelector(
+            selectIsRestoringSession
+        );
 
     const [instruction, setInstruction] = useState(null);
     const [allInstructions, setAllInstructions] = useState([]);
@@ -102,6 +125,12 @@ export default function InstructionPage() {
     const [error, setError] = useState("");
 
     const [editOpen, setEditOpen] = useState(false);
+
+    const [
+        viewStats,
+        setViewStats
+    ] =
+        useState(null);
 
 
 
@@ -165,36 +194,153 @@ export default function InstructionPage() {
 
 
 
+    /*
+     * Один просмотр на одно открытие инструкции.
+     *
+     * Просмотры администратора production
+     * намеренно не считает.
+     */
+    useEffect(() => {
 
-    async function saveInstruction(updated) {
+        if (
+            !id ||
+            isRestoringSession
+        ) {
+            return;
+        }
 
-        const response = await fetch(
-            `/api/instructions/${instruction.id}`,
-            {
-                method: "PUT",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+        if (isAdmin) {
+            return;
+        }
 
-                body: JSON.stringify(updated)
+
+        recordInstructionView(
+            id
+        )
+        .catch(
+            () => {}
+        );
+
+    }, [
+        id,
+        isAdmin,
+        isRestoringSession
+    ]);
+
+
+    /*
+     * Статистика просмотров видна
+     * только администратору.
+     */
+    useEffect(() => {
+
+        if (
+            !id ||
+            isRestoringSession ||
+            !isAdmin ||
+            !authToken
+        ) {
+
+            setViewStats(
+                null
+            );
+
+            return undefined;
+
+        }
+
+
+        let cancelled =
+            false;
+
+
+        getInstructionViews(
+            id,
+            authToken
+        )
+        .then(
+            data => {
+
+                if (!cancelled) {
+
+                    setViewStats(
+                        data
+                    );
+
+                }
+
+            }
+        )
+        .catch(
+            () => {
+
+                if (!cancelled) {
+
+                    setViewStats(
+                        null
+                    );
+
+                }
+
             }
         );
 
 
-        if (response.ok) {
+        return () => {
 
-            const saved = await response.json();
+            cancelled =
+                true;
 
-            setInstruction(saved);
+        };
 
-            setEditOpen(false);
+    }, [
+        id,
+        authToken,
+        isAdmin,
+        isRestoringSession
+    ]);
+
+
+
+
+    async function saveInstruction(updated) {
+
+        if (!authToken) {
+            return;
+        }
+
+
+        try {
+
+            const saved =
+                await updateInstruction(
+                    instruction.id,
+                    updated,
+                    authToken
+                );
+
+
+            setInstruction(
+                saved
+            );
+
+
+            setEditOpen(
+                false
+            );
+
+        }
+        catch(error) {
+
+            console.error(
+                "Instruction save error:",
+                error
+            );
 
         }
 
     }
-
-
 
 
 
@@ -369,6 +515,70 @@ export default function InstructionPage() {
                         </div>
 
 
+
+
+                        {
+                            isAdmin &&
+                            viewStats &&
+                            (
+                                <div
+                                    className={
+                                        styles.viewCounter
+                                    }
+                                >
+
+                                    <span
+                                        className={
+                                            styles.viewCounterLabel
+                                        }
+                                    >
+                                        Просмотры
+                                    </span>
+
+                                    <strong
+                                        className={
+                                            styles.viewCounterTotal
+                                        }
+                                    >
+                                        {
+                                            Number(
+                                                viewStats.total || 0
+                                            )
+                                            .toLocaleString(
+                                                "ru-RU"
+                                            )
+                                        }
+                                    </strong>
+
+                                    <span
+                                        className={
+                                            styles.viewCounterMeta
+                                        }
+                                    >
+                                        сегодня:{" "}
+                                        {
+                                            Number(
+                                                viewStats.today || 0
+                                            )
+                                            .toLocaleString(
+                                                "ru-RU"
+                                            )
+                                        }
+                                        {" · "}
+                                        7 дней:{" "}
+                                        {
+                                            Number(
+                                                viewStats.last7Days || 0
+                                            )
+                                            .toLocaleString(
+                                                "ru-RU"
+                                            )
+                                        }
+                                    </span>
+
+                                </div>
+                            )
+                        }
 
 
                         {isAdmin && (

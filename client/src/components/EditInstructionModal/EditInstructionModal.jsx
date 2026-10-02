@@ -1,4 +1,21 @@
-import { useState } from "react";
+import {
+  useEffect,
+  useState
+} from "react";
+
+import {
+  useSelector
+} from "react-redux";
+
+import {
+  selectAuthToken
+} from "../../store/authSlice.js";
+
+import {
+  getInstructionHistory,
+  rollbackInstruction
+} from "../../api/instructionsApi.js";
+
 import styles from "./EditInstructionModal.module.css";
 
 
@@ -15,6 +32,92 @@ export default function EditInstructionModal({
       paragraphs: [...section.paragraphs],
     })),
   });
+
+
+
+  const token =
+    useSelector(
+      selectAuthToken
+    );
+
+
+  const [
+    history,
+    setHistory
+  ] =
+    useState(null);
+
+
+  const [
+    rollbackBusy,
+    setRollbackBusy
+  ] =
+    useState(false);
+
+
+  useEffect(() => {
+
+    if (
+      !instruction?.id ||
+      !token
+    ) {
+
+      setHistory(
+        null
+      );
+
+      return undefined;
+
+    }
+
+
+    let cancelled =
+      false;
+
+
+    getInstructionHistory(
+      instruction.id,
+      token
+    )
+    .then(
+      data => {
+
+        if (!cancelled) {
+
+          setHistory(
+            data
+          );
+
+        }
+
+      }
+    )
+    .catch(
+      () => {
+
+        if (!cancelled) {
+
+          setHistory(
+            null
+          );
+
+        }
+
+      }
+    );
+
+
+    return () => {
+
+      cancelled =
+        true;
+
+    };
+
+  }, [
+    instruction?.id,
+    token
+  ]);
 
 
   function updateField(field, value) {
@@ -54,6 +157,76 @@ export default function EditInstructionModal({
   async function handleSave() {
 
     await onSave(data);
+
+  }
+
+
+
+  async function handleRollback() {
+
+    if (
+      rollbackBusy ||
+      !history?.available ||
+      !instruction?.id ||
+      !token
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      !window.confirm(
+        "Вернуть инструкцию к состоянию до последнего сохранения?"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    setRollbackBusy(
+      true
+    );
+
+
+    try {
+
+      await rollbackInstruction(
+        instruction.id,
+        token
+      );
+
+
+      window.alert(
+        "Предыдущая версия восстановлена."
+      );
+
+
+      window.location.reload();
+
+    }
+    catch(error) {
+
+      console.error(
+        "Rollback error:",
+        error
+      );
+
+
+      window.alert(
+        error?.message ||
+        "Не удалось выполнить откат."
+      );
+
+
+      setRollbackBusy(
+        false
+      );
+
+    }
 
   }
 
@@ -150,6 +323,33 @@ export default function EditInstructionModal({
 
         ))}
 
+
+
+        <button
+          type="button"
+          className={
+            styles.rollbackButton
+          }
+          disabled={
+            rollbackBusy ||
+            !history?.available
+          }
+          onClick={
+            handleRollback
+          }
+        >
+          {
+            rollbackBusy
+              ? "Откатываем..."
+              : history?.available
+                ? (
+                    history.count > 1
+                      ? `Откатить последнее сохранение · ${history.count} версий`
+                      : "Откатить последнее сохранение"
+                  )
+                : "Нет предыдущей версии"
+          }
+        </button>
 
 
         <button

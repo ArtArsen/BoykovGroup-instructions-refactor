@@ -120,6 +120,97 @@ export function deleteInstruction(id, token) {
 
 
 
+export function updateInstruction(
+  id,
+  instruction,
+  token
+) {
+
+  return request(
+    `/api/instructions/${encodeURIComponent(id)}`,
+    {
+      method: "PUT",
+
+      headers:
+        authHeaders(token),
+
+      body:
+        JSON.stringify(
+          instruction
+        )
+    }
+  );
+
+}
+
+
+export function recordInstructionView(
+  id
+) {
+
+  return request(
+    `/api/instructions/${encodeURIComponent(id)}/view`,
+    {
+      method:
+        "POST"
+    }
+  );
+
+}
+
+
+export function getInstructionViews(
+  id,
+  token
+) {
+
+  return request(
+    `/api/instructions/${encodeURIComponent(id)}/views`,
+    {
+      headers:
+        authHeaders(token)
+    }
+  );
+
+}
+
+
+export function getInstructionHistory(
+  id,
+  token
+) {
+
+  return request(
+    `/api/instructions/${encodeURIComponent(id)}/history`,
+    {
+      headers:
+        authHeaders(token)
+    }
+  );
+
+}
+
+
+export function rollbackInstruction(
+  id,
+  token
+) {
+
+  return request(
+    `/api/instructions/${encodeURIComponent(id)}/rollback`,
+    {
+      method:
+        "POST",
+
+      headers:
+        authHeaders(token)
+    }
+  );
+
+}
+
+
+
 /**
  * ============================================================
  * BULK IMPORT
