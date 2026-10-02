@@ -29,6 +29,8 @@ import {
   useLocation
 } from "react-router-dom";
 import AdminPanel from "./components/AdminPanel/AdminPanel.jsx";
+import SiteFooter from "./components/SiteFooter/SiteFooter.jsx";
+import CookieConsent from "./components/CookieConsent/CookieConsent.jsx";
 
 
 
@@ -550,6 +552,8 @@ loadMoreLockRef.current ||
 }
 
  return (
+  <>
+
   <Routes>
 
     <Route
@@ -873,5 +877,14 @@ loadMoreLockRef.current ||
 
 
   </Routes>
+
+
+    <SiteFooter />
+
+
+    <CookieConsent />
+
+
+  </>
 );
 }
