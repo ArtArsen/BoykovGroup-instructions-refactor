@@ -871,7 +871,7 @@ export default function UrgentGenerationPage() {
                 styles.eyebrow
               }
             >
-              [ срочная подготовка ]
+              [ профессия или вид работ ]
             </div>
 
 
@@ -890,12 +890,12 @@ export default function UrgentGenerationPage() {
                 styles.lead
               }
             >
-              Укажите профессию —
-              подготовим проект инструкции
-              с опорой на требования
-              законодательства Российской
-              Федерации и принятую структуру
-              документов по охране труда.
+              Укажите профессию, должность
+              или вид работ — подготовим
+              проект инструкции с опорой
+              на требования законодательства
+              Российской Федерации и принятую
+              структуру документов по охране труда.
             </p>
 
 
@@ -1007,15 +1007,6 @@ export default function UrgentGenerationPage() {
             }
           >
 
-            <div
-              className={
-                styles.orderNumber
-              }
-            >
-              01
-            </div>
-
-
             <div>
 
               <h2
@@ -1023,7 +1014,7 @@ export default function UrgentGenerationPage() {
                   styles.orderTitle
                 }
               >
-                Укажите профессию
+                Укажите профессию или вид работ
               </h2>
 
 
@@ -1033,9 +1024,9 @@ export default function UrgentGenerationPage() {
                 }
               >
                 Напишите точное название
-                профессии или вида работ,
-                для которых необходима
-                инструкция.
+                профессии, должности
+                или вида работ, для которых
+                необходима инструкция.
               </p>
 
             </div>
@@ -1058,7 +1049,7 @@ export default function UrgentGenerationPage() {
               }
               htmlFor="urgent-profession"
             >
-              Профессия
+              Профессия или вид работ
             </label>
 
 
@@ -1080,10 +1071,41 @@ export default function UrgentGenerationPage() {
                   setError("");
                 }
               }
-              placeholder="Например: электромонтёр по ремонту оборудования"
+              placeholder="Например: электромонтёр или при работе на высоте"
               autoComplete="off"
               maxLength={180}
             />
+
+
+            <div
+              className={
+                styles.generationScopeHint
+              }
+            >
+              <span>
+                Можно указать:
+              </span>{" "}
+
+              <strong>
+                профессию
+              </strong>{" "}
+
+              <span>
+                или
+              </span>{" "}
+
+              <strong>
+                конкретный вид работ
+              </strong>
+
+              <span
+                className={
+                  styles.generationScopeExamples
+                }
+              >
+                Например: водитель погрузчика · при работе на высоте · при эксплуатации электрооборудования
+              </span>
+            </div>
 
 
             <div

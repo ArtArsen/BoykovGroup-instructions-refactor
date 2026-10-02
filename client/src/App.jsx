@@ -2,7 +2,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useDispatch, useSelector } from "react-redux";
 import InstructionPage from "./components/InstructionPage/InstructionPage.jsx";
 import UrgentGenerationPage from "./components/UrgentGenerationPage/UrgentGenerationPage.jsx";
-import UrgentGenerationHint from "./components/UrgentGenerationHint/UrgentGenerationHint.jsx";
 import Header from "./components/Header/Header.jsx";
 import InstructionsCatalog from "./components/InstructionCatalog/InstructionsCatalog.jsx";
 import InstructionList from "./components/InstructionList/InstructionList.jsx";
@@ -834,7 +833,6 @@ loadMoreLockRef.current ||
             )}
 
           </main>
-<UrgentGenerationHint />
 
           {editingInstruction && (
 

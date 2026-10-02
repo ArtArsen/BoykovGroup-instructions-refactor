@@ -1763,3 +1763,57 @@
   }
 
 }
+
+/*
+ * ============================================================
+ * GENERATION PROFESSION / WORK SCOPE HINT
+ * ============================================================
+ */
+
+.generationScopeHint {
+  margin-top:
+    10px;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.55;
+
+  color:
+    #70809a;
+}
+
+
+.generationScopeHint strong {
+  color:
+    #1a2233;
+
+  font-weight:
+    600;
+}
+
+
+.generationScopeExamples {
+  display:
+    block;
+
+  margin-top:
+    4px;
+
+  color:
+    #8793a6;
+}
+
+
+@media (max-width: 760px) {
+
+  .generationScopeHint {
+    margin-top:
+      8px;
+
+    font-size:
+      11px;
+  }
+
+}
