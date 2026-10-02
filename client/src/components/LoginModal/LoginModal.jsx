@@ -21,8 +21,7 @@ import styles from
 
 
 export default function LoginModal({
-  onClose,
-  initialMode = "login"
+  onClose
 }) {
   const dispatch =
     useDispatch();
@@ -42,10 +41,7 @@ export default function LoginModal({
     setMode
   ] =
     useState(
-      initialMode ===
-        "register"
-        ? "register"
-        : "login"
+      "login"
     );
 
   const [

@@ -14,8 +14,8 @@ import {
   selectIsRestoringSession
 } from "../../store/authSlice.js";
 
-import LoginModal
-  from "../LoginModal/LoginModal.jsx";
+import PdfRegistrationModal
+  from "../PdfRegistrationModal/PdfRegistrationModal.jsx";
 
 import "./InstructionPdfDownload.css";
 
@@ -486,8 +486,7 @@ export default function InstructionPdfDownload({
       {
         isRegistrationOpen &&
         (
-          <LoginModal
-            initialMode="register"
+          <PdfRegistrationModal
             onClose={
               () =>
                 setRegistrationOpen(
