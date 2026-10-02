@@ -10,6 +10,7 @@ import MetaTags from "../MetaTags/MetaTags.jsx";
 import InstructionSeoBlock from "../InstructionSeoBlock/InstructionSeoBlock.jsx";
 import RelatedInstructions from "../RelatedInstructions/RelatedInstructions.jsx";
 import EditInstructionModal from "../EditInstructionModal/EditInstructionModal.jsx";
+import InstructionPdfDownload from "../InstructionPdfDownload/InstructionPdfDownload.jsx";
 
 import {
     selectAuthToken,
@@ -484,6 +485,13 @@ export default function InstructionPage() {
                     <h1 className={styles.title}>
                         {instruction.title}
                     </h1>
+
+
+                    <InstructionPdfDownload
+                        instructionId={
+                            instruction.id
+                        }
+                    />
 
 
 
