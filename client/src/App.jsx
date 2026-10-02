@@ -38,6 +38,7 @@ import {
 import AdminPanel from "./components/AdminPanel/AdminPanel.jsx";
 import SiteFooter from "./components/SiteFooter/SiteFooter.jsx";
 import CookieConsent from "./components/CookieConsent/CookieConsent.jsx";
+import VisitorTracker from "./components/VisitorTracker/VisitorTracker.jsx";
 
 
 
@@ -581,6 +582,9 @@ loadMoreLockRef.current ||
 
  return (
   <>
+
+    <VisitorTracker />
+
 
   <Routes>
 

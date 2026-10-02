@@ -7,6 +7,10 @@ import {
   Link
 } from "react-router-dom";
 
+import {
+  useSelector
+} from "react-redux";
+
 import Header
   from "../Header/Header.jsx";
 
@@ -16,6 +20,13 @@ import Navigation
 
 import InstructionSort
   from "../InstructionSort/InstructionSort.jsx";
+
+import GeneratedInstructionBadge
+  from "../GeneratedInstructionBadge/GeneratedInstructionBadge.jsx";
+
+import {
+  selectIsAdmin
+} from "../../store/authSlice.js";
 
 import SEO
   from "../SEO/SEO.jsx";
@@ -29,6 +40,12 @@ const PAGE_SIZE =
 
 
 export default function InstructionsCatalog() {
+
+  const isAdmin =
+    useSelector(
+      selectIsAdmin
+    );
+
 
   const [
     items,
@@ -404,6 +421,17 @@ export default function InstructionsCatalog() {
                         <h2>
                           {item.title}
                         </h2>
+
+
+                        {
+                          isAdmin &&
+                          item?.source ===
+                            "generated" &&
+                          (
+                            <GeneratedInstructionBadge />
+                          )
+                        }
+
 
                         <span>
                           Открыть инструкцию →
