@@ -238,39 +238,50 @@ export function login(
  * авторизует пользователя.
  */
 export function register(
-  email,
-  password
+  registration
 ) {
+
   return async (
     dispatch
   ) => {
+
     dispatch(
       authStart()
     );
 
+
     try {
+
       const data =
         await registerRequest(
-          email,
-          password
+          registration
         );
+
 
       persistAuth(
         data,
         dispatch
       );
 
+
       return true;
-    } catch (error) {
+
+    }
+    catch (error) {
+
       dispatch(
         authFail(
           error.message
         )
       );
 
+
       return false;
+
     }
+
   };
+
 }
 
 
