@@ -24,6 +24,8 @@ import {
 import PrivateInstructionView from "../PrivateInstructionView/PrivateInstructionView.jsx";
 import AdminVisitorStats from "../AdminVisitorStats/AdminVisitorStats.jsx";
 import AdminInstructionTop10 from "../AdminInstructionTop10/AdminInstructionTop10.jsx";
+import AdminPromoCodes from "../AdminPromoCodes/AdminPromoCodes.jsx";
+import AdminDashboardTabs from "../AdminDashboardTabs/AdminDashboardTabs.jsx";
 import styles from "./AdminPanel.module.css";
 
 
@@ -77,6 +79,45 @@ function getGenerationTypeLabel(source) {
     default:
       return "Генерация";
   }
+}
+
+
+const ADMIN_DASHBOARD_TAB_KEY =
+  "boykov_admin_dashboard_tab_v1";
+
+const ADMIN_DASHBOARD_TABS = [
+  "publications",
+  "visitors",
+  "top10",
+  "promocodes"
+];
+
+
+function getInitialAdminDashboardTab() {
+
+  try {
+
+    const saved =
+      window.localStorage
+        .getItem(
+          ADMIN_DASHBOARD_TAB_KEY
+        );
+
+
+    return ADMIN_DASHBOARD_TABS
+      .includes(
+        saved
+      )
+      ? saved
+      : "publications";
+
+  }
+  catch {
+
+    return "publications";
+
+  }
+
 }
 
 
@@ -136,6 +177,54 @@ export default function AdminPanel({
     useSelector(
       selectAuthToken
     );
+
+
+
+  const [
+    adminDashboardTab,
+    setAdminDashboardTab
+  ] =
+    useState(
+      getInitialAdminDashboardTab
+    );
+
+
+  function changeAdminDashboardTab(
+    nextTab
+  ) {
+
+    const valid =
+      ADMIN_DASHBOARD_TABS
+        .includes(
+          nextTab
+        );
+
+
+    const value =
+      valid
+        ? nextTab
+        : "publications";
+
+
+    setAdminDashboardTab(
+      value
+    );
+
+
+    try {
+
+      window.localStorage
+        .setItem(
+          ADMIN_DASHBOARD_TAB_KEY,
+          value
+        );
+
+    }
+    catch {
+      /* UI state persistence is optional */
+    }
+
+  }
 
 
   /*
@@ -584,10 +673,33 @@ export default function AdminPanel({
         {
           isAdmin &&
           (
-            <div
-              className={
-                styles.publicationInbox
+            <AdminDashboardTabs
+              activeTab={
+                adminDashboardTab
               }
+              onChange={
+                changeAdminDashboardTab
+              }
+            />
+          )
+        }
+
+
+        {
+          isAdmin &&
+          (
+            <div
+              data-boykov-admin-tab-section="publications"
+              className={[
+                styles.publicationInbox,
+
+                adminDashboardTab !==
+                  "publications"
+                  ? "boykovAdminDashboardSection--hidden"
+                  : ""
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
 
               <div
@@ -929,12 +1041,31 @@ export default function AdminPanel({
               token={
                 token
               }
+              hidden={
+                adminDashboardTab !==
+                  "visitors"
+              }
             />
 
 
             <AdminInstructionTop10
               token={
                 token
+              }
+              hidden={
+                adminDashboardTab !==
+                  "top10"
+              }
+            />
+
+
+            <AdminPromoCodes
+              token={
+                token
+              }
+              hidden={
+                adminDashboardTab !==
+                  "promocodes"
               }
             />
 

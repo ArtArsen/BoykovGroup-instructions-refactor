@@ -226,6 +226,7 @@ export default function AdminVisitorStats({
     <section
       id="boykovVisitorStats"
       className="boykovVisitorStats"
+      data-boykov-admin-tab-section="visitors"
     >
 
       <div

@@ -264,6 +264,7 @@ export default function AdminInstructionTop10({
     <section
       id="boykov-admin-instruction-top10"
       className="boykovTop10"
+      data-boykov-admin-tab-section="top10"
     >
 
       <div
