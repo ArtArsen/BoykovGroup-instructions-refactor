@@ -211,6 +211,29 @@ export default function UrgentGenerationPage() {
     document.body.scrollTop =
       0;
 
+
+    /*
+     * LEGACY ORDER STORAGE CLEANUP
+     *
+     * Старое восстановление заказа больше
+     * не используется. Удаляем оставшиеся
+     * ключи у пользователей после обновления.
+     */
+    try {
+
+      window.sessionStorage.removeItem(
+        "boykovgroup_urgent_generation_order_v1"
+      );
+
+      window.sessionStorage.removeItem(
+        "boykovdocs_thanks_order_v1"
+      );
+
+    }
+    catch {
+      /* storage может быть недоступен */
+    }
+
   }, []);
 
 
