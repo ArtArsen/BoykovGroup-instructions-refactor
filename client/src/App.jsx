@@ -761,6 +761,8 @@ loadMoreLockRef.current ||
 
 <InstructionList
   instructions={items}
+  total={total}
+  query={debouncedQuery}
   isAdmin={isAdmin}
   onDelete={handleDelete}
   onEdit={handleEditOpen}
