@@ -549,7 +549,7 @@ export default function InstructionList({
         >
 
           <div
-            className={`${cardStyles.card} generationListCard`}
+            className={`${cardStyles.card} generationListCard boykovCardSearchShadow`}
           >
 
             <div
