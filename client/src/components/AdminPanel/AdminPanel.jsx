@@ -22,6 +22,8 @@ import {
 } from "../../api/instructionsApi.js";
 
 import PrivateInstructionView from "../PrivateInstructionView/PrivateInstructionView.jsx";
+import AdminVisitorStats from "../AdminVisitorStats/AdminVisitorStats.jsx";
+import AdminInstructionTop10 from "../AdminInstructionTop10/AdminInstructionTop10.jsx";
 import styles from "./AdminPanel.module.css";
 
 
@@ -915,6 +917,30 @@ export default function AdminPanel({
         }
 
 
+
+
+      {
+        isAdmin &&
+        token &&
+        (
+          <>
+
+            <AdminVisitorStats
+              token={
+                token
+              }
+            />
+
+
+            <AdminInstructionTop10
+              token={
+                token
+              }
+            />
+
+          </>
+        )
+      }
 
 
       {
