@@ -305,7 +305,15 @@ export default function InstructionList({
             pageSize:
               String(
                 PAGE_SIZE
-              )
+              ),
+
+            sort:
+              new URLSearchParams(
+                window.location.search
+              ).get("sort") ===
+                "popular"
+                ? "popular"
+                : "newest"
           });
 
 

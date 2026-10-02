@@ -33,13 +33,46 @@ function authHeaders(token) {
  * Поиск инструкций — вся логика поиска выполняется на сервере,
  * клиент лишь передаёт текст запроса и номер страницы.
  */
-export function searchInstructions({ query = "", page = 1, pageSize = 6 } = {}) {
-  const params = new URLSearchParams({
-    q: query,
-    page: String(page),
-    pageSize: String(pageSize),
-  });
-  return request(`/api/instructions?${params.toString()}`);
+export function searchInstructions({
+  query = "",
+  page = 1,
+  pageSize = 11,
+  sort
+} = {}) {
+
+  const currentSort =
+    sort ||
+    (
+      typeof window !== "undefined" &&
+      new URLSearchParams(
+        window.location.search
+      ).get("sort") ===
+        "popular"
+        ? "popular"
+        : "newest"
+    );
+
+
+  const params =
+    new URLSearchParams({
+      q:
+        query,
+
+      page:
+        String(page),
+
+      pageSize:
+        String(pageSize),
+
+      sort:
+        currentSort
+    });
+
+
+  return request(
+    `/api/instructions?${params.toString()}`
+  );
+
 }
 
 export function getInstruction(id) {

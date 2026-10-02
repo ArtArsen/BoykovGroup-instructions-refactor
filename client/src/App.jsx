@@ -5,6 +5,7 @@ import UrgentGenerationPage from "./components/UrgentGenerationPage/UrgentGenera
 import Header from "./components/Header/Header.jsx";
 import InstructionsCatalog from "./components/InstructionCatalog/InstructionsCatalog.jsx";
 import InstructionList from "./components/InstructionList/InstructionList.jsx";
+import InstructionSort from "./components/InstructionSort/InstructionSort.jsx";
 import Loader from "./components/Loader/Loader.jsx";
 import EmptyState from "./components/EmptyState/EmptyState.jsx";
 import HeroPortrait from "./components/HeroPortrait/HeroPortrait.jsx";
@@ -757,6 +758,9 @@ loadMoreLockRef.current ||
                     Всего инструкций: {total}
                   </span>
                 </div>
+
+
+<InstructionSort />
 
 
 <InstructionList

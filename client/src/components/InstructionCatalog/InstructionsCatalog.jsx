@@ -13,6 +13,10 @@ import Header
 import Navigation
   from "../Navigation/Navigation.jsx";
 
+
+import InstructionSort
+  from "../InstructionSort/InstructionSort.jsx";
+
 import SEO
   from "../SEO/SEO.jsx";
 
@@ -73,7 +77,7 @@ export default function InstructionsCatalog() {
 
         const response =
           await fetch(
-            `/api/instructions?page=${page}&pageSize=${PAGE_SIZE}`
+            `/api/instructions?page=${page}&pageSize=${PAGE_SIZE}&sort=${new URLSearchParams(window.location.search).get("sort") === "popular" ? "popular" : "newest"}`
           );
 
 
@@ -373,6 +377,9 @@ export default function InstructionsCatalog() {
           !error &&
           (
             <>
+
+              <InstructionSort />
+
 
               <div
                 className={
