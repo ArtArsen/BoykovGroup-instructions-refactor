@@ -1,7 +1,5 @@
 import {
-  useCallback,
   useEffect,
-  useRef,
   useState
 } from "react";
 
@@ -27,6 +25,9 @@ import InstructionResults
 
 import useHomeCompactHeader
   from "./hooks/useHomeCompactHeader.js";
+
+import useInfiniteInstructions
+  from "./hooks/useInfiniteInstructions.js";
 
 import EditInstructionModal
   from "../../components/EditInstructionModal/EditInstructionModal.jsx";
@@ -88,22 +89,6 @@ export default function HomePage() {
     useHomeCompactHeader();
   const debouncedQuery = useDebouncedValue(queryInput, 350);
 
-  const loadMoreRef =
-    useRef(null);
-
-  const loadMoreLockRef =
-    useRef(false);
-
-  /*
-   * После одной автоматической загрузки
-   * ждём, пока sentinel выйдет из viewport.
-   *
-   * Это предотвращает:
-   * page 2 -> page 3 -> page 4 -> ...
-   * без прокрутки пользователя.
-   */
-  const loadMoreArmedRef =
-    useRef(true);
   const {
     items,
     total,
@@ -144,158 +129,24 @@ export default function HomePage() {
    */
 
 
-  const hasMore =
-    resultPage <
-    totalPages;
-
-
-  useEffect(() => {
-
-    loadMoreArmedRef.current =
-      true;
-
-  }, [
-    debouncedQuery
-  ]);
-
-
-  const loadMore =
-    useCallback(
-      async () => {
-
-        if (
-          !loadMoreArmedRef.current
-        ) {
-          return;
-        }
-
-
-        if (
-loadMoreLockRef.current ||
-          isSearching ||
-          isLoadingMore ||
-          !hasMore
-        ) {
-          return;
-        }
-
-
-        loadMoreArmedRef.current =
-          false;
-
-        loadMoreLockRef.current =
-          true;
-
-
-        try {
-
-          await dispatch(
-            searchInstructions({
-              query:
-                debouncedQuery,
-
-              page:
-                resultPage + 1,
-
-              pageSize:
-                PAGE_SIZE,
-
-              append:
-                true
-            })
-          );
-
-        }
-        finally {
-
-          loadMoreLockRef.current =
-            false;
-
-        }
-
-      },
-      [
-        dispatch,
-        debouncedQuery,
-        resultPage,
-        hasMore,
-        isSearching,
-        isLoadingMore
-      ]
-    );
-
-
-  useEffect(() => {
-
-    const target =
-      loadMoreRef.current;
-
-
-    if (
-      !target ||
-      !hasMore ||
-      loadMoreError
-    ) {
-      return undefined;
-    }
-
-
-    const observer =
-      new IntersectionObserver(
-        ([entry]) => {
-
-          /*
-           * Новые карточки вытолкнули sentinel
-           * за пределы viewport.
-           *
-           * Теперь пользователь может прокрутить
-           * до него ещё раз и получить следующую страницу.
-           */
-          if (
-            !entry.isIntersecting
-          ) {
-            loadMoreArmedRef.current =
-              true;
-
-            return;
-          }
-
-
-          if (
-            entry.isIntersecting
-          ) {
-            void loadMore();
-          }
-
-        },
-        {
-          /*
-           * Следующая порция начинает
-           * загружаться заранее.
-           */
-          rootMargin:
-            "120px 0px",
-
-          threshold:
-            0.01
-        }
-      );
-
-
-    observer.observe(
-      target
-    );
-
-
-    return () => {
-      observer.disconnect();
-    };
-
-  }, [
-    loadMore,
+  const {
     hasMore,
-    loadMoreError
-  ]);
+    loadMore,
+    loadMoreRef
+  } =
+    useInfiniteInstructions({
+      query:
+        debouncedQuery,
+
+      page:
+        resultPage,
+
+      totalPages,
+
+      isSearching,
+      isLoadingMore,
+      loadMoreError
+    });
 
 
   async function handleGenerate() {
