@@ -1,18 +1,15 @@
 import {
-  useEffect,
   useState
 } from "react";
-
-import {
-  useDispatch,
-  useSelector
-} from "react-redux";
 
 import Header
   from "../../components/Header/Header.jsx";
 
 import AdminPanel
   from "../../components/AdminPanel/AdminPanel.jsx";
+
+import EditInstructionModal
+  from "../../components/EditInstructionModal/EditInstructionModal.jsx";
 
 import HomeCompactHeader
   from "./components/HomeCompactHeader/HomeCompactHeader.jsx";
@@ -26,97 +23,64 @@ import InstructionResults
 import useHomeCompactHeader
   from "./hooks/useHomeCompactHeader.js";
 
+import useHomeInstructions
+  from "./hooks/useHomeInstructions.js";
+
 import useInfiniteInstructions
   from "./hooks/useInfiniteInstructions.js";
 
 import useInstructionEditor
   from "./hooks/useInstructionEditor.js";
 
-import EditInstructionModal
-  from "../../components/EditInstructionModal/EditInstructionModal.jsx";
-
-import {
-  useDebouncedValue
-} from "../../hooks/useDebouncedValue.js";
-
-import {
-  searchInstructions,
-  generateInstruction,
-  deleteInstruction
-} from "../../store/instructionsSlice.js";
-
-import {
-  selectIsAdmin
-} from "../../store/authSlice.js";
-
-import {
-  PAGE_SIZE
-} from "../../constants.js";
-
 import styles
   from "../../App.module.css";
 
 
 export default function HomePage() {
-  const dispatch = useDispatch();
 
-  const isAdmin =
-    useSelector(
-      selectIsAdmin
-    );
+  const [
+    importId,
+    setImportId
+  ] =
+    useState(null);
 
-  const [importId,setImportId] = useState(null);
-  const [queryInput, setQueryInput] = useState(
-    () =>
-      new URLSearchParams(
-        window.location.search
-      ).get("q") ?? ""
-  );
+
   const {
     isCompactHeader,
     stickyIntroRef,
     stickyTriggerRef
   } =
     useHomeCompactHeader();
-  const debouncedQuery = useDebouncedValue(queryInput, 350);
+
 
   const {
+    queryInput,
+    setQueryInput,
+    debouncedQuery,
+
+    isAdmin,
+
     items,
     total,
-    page: resultPage,
+    resultPage,
     totalPages,
+
     isSearching,
     isLoadingMore,
     searchError,
     loadMoreError,
+
     isGenerating,
     generateError,
     deletingId,
-  } = useSelector((state) => state.instructions);
 
+    showEmptyState,
 
-  useEffect(() => {
-
-    dispatch(
-      searchInstructions({
-        query:
-          debouncedQuery,
-
-        page:
-          1,
-
-        pageSize:
-          PAGE_SIZE,
-
-        append:
-          false
-      })
-    );
-
-  }, [
-    dispatch,
-    debouncedQuery
-  ]);
+    generate,
+    remove,
+    refresh
+  } =
+    useHomeInstructions();
 
 
   const {
@@ -139,16 +103,6 @@ export default function HomePage() {
     });
 
 
-  async function handleGenerate() {
-    if (!isAdmin) return;
-    await dispatch(generateInstruction(debouncedQuery));
-  }
-
-  function handleDelete(id) {
-    if (!isAdmin) return;
-    dispatch(deleteInstruction(id));
-  }
-
   const {
     editingInstruction,
     openInstructionEditor,
@@ -163,21 +117,7 @@ export default function HomePage() {
     });
 
 
-  const showEmptyState = !isSearching && !searchError && debouncedQuery.trim() && items.length === 0;
-
-  function handleImportRefresh(){
-
-    dispatch(
-        searchInstructions({
-            query: debouncedQuery,
-            page: 1,
-            pageSize: PAGE_SIZE
-        })
-    );
-
-}
-
-return (
+  return (
     <div
       className={
         styles.page
@@ -202,7 +142,7 @@ return (
           setImportId
         }
         onRefresh={
-          handleImportRefresh
+          refresh
         }
       />
 
@@ -282,7 +222,7 @@ return (
           loadMore
         }
         onDelete={
-          handleDelete
+          remove
         }
         onEdit={
           openInstructionEditor
@@ -297,7 +237,7 @@ return (
           generateError
         }
         onGenerate={
-          handleGenerate
+          generate
         }
       />
 
