@@ -29,6 +29,9 @@ import useHomeCompactHeader
 import useInfiniteInstructions
   from "./hooks/useInfiniteInstructions.js";
 
+import useInstructionEditor
+  from "./hooks/useInstructionEditor.js";
+
 import EditInstructionModal
   from "../../components/EditInstructionModal/EditInstructionModal.jsx";
 
@@ -43,13 +46,8 @@ import {
 } from "../../store/instructionsSlice.js";
 
 import {
-  selectAuthToken,
   selectIsAdmin
 } from "../../store/authSlice.js";
-
-import {
-  updateInstruction
-} from "../../api/instructionsApi.js";
 
 import {
   PAGE_SIZE
@@ -67,11 +65,6 @@ export default function HomePage() {
       selectIsAdmin
     );
 
-  const authToken =
-    useSelector(
-      selectAuthToken
-    );
-
   const [importId,setImportId] = useState(null);
   const [queryInput, setQueryInput] = useState(
     () =>
@@ -79,8 +72,6 @@ export default function HomePage() {
         window.location.search
       ).get("q") ?? ""
   );
-  const [editingInstruction, setEditingInstruction] = useState(null);
-
   const {
     isCompactHeader,
     stickyIntroRef,
@@ -154,78 +145,24 @@ export default function HomePage() {
     await dispatch(generateInstruction(debouncedQuery));
   }
 
-  async function handleEditOpen(instruction) {
-
-  const response = await fetch(
-    `/api/instructions/${instruction.id}`
-  );
-
-
-  if (!response.ok) {
-    return;
-  }
-
-
-  const fullInstruction = await response.json();
-
-
-  setEditingInstruction(fullInstruction);
-
-}
-
   function handleDelete(id) {
     if (!isAdmin) return;
     dispatch(deleteInstruction(id));
   }
 
-  async function handleEditSave(updated) {
+  const {
+    editingInstruction,
+    openInstructionEditor,
+    closeInstructionEditor,
+    saveInstruction
+  } =
+    useInstructionEditor({
+      query:
+        debouncedQuery,
 
-    if (
-      !isAdmin ||
-      !authToken
-    ) {
-      return;
-    }
+      isAdmin
+    });
 
-
-    try {
-
-      await updateInstruction(
-        updated.id,
-        updated,
-        authToken
-      );
-
-
-      setEditingInstruction(
-        null
-      );
-
-
-      dispatch(
-        searchInstructions({
-          query:
-            debouncedQuery,
-
-          page:
-            1,
-
-          pageSize:
-            PAGE_SIZE
-        })
-      );
-
-    }
-    catch(error) {
-
-      console.error(
-        "Instruction save error:",
-        error
-      );
-
-    }
-
-  }
 
   const showEmptyState = !isSearching && !searchError && debouncedQuery.trim() && items.length === 0;
 
@@ -349,7 +286,7 @@ return (
           handleDelete
         }
         onEdit={
-          handleEditOpen
+          openInstructionEditor
         }
         showEmptyState={
           showEmptyState
@@ -374,13 +311,10 @@ return (
               editingInstruction
             }
             onClose={
-              () =>
-                setEditingInstruction(
-                  null
-                )
+              closeInstructionEditor
             }
             onSave={
-              handleEditSave
+              saveInstruction
             }
           />
         )
