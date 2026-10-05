@@ -95,29 +95,28 @@ export default function HomePage() {
   } = useSelector((state) => state.instructions);
 
 
-  /*
-   * ==========================================================
-   * ROUTE SCROLL RESET
-   * ==========================================================
-   *
-   * React Router сам не обязан возвращать
-   * новый route к началу страницы.
-   *
-   * Сбрасываем позицию ДО отрисовки кадра,
-   * чтобы пользователь не увидел старое
-   * compact-состояние sticky-header.
-   */
+  useEffect(() => {
 
+    dispatch(
+      searchInstructions({
+        query:
+          debouncedQuery,
 
-  //         .
-  /*
-   * ==========================================================
-   * BOYKOVDOCS INITIAL SEARCH
-   * ==========================================================
-   *
-   * Первый запрос и каждый новый поисковый запрос
-   * всегда начинаются с первой страницы.
-   */
+        page:
+          1,
+
+        pageSize:
+          PAGE_SIZE,
+
+        append:
+          false
+      })
+    );
+
+  }, [
+    dispatch,
+    debouncedQuery
+  ]);
 
 
   const {

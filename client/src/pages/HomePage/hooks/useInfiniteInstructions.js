@@ -50,6 +50,9 @@ export default function useInfiniteInstructions({
 
   useEffect(() => {
 
+    loadMoreLockRef.current =
+      false;
+
     loadMoreArmedRef.current =
       true;
 
