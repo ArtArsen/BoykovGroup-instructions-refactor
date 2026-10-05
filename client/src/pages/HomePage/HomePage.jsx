@@ -1,7 +1,6 @@
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState
 } from "react";
@@ -10,10 +9,6 @@ import {
   useDispatch,
   useSelector
 } from "react-redux";
-
-import {
-  useLocation
-} from "react-router-dom";
 
 import Header
   from "../../components/Header/Header.jsx";
@@ -29,6 +24,9 @@ import HomeIntro
 
 import InstructionResults
   from "./components/InstructionResults/InstructionResults.jsx";
+
+import useHomeCompactHeader
+  from "./hooks/useHomeCompactHeader.js";
 
 import EditInstructionModal
   from "../../components/EditInstructionModal/EditInstructionModal.jsx";
@@ -63,8 +61,6 @@ import styles
 export default function HomePage() {
   const dispatch = useDispatch();
 
-  const location =
-    useLocation();
   const isAdmin =
     useSelector(
       selectIsAdmin
@@ -84,17 +80,13 @@ export default function HomePage() {
   );
   const [editingInstruction, setEditingInstruction] = useState(null);
 
-  const [
+  const {
     isCompactHeader,
-    setIsCompactHeader
-  ] = useState(false);
+    stickyIntroRef,
+    stickyTriggerRef
+  } =
+    useHomeCompactHeader();
   const debouncedQuery = useDebouncedValue(queryInput, 350);
-
-  const stickyIntroRef =
-    useRef(null);
-
-  const stickyTriggerRef =
-    useRef(null);
 
   const loadMoreRef =
     useRef(null);
@@ -139,23 +131,6 @@ export default function HomePage() {
    * чтобы пользователь не увидел старое
    * compact-состояние sticky-header.
    */
-  useLayoutEffect(() => {
-
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "auto"
-    });
-
-    document.documentElement.scrollTop =
-      0;
-
-    document.body.scrollTop =
-      0;
-
-  }, [
-    location.pathname
-  ]);
 
 
   //         .
@@ -167,179 +142,6 @@ export default function HomePage() {
    * Первый запрос и каждый новый поисковый запрос
    * всегда начинаются с первой страницы.
    */
-  useEffect(() => {
-
-    loadMoreLockRef.current =
-      false;
-
-    loadMoreArmedRef.current =
-      true;
-
-
-    dispatch(
-      searchInstructions({
-        query:
-          debouncedQuery,
-
-        page:
-          1,
-
-        pageSize:
-          PAGE_SIZE,
-
-        append:
-          false
-      })
-    );
-
-  }, [
-    dispatch,
-    debouncedQuery
-  ]);
-
-
-  /*
-   * ==========================================================
-   * MAIN ROUTE STICKY RESET
-   * ==========================================================
-   *
-   * При любом route-переходе compact-состояние
-   * сбрасывается до первого кадра.
-   */
-  useLayoutEffect(() => {
-
-    setIsCompactHeader(
-      false
-    );
-
-
-    if (
-      location.pathname === "/"
-    ) {
-
-      loadMoreLockRef.current =
-        false;
-
-      loadMoreArmedRef.current =
-        true;
-
-    }
-
-  }, [
-    location.pathname
-  ]);
-
-
-  useEffect(() => {
-
-    if (
-      location.pathname !== "/"
-    ) {
-      setIsCompactHeader(false);
-      return undefined;
-    }
-
-    const intro =
-      stickyIntroRef.current;
-
-    if (!intro) {
-      setIsCompactHeader(false);
-      return undefined;
-    }
-
-    let frameId =
-      null;
-
-    const update =
-      () => {
-
-        frameId =
-          null;
-
-        const top =
-          intro
-            .getBoundingClientRect()
-            .top;
-
-        setIsCompactHeader(
-          (current) => {
-
-            if (current) {
-
-              if (
-                top >= 16
-              ) {
-                return false;
-              }
-
-              return true;
-            }
-
-            if (
-              top <= -4
-            ) {
-              return true;
-            }
-
-            return false;
-          }
-        );
-      };
-
-    const scheduleUpdate =
-      () => {
-
-        if (
-          frameId !== null
-        ) {
-          return;
-        }
-
-        frameId =
-          window.requestAnimationFrame(
-            update
-          );
-      };
-
-    update();
-
-    window.addEventListener(
-      "scroll",
-      scheduleUpdate,
-      {
-        passive: true
-      }
-    );
-
-    window.addEventListener(
-      "resize",
-      scheduleUpdate
-    );
-
-    return () => {
-
-      window.removeEventListener(
-        "scroll",
-        scheduleUpdate
-      );
-
-      window.removeEventListener(
-        "resize",
-        scheduleUpdate
-      );
-
-      if (
-        frameId !== null
-      ) {
-        window.cancelAnimationFrame(
-          frameId
-        );
-      }
-    };
-
-  }, [
-    location.pathname
-  ]);
 
 
   const hasMore =
