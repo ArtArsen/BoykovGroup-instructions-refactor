@@ -1058,17 +1058,6 @@ export default function AdminPanel({
               }
             />
 
-
-            <AdminPromoCodes
-              token={
-                token
-              }
-              hidden={
-                adminDashboardTab !==
-                  "promocodes"
-              }
-            />
-
           </>
         )
       }
@@ -1394,6 +1383,23 @@ export default function AdminPanel({
             />
 
           </div>
+        )
+      }
+
+
+      {
+        isAdmin &&
+        token &&
+        (
+          <AdminPromoCodes
+            token={
+              token
+            }
+            hidden={
+              adminDashboardTab !==
+                "promocodes"
+            }
+          />
         )
       }
 

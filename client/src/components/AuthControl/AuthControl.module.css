@@ -136,12 +136,6 @@
 }
 
 
-.accountTrigger[aria-expanded="true"]
-.accountTriggerChevron {
-  transform: rotate(180deg);
-}
-
-
 /*
  * MENU
  */
