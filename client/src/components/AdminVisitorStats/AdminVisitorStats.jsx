@@ -24,7 +24,8 @@ function formatNumber(
 
 
 export default function AdminVisitorStats({
-  token
+  token,
+  hidden = false
 }) {
 
   const [
@@ -225,7 +226,15 @@ export default function AdminVisitorStats({
   return (
     <section
       id="boykovVisitorStats"
-      className="boykovVisitorStats"
+      className={[
+        "boykovVisitorStats",
+
+        hidden
+          ? "boykovAdminDashboardSection--hidden"
+          : ""
+      ]
+        .filter(Boolean)
+        .join(" ")}
       data-boykov-admin-tab-section="visitors"
     >
 

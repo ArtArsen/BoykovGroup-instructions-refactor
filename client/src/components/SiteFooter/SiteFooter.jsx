@@ -30,7 +30,7 @@ export default function SiteFooter() {
   return (
     <footer
       id="boykov-site-footer"
-      className="boykovSiteFooter bg-footer-compact-root"
+      className="boykovSiteFooter"
     >
 
       <section
@@ -43,226 +43,198 @@ export default function SiteFooter() {
         >
 
           <div
-            className="boykovFooterReq__head bg-footer-original-heading"
+            className="boykovFooterReq__head"
           >
+
             <span
               className="boykovFooterReq__eyebrow"
             >
               Реквизиты юридического лица
             </span>
+
           </div>
 
 
           <div
-            className="bg-footer-compact"
+            className="boykovFooterReq__grid"
           >
 
             <div
-              className="bg-footer-compact-line"
+              className="boykovFooterReq__column"
             >
 
-              <span
-                className="bg-footer-compact-company"
+              <FooterItem
+                label="Полное наименование"
               >
-                ООО «СПЕЦКОНС»
-              </span>
+                <strong
+                  className="boykovFooterReq__value"
+                >
+                  Общество с ограниченной ответственностью «СПЕЦКОНС»
+                </strong>
+              </FooterItem>
 
 
-              <span
-                className="bg-footer-compact-item"
+              <FooterItem
+                label="Бренд"
               >
                 <span
-                  className="bg-footer-compact-label"
+                  className="boykovFooterReq__value"
                 >
-                  ИНН
+                  БОЙКОВГРУПП
                 </span>
-
-                5027310150
-              </span>
+              </FooterItem>
 
 
-              <span
-                className="bg-footer-compact-item"
+              <FooterItem
+                label="Руководитель"
               >
-                <a href="tel:+78002012043">
-                  +7 (800) 201-20-43
-                </a>
-              </span>
-
-
-              <span
-                className="bg-footer-compact-item"
-              >
-                <a href="mailto:contact@boykovgroup.ru">
-                  contact@boykovgroup.ru
-                </a>
-              </span>
+                <span
+                  className="boykovFooterReq__value"
+                >
+                  Бойков Николай Александрович, генеральный директор
+                </span>
+              </FooterItem>
 
             </div>
 
 
-            <details
-              className="bg-footer-requisites-details"
+            <div
+              className="boykovFooterReq__column"
             >
 
-              <summary>
-                Все реквизиты компании
-              </summary>
-
-
               <div
-                className="
-                  boykovFooterReq__grid
-                  bg-footer-requisites-card
-                "
+                className="boykovFooterReq__numbers"
               >
 
-                <div
-                  className="boykovFooterReq__column"
+                <FooterItem
+                  label="ИНН"
                 >
-
-                  <FooterItem label="Полное наименование">
-                    <strong
-                      className="boykovFooterReq__value"
-                    >
-                      Общество с ограниченной ответственностью «СПЕЦКОНС»
-                    </strong>
-                  </FooterItem>
-
-
-                  <FooterItem label="Бренд">
-                    <span
-                      className="boykovFooterReq__value"
-                    >
-                      БОЙКОВГРУПП
-                    </span>
-                  </FooterItem>
-
-
-                  <FooterItem label="Руководитель">
-                    <span
-                      className="boykovFooterReq__value"
-                    >
-                      Бойков Николай Александрович, генеральный директор
-                    </span>
-                  </FooterItem>
-
-                </div>
-
-
-                <div
-                  className="boykovFooterReq__column"
-                >
-
-                  <div
-                    className="boykovFooterReq__numbers"
+                  <span
+                    className="boykovFooterReq__value"
                   >
-
-                    <FooterItem label="ИНН">
-                      <span className="boykovFooterReq__value">
-                        5027310150
-                      </span>
-                    </FooterItem>
+                    5027310150
+                  </span>
+                </FooterItem>
 
 
-                    <FooterItem label="КПП">
-                      <span className="boykovFooterReq__value">
-                        502701001
-                      </span>
-                    </FooterItem>
-
-                  </div>
-
-
-                  <FooterItem label="ОГРН">
-                    <span className="boykovFooterReq__value">
-                      1225000108618
-                    </span>
-                  </FooterItem>
-
-
-                  <FooterItem label="Лицензия МЧС">
-                    <span className="boykovFooterReq__value">
-                      Л014-00101-50/00624678
-                    </span>
-                  </FooterItem>
-
-
-                  <FooterItem label="Образовательная лицензия">
-                    <span className="boykovFooterReq__value">
-                      № Л035-01255-50-06059814
-                    </span>
-                  </FooterItem>
-
-                </div>
-
-
-                <div
-                  className="boykovFooterReq__column"
+                <FooterItem
+                  label="КПП"
                 >
-
-                  <div
-                    className="boykovFooterReq__contactRow"
+                  <span
+                    className="boykovFooterReq__value"
                   >
-
-                    <FooterItem label="Телефон">
-                      <a
-                        className="
-                          boykovFooterReq__value
-                          boykovFooterReq__link
-                        "
-                        href="tel:+78002012043"
-                      >
-                        +7 (800) 201-20-43
-                      </a>
-                    </FooterItem>
-
-
-                    <FooterItem label="Email">
-                      <a
-                        className="
-                          boykovFooterReq__value
-                          boykovFooterReq__link
-                        "
-                        href="mailto:contact@boykovgroup.ru"
-                      >
-                        contact@boykovgroup.ru
-                      </a>
-                    </FooterItem>
-
-                  </div>
-
-
-                  <FooterItem label="Юридический адрес">
-                    <address
-                      className="
-                        boykovFooterReq__value
-                        boykovFooterReq__address
-                      "
-                    >
-                      140054, Московская область, г. о. Котельники,
-                      г. Котельники, мкр. Парковый, д. 2, помещ. 0181
-                    </address>
-                  </FooterItem>
-
-
-                  <FooterItem label="Московский офис">
-                    <address
-                      className="
-                        boykovFooterReq__value
-                        boykovFooterReq__address
-                      "
-                    >
-                      Москва, проспект Мира, 101с1,
-                      БЦ «Гипромез», офис №1308
-                    </address>
-                  </FooterItem>
-
-                </div>
+                    502701001
+                  </span>
+                </FooterItem>
 
               </div>
 
-            </details>
+
+              <FooterItem
+                label="ОГРН"
+              >
+                <span
+                  className="boykovFooterReq__value"
+                >
+                  1225000108618
+                </span>
+              </FooterItem>
+
+
+              <FooterItem
+                label="Лицензия МЧС"
+              >
+                <span
+                  className="boykovFooterReq__value"
+                >
+                  Л014-00101-50/00624678
+                </span>
+              </FooterItem>
+
+
+              <FooterItem
+                label="Образовательная лицензия"
+              >
+                <span
+                  className="boykovFooterReq__value"
+                >
+                  № Л035-01255-50-06059814
+                </span>
+              </FooterItem>
+
+            </div>
+
+
+            <div
+              className="boykovFooterReq__column"
+            >
+
+              <div
+                className="boykovFooterReq__contactRow"
+              >
+
+                <FooterItem
+                  label="Телефон"
+                >
+                  <a
+                    className="
+                      boykovFooterReq__value
+                      boykovFooterReq__link
+                    "
+                    href="tel:+78002012043"
+                  >
+                    +7 (800) 201-20-43
+                  </a>
+                </FooterItem>
+
+
+                <FooterItem
+                  label="Email"
+                >
+                  <a
+                    className="
+                      boykovFooterReq__value
+                      boykovFooterReq__link
+                    "
+                    href="mailto:contact@boykovgroup.ru"
+                  >
+                    contact@boykovgroup.ru
+                  </a>
+                </FooterItem>
+
+              </div>
+
+
+              <FooterItem
+                label="Юридический адрес"
+              >
+                <address
+                  className="
+                    boykovFooterReq__value
+                    boykovFooterReq__address
+                  "
+                >
+                  140054, Московская область, г. о. Котельники,
+                  г. Котельники, мкр. Парковый, д. 2, помещ. 0181
+                </address>
+              </FooterItem>
+
+
+              <FooterItem
+                label="Московский офис"
+              >
+                <address
+                  className="
+                    boykovFooterReq__value
+                    boykovFooterReq__address
+                  "
+                >
+                  Москва, проспект Мира, 101с1,
+                  БЦ «Гипромез», офис №1308
+                </address>
+              </FooterItem>
+
+            </div>
 
           </div>
 
@@ -274,11 +246,9 @@ export default function SiteFooter() {
       <div
         className="boykovSiteFooter__inner"
       >
+
         <nav
-          className="
-            boykovSiteFooter__links
-            bg-footer-legal-links
-          "
+          className="boykovSiteFooter__links"
           aria-label="Правовая информация"
         >
 
@@ -312,6 +282,7 @@ export default function SiteFooter() {
           </a>
 
         </nav>
+
       </div>
 
     </footer>

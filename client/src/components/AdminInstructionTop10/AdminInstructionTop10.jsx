@@ -56,7 +56,8 @@ function formatNumber(
 
 
 export default function AdminInstructionTop10({
-  token
+  token,
+  hidden = false
 }) {
 
   const [
@@ -263,7 +264,15 @@ export default function AdminInstructionTop10({
   return (
     <section
       id="boykov-admin-instruction-top10"
-      className="boykovTop10"
+      className={[
+        "boykovTop10",
+
+        hidden
+          ? "boykovAdminDashboardSection--hidden"
+          : ""
+      ]
+        .filter(Boolean)
+        .join(" ")}
       data-boykov-admin-tab-section="top10"
     >
 
