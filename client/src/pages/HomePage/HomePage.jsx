@@ -21,29 +21,14 @@ import Header
 import AdminPanel
   from "../../components/AdminPanel/AdminPanel.jsx";
 
-import InstructionList
-  from "../../components/InstructionList/InstructionList.jsx";
+import HomeCompactHeader
+  from "./components/HomeCompactHeader/HomeCompactHeader.jsx";
 
-import InstructionSort
-  from "../../components/InstructionSort/InstructionSort.jsx";
+import HomeIntro
+  from "./components/HomeIntro/HomeIntro.jsx";
 
-import Loader
-  from "../../components/Loader/Loader.jsx";
-
-import EmptyState
-  from "../../components/EmptyState/EmptyState.jsx";
-
-import HeroPortrait
-  from "../../components/HeroPortrait/HeroPortrait.jsx";
-
-import SearchBar
-  from "../../components/SearchBar/SearchBar.jsx";
-
-import SiteLinkButton
-  from "../../components/SiteLinkButton/SiteLinkButton.jsx";
-
-import Navigation
-  from "../../components/Navigation/Navigation.jsx";
+import InstructionResults
+  from "./components/InstructionResults/InstructionResults.jsx";
 
 import EditInstructionModal
   from "../../components/EditInstructionModal/EditInstructionModal.jsx";
@@ -247,12 +232,6 @@ export default function HomePage() {
 
   useEffect(() => {
 
-    /*
-     * SAFE_FIXED_COMPACT_HEADER_V2
-     *
-     * Обычный hero никогда не меняет свою высоту.
-     * Compact header является отдельным fixed-слоем.
-     */
     if (
       location.pathname !== "/"
     ) {
@@ -609,303 +588,152 @@ loadMoreLockRef.current ||
 
 }
 
-  return (
-<div className={styles.page}>
+return (
+    <div
+      className={
+        styles.page
+      }
+    >
 
-         <Header
-  query={queryInput}
-  onQueryChange={setQueryInput}
-/>
+      <Header
+        query={
+          queryInput
+        }
+        onQueryChange={
+          setQueryInput
+        }
+      />
 
 
-<AdminPanel
+      <AdminPanel
+        importId={
+          importId
+        }
+        onImportCreated={
+          setImportId
+        }
+        onRefresh={
+          handleImportRefresh
+        }
+      />
 
-    importId={importId}
 
-    onImportCreated={(id)=>{
+      <HomeCompactHeader
+        visible={
+          isCompactHeader
+        }
+        query={
+          queryInput
+        }
+        onQueryChange={
+          setQueryInput
+        }
+      />
 
-        setImportId(id);
 
-    }}
+      <div
+        ref={
+          stickyTriggerRef
+        }
+        className={
+          styles.stickyTrigger
+        }
+        aria-hidden="true"
+      />
 
-    onRefresh={handleImportRefresh}
 
-/>
+      <HomeIntro
+        query={
+          queryInput
+        }
+        onQueryChange={
+          setQueryInput
+        }
+        containerRef={
+          stickyIntroRef
+        }
+      />
 
-            <div
-              className={[
-                styles.safeCompactHeader,
-                isCompactHeader
-                  ? styles.safeCompactHeaderVisible
-                  : ""
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              aria-hidden={!isCompactHeader}
-            >
-              <div className={styles.safeCompactInner}>
 
-                <div className={styles.stickyIntroCompact}>
+      <InstructionResults
+        items={
+          items
+        }
+        total={
+          total
+        }
+        query={
+          debouncedQuery
+        }
+        isAdmin={
+          isAdmin
+        }
+        isSearching={
+          isSearching
+        }
+        searchError={
+          searchError
+        }
+        isLoadingMore={
+          isLoadingMore
+        }
+        loadMoreError={
+          loadMoreError
+        }
+        hasMore={
+          hasMore
+        }
+        deletingId={
+          deletingId
+        }
+        loadMoreRef={
+          loadMoreRef
+        }
+        onLoadMore={
+          loadMore
+        }
+        onDelete={
+          handleDelete
+        }
+        onEdit={
+          handleEditOpen
+        }
+        showEmptyState={
+          showEmptyState
+        }
+        isGenerating={
+          isGenerating
+        }
+        generateError={
+          generateError
+        }
+        onGenerate={
+          handleGenerate
+        }
+      />
 
-                  <div
-                    className={
-                      styles.compactControls
-                    }
-                  >
 
-                    <div
-                      className={
-                        styles.compactSearch
-                      }
-                    >
-                      <SearchBar
-                        value={queryInput}
-                        onChange={setQueryInput}
-                      />
-                    </div>
-
-                    <div
-                      className={
-                        styles.compactLogo
-                      }
-                    >
-                      <SiteLinkButton />
-                    </div>
-
-                  </div>
-
-                  <Navigation />
-
-                  <section
-                    className={
-                      styles.hero
-                    }
-                  >
-
-                    <div
-                      className={
-                        styles.heroText
-                      }
-                    >
-
-                      <h1
-                        className={
-                          styles.title
-                        }
-                      >
-                        Инструкции по охране труда
-                      </h1>
-
-                      <p
-                        className={
-                          styles.subtitle
-                        }
-                      >
-                        Найдите готовую инструкцию для нужной профессии.
-                        База пополняется автоматически каждый день.
-                      </p>
-
-                    </div>
-
-                    <div
-                      className={
-                        styles.heroPortraitWrap
-                      }
-                    >
-                      <HeroPortrait
-                        compact={true}
-                      />
-                    </div>
-
-                  </section>
-
-                </div>
-
-              </div>
-            </div>
-
-            <div
-            ref={stickyTriggerRef}
-            className={styles.stickyTrigger}
-            aria-hidden="true"
+      {
+        editingInstruction &&
+        (
+          <EditInstructionModal
+            instruction={
+              editingInstruction
+            }
+            onClose={
+              () =>
+                setEditingInstruction(
+                  null
+                )
+            }
+            onSave={
+              handleEditSave
+            }
           />
+        )
+      }
 
-          <div ref={stickyIntroRef}
-              className={styles.stickyIntro}>
-
-
-            <div
-              className={
-                styles.compactControls
-              }
-            >
-
-              <div
-                className={
-                  styles.compactSearch
-                }
-              >
-                <SearchBar
-                  value={queryInput}
-                  onChange={setQueryInput}
-                />
-              </div>
-
-
-              <div
-                className={
-                  styles.compactLogo
-                }
-              >
-                <SiteLinkButton />
-              </div>
-
-            </div>
-
-            <Navigation />
-
-          <section className={styles.hero}>
-            <div className={styles.heroText}>
-
-              <h1 className={styles.title}>
-                Инструкции по охране труда
-              </h1>
-
-              <p className={styles.subtitle}>
-                Найдите готовую инструкцию для нужной профессии.
-                База пополняется автоматически каждый день.
-              </p>
-
-            </div>
-
-            <div
-                className={
-                  styles.heroPortraitWrap
-                }
-              >
-                <HeroPortrait compact={false} />
-              </div>
-
-          </section>
-          </div>
-
-          <main>
-
-            {isSearching && (
-              <Loader label="Загрузка..." />
-            )}
-
-
-            {!isSearching && searchError && (
-              <p className={styles.error}>
-                Ошибка: {searchError}
-              </p>
-            )}
-
-
-            {!isSearching && !searchError && items.length > 0 && (
-              <>
-
-                <div className={styles.resultsHead}>
-                  <span className={styles.count}>
-                    Всего инструкций: {total}
-                  </span>
-                </div>
-
-
-<InstructionSort />
-
-
-<InstructionList
-  instructions={items}
-  total={total}
-  query={debouncedQuery}
-  isAdmin={isAdmin}
-  onDelete={handleDelete}
-  onEdit={handleEditOpen}
-  deletingId={deletingId}
-/>
-
-
-                <div
-                  ref={loadMoreRef}
-                  className={styles.loadMoreZone}
-                  aria-live="polite"
-                >
-
-                  {isLoadingMore && (
-                    <span
-                      className={
-                        styles.loadMoreText
-                      }
-                    >
-                      [ загружаем ещё ]
-                    </span>
-                  )}
-
-
-                  {!isLoadingMore &&
-                    loadMoreError &&
-                    hasMore && (
-
-                      <button
-                        type="button"
-                        className={
-                          styles.loadMoreRetry
-                        }
-                        onClick={loadMore}
-                      >
-                        [ повторить загрузку ]
-                      </button>
-
-                    )}
-
-
-                  {!isLoadingMore &&
-                    !loadMoreError &&
-                    !hasMore && (
-
-                      <span
-                        className={
-                          styles.loadMoreDone
-                        }
-                      >
-                        [ все инструкции загружены ]
-                      </span>
-
-                    )}
-
-                </div>
-
-              </>
-            )}
-
-
-            {showEmptyState && (
-              <EmptyState
-                query={debouncedQuery}
-                isAdmin={isAdmin}
-                isGenerating={isGenerating}
-                error={generateError}
-                onGenerate={handleGenerate}
-              />
-            )}
-
-          </main>
-
-          {editingInstruction && (
-
-  <EditInstructionModal
-
-    instruction={editingInstruction}
-
-    onClose={() => setEditingInstruction(null)}
-
-    onSave={handleEditSave}
-
-  />
-
-)}
-        </div>
+    </div>
   );
+
 }
