@@ -1,12 +1,8 @@
-import {
-  Link
-} from "react-router-dom";
-
 import InstructionButton
   from "../InstructionButton/InstructionButton.jsx";
 
-import cardStyles
-  from "../InstructionButton/InstructionButton.module.css";
+import InstructionGenerationCard
+  from "./InstructionGenerationCard.jsx";
 
 import InstructionListPagination
   from "./InstructionListPagination.jsx";
@@ -102,8 +98,7 @@ export default function InstructionList({
         }
 
 
-        <RevealItem
-          key="generation-card"
+        <InstructionGenerationCard
           delay={
             (
               visibleItems.length %
@@ -112,55 +107,7 @@ export default function InstructionList({
             *
             90
           }
-        >
-
-          <div
-            className={`${cardStyles.card} generationListCard boykovCardSearchShadow`}
-          >
-
-            <div
-              className={`${cardStyles.clickArea} generationListCardInner`}
-            >
-
-              <span
-                className={`${cardStyles.body} generationListBody`}
-              >
-
-                <span
-                  className="generationListEyebrow"
-                >
-                  [ своя инструкция ]
-                </span>
-
-
-                <span
-                  className={`${cardStyles.title} generationListTitle`}
-                >
-                  Не нашли нужную инструкцию?
-                </span>
-
-
-                <span
-                  className="generationListText"
-                >
-                  Создадим её за 2 минуты!
-                </span>
-
-
-                <Link
-                  to="/srochnaya-generaciya-instrukcii"
-                  className="generationListButton"
-                >
-                  Сгенерировать
-                </Link>
-
-              </span>
-
-            </div>
-
-          </div>
-
-        </RevealItem>
+        />
 
       </ul>
 
