@@ -1,4 +1,4 @@
-import PrivateInstructionView from "../PrivateInstructionView/PrivateInstructionView.jsx";
+import AdminPublicationReviewModal from "./AdminPublicationReviewModal.jsx";
 import styles from "../AdminPanel/AdminPanel.module.css";
 
 
@@ -274,87 +274,17 @@ export default function AdminPublicationInbox({
       }
 
 
-      {
-        selectedPublicationInstruction &&
-        (
-          <div
-            className={
-              styles.publicationModalOverlay
-            }
-            onMouseDown={
-              event => {
-
-                if (
-                  event.target ===
-                    event.currentTarget
-                ) {
-
-                  setSelectedPublicationInstruction(
-                    null
-                  );
-
-                }
-
-              }
-            }
-          >
-
-            <div
-              className={
-                styles.publicationModal
-              }
-            >
-
-              <div
-                className={
-                  styles.publicationModalHeader
-                }
-              >
-
-                <strong>
-                  Просмотр инструкции
-                </strong>
-
-                <button
-                  type="button"
-                  className={
-                    styles.publicationModalClose
-                  }
-                  onClick={
-                    () =>
-                      setSelectedPublicationInstruction(
-                        null
-                      )
-                  }
-                  aria-label="Закрыть"
-                >
-                  ×
-                </button>
-
-              </div>
-
-
-              <div
-                className={
-                  styles.publicationModalContent
-                }
-              >
-
-                <PrivateInstructionView
-                  compact
-                  instruction={
-                    selectedPublicationInstruction
-                      .instruction
-                  }
-                />
-
-              </div>
-
-            </div>
-
-          </div>
-        )
-      }
+      <AdminPublicationReviewModal
+        selectedPublicationInstruction={
+          selectedPublicationInstruction
+        }
+        onClose={
+          () =>
+            setSelectedPublicationInstruction(
+              null
+            )
+        }
+      />
 
     </div>
 
