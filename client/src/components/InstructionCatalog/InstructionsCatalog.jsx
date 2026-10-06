@@ -26,6 +26,9 @@ import {
 import SEO
   from "../SEO/SEO.jsx";
 
+import InstructionsCatalogPagination
+  from "./InstructionsCatalogPagination.jsx";
+
 import useInstructionsCatalog
   from "./hooks/useInstructionsCatalog.js";
 
@@ -226,106 +229,20 @@ export default function InstructionsCatalog() {
               </div>
 
 
-              {
-                totalPages > 1 &&
-                (
-                  <nav
-                    className="catalogPagination"
-                    aria-label="Пагинация инструкций"
-                  >
-
-                    <button
-                      type="button"
-                      className="catalogPaginationArrow"
-                      disabled={
-                        page === 1
-                      }
-                      onClick={
-                        () =>
-                          changePage(
-                            page - 1
-                          )
-                      }
-                      aria-label="Предыдущая страница"
-                    >
-                      ←
-                    </button>
-
-
-                    {
-                      paginationItems.map(
-                        (
-                          item,
-                          index
-                        ) => (
-
-                          typeof item ===
-                            "number"
-                            ? (
-                                <button
-                                  key={`page-${item}`}
-                                  type="button"
-                                  className={[
-                                    "catalogPaginationPage",
-
-                                    item ===
-                                      page
-                                      ? "catalogPaginationPageActive"
-                                      : ""
-                                  ]
-                                    .filter(Boolean)
-                                    .join(" ")}
-                                  onClick={
-                                    () =>
-                                      changePage(
-                                        item
-                                      )
-                                  }
-                                  aria-current={
-                                    item ===
-                                      page
-                                      ? "page"
-                                      : undefined
-                                  }
-                                >
-                                  {item}
-                                </button>
-                              )
-                            : (
-                                <span
-                                  key={`dots-${item}-${index}`}
-                                  className="catalogPaginationDots"
-                                >
-                                  …
-                                </span>
-                              )
-
-                        )
-                      )
-                    }
-
-
-                    <button
-                      type="button"
-                      className="catalogPaginationArrow"
-                      disabled={
-                        page ===
-                          totalPages
-                      }
-                      onClick={
-                        () =>
-                          changePage(
-                            page + 1
-                          )
-                      }
-                      aria-label="Следующая страница"
-                    >
-                      →
-                    </button>
-
-                  </nav>
-                )
-              }
+              <InstructionsCatalogPagination
+                page={
+                  page
+                }
+                totalPages={
+                  totalPages
+                }
+                paginationItems={
+                  paginationItems
+                }
+                onChangePage={
+                  changePage
+                }
+              />
 
             </>
           )
