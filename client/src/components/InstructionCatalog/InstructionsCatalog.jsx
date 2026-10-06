@@ -1,8 +1,4 @@
 import {
-  Link
-} from "react-router-dom";
-
-import {
   useSelector
 } from "react-redux";
 
@@ -16,15 +12,15 @@ import Navigation
 import InstructionSort
   from "../InstructionSort/InstructionSort.jsx";
 
-import GeneratedInstructionBadge
-  from "../GeneratedInstructionBadge/GeneratedInstructionBadge.jsx";
-
 import {
   selectIsAdmin
 } from "../../store/authSlice.js";
 
 import SEO
   from "../SEO/SEO.jsx";
+
+import InstructionsCatalogGrid
+  from "./InstructionsCatalogGrid.jsx";
 
 import InstructionsCatalogPagination
   from "./InstructionsCatalogPagination.jsx";
@@ -149,84 +145,14 @@ export default function InstructionsCatalog() {
               <InstructionSort />
 
 
-              <div
-                className={
-                  styles.grid
+              <InstructionsCatalogGrid
+                items={
+                  items
                 }
-              >
-
-                {
-                  items.map(
-                    item => (
-
-                      <Link
-                        key={
-                          item.id
-                        }
-                        to={`/instrukciya-po-ohrane-truda/${item.id}`}
-                        className={
-                          styles.card
-                        }
-                      >
-
-                        <h2>
-                          {item.title}
-                        </h2>
-
-
-                        {
-                          isAdmin &&
-                          item?.source ===
-                            "generated" &&
-                          (
-                            <GeneratedInstructionBadge />
-                          )
-                        }
-
-
-                        <span>
-                          Открыть инструкцию →
-                        </span>
-
-                      </Link>
-
-                    )
-                  )
+                isAdmin={
+                  isAdmin
                 }
-
-
-                <div
-                  className="generationCatalogCard generationCatalogStandalone"
-                >
-
-                  <div
-                    className="generationCatalogEyebrow"
-                  >
-                    Нужной инструкции нет?
-                  </div>
-
-                  <h2
-                    className="generationCatalogTitle"
-                  >
-                    Не нашли нужную инструкцию?
-                  </h2>
-
-                  <p
-                    className="generationCatalogText"
-                  >
-                    Сгенерируйте её!
-                  </p>
-
-                  <Link
-                    to="/srochnaya-generaciya-instrukcii"
-                    className="generationCatalogButton"
-                  >
-                    Сгенерировать
-                  </Link>
-
-                </div>
-
-              </div>
+              />
 
 
               <InstructionsCatalogPagination

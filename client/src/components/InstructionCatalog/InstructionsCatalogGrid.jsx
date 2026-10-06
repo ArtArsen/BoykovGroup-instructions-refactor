@@ -1,0 +1,100 @@
+import {
+  Link
+} from "react-router-dom";
+
+import GeneratedInstructionBadge
+  from "../GeneratedInstructionBadge/GeneratedInstructionBadge.jsx";
+
+import styles
+  from "./InstructionsCatalog.module.css";
+
+
+export default function InstructionsCatalogGrid({
+
+  items,
+  isAdmin
+
+}) {
+
+  return (
+    <div
+      className={
+        styles.grid
+      }
+    >
+
+      {
+        items.map(
+          item => (
+
+            <Link
+              key={
+                item.id
+              }
+              to={`/instrukciya-po-ohrane-truda/${item.id}`}
+              className={
+                styles.card
+              }
+            >
+
+              <h2>
+                {item.title}
+              </h2>
+
+
+              {
+                isAdmin &&
+                item?.source ===
+                  "generated" &&
+                (
+                  <GeneratedInstructionBadge />
+                )
+              }
+
+
+              <span>
+                Открыть инструкцию →
+              </span>
+
+            </Link>
+
+          )
+        )
+      }
+
+
+      <div
+        className="generationCatalogCard generationCatalogStandalone"
+      >
+
+        <div
+          className="generationCatalogEyebrow"
+        >
+          Нужной инструкции нет?
+        </div>
+
+        <h2
+          className="generationCatalogTitle"
+        >
+          Не нашли нужную инструкцию?
+        </h2>
+
+        <p
+          className="generationCatalogText"
+        >
+          Сгенерируйте её!
+        </p>
+
+        <Link
+          to="/srochnaya-generaciya-instrukcii"
+          className="generationCatalogButton"
+        >
+          Сгенерировать
+        </Link>
+
+      </div>
+
+    </div>
+  );
+
+}
