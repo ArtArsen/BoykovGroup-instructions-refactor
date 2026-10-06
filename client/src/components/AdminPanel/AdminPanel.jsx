@@ -2,8 +2,6 @@ import {
   useSelector
 } from "react-redux";
 
-import ImportManager from "../ImportManager/ImportManager.jsx";
-
 import {
   selectAuthToken,
   selectIsAdmin
@@ -16,6 +14,7 @@ import AdminDashboardTabs from "../AdminDashboardTabs/AdminDashboardTabs.jsx";
 import AdminPublicationInbox from "../AdminPublicationInbox/AdminPublicationInbox.jsx";
 import AdminGenerationStats from "../AdminGenerationStats/AdminGenerationStats.jsx";
 import AdminPanelActions from "../AdminPanelActions/AdminPanelActions.jsx";
+import AdminImportBlock from "../AdminImportBlock/AdminImportBlock.jsx";
 import useAdminPublicationInbox from "./hooks/useAdminPublicationInbox.js";
 import useAdminGenerationStats from "./hooks/useAdminGenerationStats.js";
 import useAdminDashboardTab from "./hooks/useAdminDashboardTab.js";
@@ -193,25 +192,17 @@ export default function AdminPanel({
       {
         importId &&
         (
-          <div className={styles.importBlock}>
-
-            <ImportManager
-
-              importId={
-                importId
-              }
-
-              onComplete={() => {
-                onImportCreated(null);
-              }}
-
-              onRefresh={
-                onRefresh
-              }
-
-            />
-
-          </div>
+          <AdminImportBlock
+            importId={
+              importId
+            }
+            onImportCreated={
+              onImportCreated
+            }
+            onRefresh={
+              onRefresh
+            }
+          />
         )
       }
 
