@@ -1,20 +1,5 @@
-import {
-  useEffect,
-  useState
-} from "react";
-
-import {
-  useDispatch,
-  useSelector
-} from "react-redux";
-
-import {
-  clearAuthError,
-  login,
-  register,
-  selectAuthError,
-  selectIsAuthenticating
-} from "../../store/authSlice.js";
+import useLoginModal
+  from "./hooks/useLoginModal.js";
 
 import styles from
   "./LoginModal.module.css";
@@ -23,215 +8,40 @@ import styles from
 export default function LoginModal({
   onClose
 }) {
-  const dispatch =
-    useDispatch();
-
-  const isAuthenticating =
-    useSelector(
-      selectIsAuthenticating
-    );
-
-  const error =
-    useSelector(
-      selectAuthError
-    );
-
-  const [
+  const {
     mode,
-    setMode
-  ] =
-    useState(
-      "login"
-    );
-
-  const [
     loginValue,
-    setLoginValue
-  ] =
-    useState("");
-
-  const [
+    setLoginValue,
     name,
-    setName
-  ] =
-    useState("");
-
-  const [
+    setName,
     phone,
-    setPhone
-  ] =
-    useState("");
-
-  const [
+    setPhone,
     email,
-    setEmail
-  ] =
-    useState("");
+    setEmail,
 
-
-  const [
     userAgreementAccepted,
-    setUserAgreementAccepted
-  ] =
-    useState(false);
+    setUserAgreementAccepted,
 
-  const [
     personalDataConsentAccepted,
-    setPersonalDataConsentAccepted
-  ] =
-    useState(false);
+    setPersonalDataConsentAccepted,
 
-  const [
     advertisingConsentAccepted,
-    setAdvertisingConsentAccepted
-  ] =
-    useState(false);
+    setAdvertisingConsentAccepted,
 
-  const [
     password,
-    setPassword
-  ] =
-    useState("");
-
-  const [
+    setPassword,
     passwordConfirm,
-    setPasswordConfirm
-  ] =
-    useState("");
+    setPasswordConfirm,
 
-  const [
-    localError,
-    setLocalError
-  ] =
-    useState("");
+    isAuthenticating,
+    visibleError,
 
-
-  useEffect(
-    () => {
-      function handleKeyDown(
-        event
-      ) {
-        if (
-          event.key ===
-          "Escape"
-        ) {
-          onClose();
-        }
-      }
-
-      document.addEventListener(
-        "keydown",
-        handleKeyDown
-      );
-
-      return () =>
-        document.removeEventListener(
-          "keydown",
-          handleKeyDown
-        );
-    },
-    [
+    switchMode,
+    handleSubmit
+  } =
+    useLoginModal({
       onClose
-    ]
-  );
-
-
-  useEffect(
-    () => {
-      return () => {
-        dispatch(
-          clearAuthError()
-        );
-      };
-    },
-    [
-      dispatch
-    ]
-  );
-
-
-  function switchMode(
-    nextMode
-  ) {
-    setMode(
-      nextMode
-    );
-
-    setLocalError("");
-
-    dispatch(
-      clearAuthError()
-    );
-  }
-
-
-  async function handleSubmit(
-    event
-  ) {
-    event.preventDefault();
-
-    setLocalError("");
-
-    if (
-      mode ===
-      "register"
-    ) {
-      if (
-        password !==
-        passwordConfirm
-      ) {
-        setLocalError(
-          "Пароли не совпадают"
-        );
-
-        return;
-      }
-
-      const ok =
-        await dispatch(
-          register({
-            name:
-              name.trim(),
-
-            phone:
-              phone.trim(),
-
-            email,
-
-            password,
-
-            userAgreementAccepted,
-
-            personalDataConsentAccepted,
-
-            advertisingConsentAccepted
-          })
-        );
-
-      if (ok) {
-        onClose();
-      }
-
-      return;
-    }
-
-    const ok =
-      await dispatch(
-        login(
-          loginValue,
-          password
-        )
-      );
-
-    if (ok) {
-      onClose();
-    }
-  }
-
-
-  const visibleError =
-    localError ||
-    error;
+    });
 
 
   return (
