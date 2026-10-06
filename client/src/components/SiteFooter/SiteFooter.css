@@ -16,40 +16,6 @@
   gap:28px 42px;
   align-items:center;
 }
-.boykovSiteFooter__brand{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  min-height:40px;
-  padding:7px 12px;
-  border:1px solid #cfd6e1;
-  border-radius:8px;
-  background:#fff;
-  color:#25334b;
-  text-decoration:none;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.035em;
-  transition:border-color .15s ease,background .15s ease,transform .15s ease;
-}
-.boykovSiteFooter__brand:hover{
-  transform:translateY(-1px);
-  border-color:#9eabbc;
-  background:#f9fbfd;
-}
-.boykovSiteFooter__mark{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:24px;
-  height:24px;
-  border:1px solid #7ea7df;
-  border-radius:5px;
-  color:#397bd9;
-  font-size:12px;
-  line-height:1;
-  font-weight:800;
-}
 .boykovSiteFooter__links{
   display:flex;
   align-items:center;
@@ -83,7 +49,6 @@
     grid-template-columns:1fr;
     gap:18px;
   }
-  .boykovSiteFooter__brand{justify-self:start}
   .boykovSiteFooter__links{
     justify-content:flex-start;
     align-items:flex-start;
