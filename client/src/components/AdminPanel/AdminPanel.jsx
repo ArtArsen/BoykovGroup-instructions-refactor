@@ -3,9 +3,6 @@ import {
 } from "react-redux";
 
 import ImportManager from "../ImportManager/ImportManager.jsx";
-import AddInstructionButton from "../AddInstructionButton/AddInstructionButton.jsx";
-import GenerateInstructionButton from "../GenerateInstructionButton/GenerateInstructionButton.jsx";
-import AutoGenerationToggle from "../AutoGenerationToggle/AutoGenerationToggle.jsx";
 
 import {
   selectAuthToken,
@@ -18,6 +15,7 @@ import AdminPromoCodes from "../AdminPromoCodes/AdminPromoCodes.jsx";
 import AdminDashboardTabs from "../AdminDashboardTabs/AdminDashboardTabs.jsx";
 import AdminPublicationInbox from "../AdminPublicationInbox/AdminPublicationInbox.jsx";
 import AdminGenerationStats from "../AdminGenerationStats/AdminGenerationStats.jsx";
+import AdminPanelActions from "../AdminPanelActions/AdminPanelActions.jsx";
 import useAdminPublicationInbox from "./hooks/useAdminPublicationInbox.js";
 import useAdminGenerationStats from "./hooks/useAdminGenerationStats.js";
 import useAdminDashboardTab from "./hooks/useAdminDashboardTab.js";
@@ -83,53 +81,17 @@ export default function AdminPanel({
 
     <section className={styles.panel}>
 
-      <div className={styles.actions}>
-
-        <AddInstructionButton
-          onImportCreated={
-            onImportCreated
-          }
-        />
-
-        <GenerateInstructionButton />
-                  <AutoGenerationToggle />
-
-          {/*
-            ADMIN_PUBLICATION_BADGE_V1
-          */}
-          {
-            isAdmin &&
-            (
-              <div
-                className={
-                  styles.publicationBadge
-                }
-                title="Инструкции, ожидающие решения о публикации"
-              >
-
-                <span
-                  className={
-                    styles.publicationBadgeLabel
-                  }
-                >
-                  На публикацию
-                </span>
-
-                <strong
-                  className={
-                    styles.publicationBadgeCount
-                  }
-                >
-                  {
-                    publicationInbox.length
-                  }
-                </strong>
-
-              </div>
-            )
-          }
-
-      </div>
+      <AdminPanelActions
+        isAdmin={
+          isAdmin
+        }
+        publicationCount={
+          publicationInbox.length
+        }
+        onImportCreated={
+          onImportCreated
+        }
+      />
 
         {
           isAdmin &&
