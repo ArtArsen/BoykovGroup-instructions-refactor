@@ -1,8 +1,4 @@
 import {
-  useState
-} from "react";
-
-import {
   useSelector
 } from "react-redux";
 
@@ -24,47 +20,8 @@ import AdminPublicationInbox from "../AdminPublicationInbox/AdminPublicationInbo
 import AdminGenerationStats from "../AdminGenerationStats/AdminGenerationStats.jsx";
 import useAdminPublicationInbox from "./hooks/useAdminPublicationInbox.js";
 import useAdminGenerationStats from "./hooks/useAdminGenerationStats.js";
+import useAdminDashboardTab from "./hooks/useAdminDashboardTab.js";
 import styles from "./AdminPanel.module.css";
-
-
-const ADMIN_DASHBOARD_TAB_KEY =
-  "boykov_admin_dashboard_tab_v1";
-
-const ADMIN_DASHBOARD_TABS = [
-  "publications",
-  "visitors",
-  "top10",
-  "promocodes"
-];
-
-
-function getInitialAdminDashboardTab() {
-
-  try {
-
-    const saved =
-      window.localStorage
-        .getItem(
-          ADMIN_DASHBOARD_TAB_KEY
-        );
-
-
-    return ADMIN_DASHBOARD_TABS
-      .includes(
-        saved
-      )
-      ? saved
-      : "publications";
-
-  }
-  catch {
-
-    return "publications";
-
-  }
-
-}
-
 
 
 export default function AdminPanel({
@@ -87,51 +44,11 @@ export default function AdminPanel({
 
 
 
-  const [
+  const {
     adminDashboardTab,
-    setAdminDashboardTab
-  ] =
-    useState(
-      getInitialAdminDashboardTab
-    );
-
-
-  function changeAdminDashboardTab(
-    nextTab
-  ) {
-
-    const valid =
-      ADMIN_DASHBOARD_TABS
-        .includes(
-          nextTab
-        );
-
-
-    const value =
-      valid
-        ? nextTab
-        : "publications";
-
-
-    setAdminDashboardTab(
-      value
-    );
-
-
-    try {
-
-      window.localStorage
-        .setItem(
-          ADMIN_DASHBOARD_TAB_KEY,
-          value
-        );
-
-    }
-    catch {
-      /* UI state persistence is optional */
-    }
-
-  }
+    changeAdminDashboardTab
+  } =
+    useAdminDashboardTab();
 
 
   const {
