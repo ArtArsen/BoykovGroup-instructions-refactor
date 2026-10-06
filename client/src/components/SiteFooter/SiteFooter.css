@@ -521,138 +521,6 @@ strong.boykovFooterReq__value {
 
 /*
  * ============================================================
- * FOOTER REQUISITES CONTRAST V2
- * Light BoykovDocs footer
- * ============================================================
- */
-
-.boykovFooterReq {
-  color: #27364a;
-
-  border-top:
-    1px solid
-    rgba(31, 48, 72, .11);
-
-  border-bottom:
-    1px solid
-    rgba(31, 48, 72, .09);
-}
-
-
-/*
- * Заголовок блока
- */
-
-.boykovFooterReq__eyebrow {
-  color: #718096;
-
-  font-weight: 700;
-}
-
-
-/*
- * Вертикальные разделители
- */
-
-.boykovFooterReq__column
-+
-.boykovFooterReq__column {
-  border-left:
-    1px solid
-    rgba(31, 48, 72, .10);
-}
-
-
-/*
- * Маленькие подписи:
- * ИНН, КПП, ТЕЛЕФОН и т.д.
- */
-
-.boykovFooterReq__label {
-  color: #8793a5;
-
-  font-weight: 700;
-}
-
-
-/*
- * Основной текст
- */
-
-.boykovFooterReq__value {
-  color: #33445a;
-
-  font-weight: 500;
-}
-
-
-/*
- * Название организации
- */
-
-strong.boykovFooterReq__value {
-  color: #1d2c40;
-
-  font-weight: 700;
-}
-
-
-/*
- * Телефон / email
- */
-
-.boykovFooterReq__link {
-  color: #315f96;
-
-  font-weight: 600;
-}
-
-
-.boykovFooterReq__link::after {
-  background:
-    rgba(49, 95, 150, .42);
-}
-
-
-.boykovFooterReq__link:hover {
-  color: #174b87;
-}
-
-
-/*
- * Планшетные разделители
- */
-
-@media (max-width: 900px) {
-
-  .boykovFooterReq__column:nth-child(3) {
-    border-top:
-      1px solid
-      rgba(31, 48, 72, .10);
-  }
-
-}
-
-
-/*
- * Мобильные разделители
- */
-
-@media (max-width: 600px) {
-
-  .boykovFooterReq__column
-  +
-  .boykovFooterReq__column {
-    border-top:
-      1px solid
-      rgba(31, 48, 72, .10);
-  }
-
-}
-
-
-/*
- * ============================================================
  * FOOTER REQUISITES CARDS V3
  * ============================================================
  *
@@ -1735,6 +1603,9 @@ strong.boykovFooterReq__value {
 
   background:
     transparent !important;
+
+  color:
+    #27364a;
 }
 
 
