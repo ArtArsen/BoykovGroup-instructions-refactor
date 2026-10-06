@@ -1,3 +1,6 @@
+import EditInstructionSection
+  from "./EditInstructionSection.jsx";
+
 import useEditInstructionModal
   from "./hooks/useEditInstructionModal.js";
 
@@ -120,135 +123,26 @@ export default function EditInstructionModal({
                 sectionIndex
               ) => (
 
-                <div
-                  className={[
-                    styles.editorSection,
-                    styles.editorUnifiedSection
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
+                <EditInstructionSection
                   key={
                     `${section.number}-${sectionIndex}`
                   }
-                >
-
-                  <div
-                    className={
-                      styles.editorSectionHeader
-                    }
-                  >
-
-                    <h3>
-                      Раздел{" "}
-                      {section.number}
-                    </h3>
-
-
-                    <button
-                      type="button"
-                      className={
-                        styles.editorDangerButton
-                      }
-                      onClick={
-                        () => {
-
-                          if (
-                            !String(
-                              section.__editorText ??
-                              ""
-                            )
-                              .trim() ||
-                            window.confirm(
-                              `Удалить раздел ${section.number}?`
-                            )
-                          ) {
-
-                            removeSection(
-                              sectionIndex
-                            );
-
-                          }
-
-                        }
-                      }
-                    >
-                      Удалить раздел
-                    </button>
-
-                  </div>
-
-
-                  <label
-                    className={
-                      styles.editorField
-                    }
-                  >
-                    Заголовок раздела
-
-                    <input
-                      value={
-                        section.heading ??
-                        ""
-                      }
-                      placeholder={
-                        `Название раздела ${section.number}`
-                      }
-                      onChange={
-                        event =>
-                          updateSectionHeading(
-                            sectionIndex,
-                            event.target.value
-                          )
-                      }
-                    />
-                  </label>
-
-
-                  <label
-                    className={
-                      styles.editorUnifiedSectionField
-                    }
-                  >
-
-                    <span
-                      className={
-                        styles.editorUnifiedSectionLabel
-                      }
-                    >
-                      Содержание раздела
-                    </span>
-
-
-                    <textarea
-                      className={
-                        styles.editorUnifiedSectionTextarea
-                      }
-                      value={
-                        section.__editorText ??
-                        ""
-                      }
-                      onChange={
-                        event =>
-                          updateSectionText(
-                            sectionIndex,
-                            event.target.value
-                          )
-                      }
-                      placeholder="Введите содержание всего раздела"
-                    />
-
-
-                    <span
-                      className={
-                        styles.editorUnifiedSectionHint
-                      }
-                    >
-                      Весь раздел редактируется здесь целиком. Новый абзац отделяйте пустой строкой.
-                    </span>
-
-                  </label>
-
-                </div>
+                  section={
+                    section
+                  }
+                  sectionIndex={
+                    sectionIndex
+                  }
+                  onRemove={
+                    removeSection
+                  }
+                  onHeadingChange={
+                    updateSectionHeading
+                  }
+                  onTextChange={
+                    updateSectionText
+                  }
+                />
 
               )
             )
