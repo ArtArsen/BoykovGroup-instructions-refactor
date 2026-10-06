@@ -19,49 +19,15 @@ import {
   loadCloudPayments
 } from "../../lib/cloudPayments.js";
 
+import useUrgentGenerationPromo
+  from "./hooks/useUrgentGenerationPromo.js";
+
+import {
+  formatAmount
+} from "./urgentGenerationUtils.js";
+
 import styles
   from "./UrgentGenerationPage.module.css";
-
-
-function normalizePromoCode(value) {
-
-  return String(
-    value || ""
-  )
-    .trim()
-    .toUpperCase();
-
-}
-
-
-function formatAmount(value) {
-
-  const number =
-    Number(value);
-
-
-  if (
-    !Number.isFinite(
-      number
-    )
-  ) {
-
-    return "";
-
-  }
-
-
-  return new Intl.NumberFormat(
-    "ru-RU",
-    {
-      maximumFractionDigits:
-        2
-    }
-  ).format(
-    number
-  );
-
-}
 
 
 function getUserAuthToken() {
@@ -150,36 +116,21 @@ export default function UrgentGenerationPage() {
   ] = useState("");
 
 
-  /*
-   * PROMO CODE CHECKOUT
-   *
-   * Раньше этот слой внедрялся отдельным
-   * production JS поверх React.
-   */
-  const [
+  const {
     promoInput,
-    setPromoInput
-  ] = useState("");
-
-  const [
     appliedPromo,
-    setAppliedPromo
-  ] = useState(null);
-
-  const [
     promoMessage,
-    setPromoMessage
-  ] = useState("");
-
-  const [
     promoMessageType,
-    setPromoMessageType
-  ] = useState("");
-
-  const [
     isPromoChecking,
-    setIsPromoChecking
-  ] = useState(false);
+
+    handlePromoApply,
+    handlePromoInputChange,
+
+    displayOriginalAmount,
+    displayAmount,
+    hasPromoDiscount
+  } =
+    useUrgentGenerationPromo();
 
 
   /*
@@ -237,166 +188,6 @@ export default function UrgentGenerationPage() {
   }, []);
 
 
-
-
-  async function handlePromoApply() {
-
-    const code =
-      normalizePromoCode(
-        promoInput
-      );
-
-
-    if (!code) {
-
-      setAppliedPromo(
-        null
-      );
-
-      setPromoMessageType(
-        "error"
-      );
-
-      setPromoMessage(
-        "Введите промокод."
-      );
-
-      return;
-    }
-
-
-    setIsPromoChecking(
-      true
-    );
-
-    setPromoMessage(
-      ""
-    );
-
-    setPromoMessageType(
-      ""
-    );
-
-
-    try {
-
-      const response =
-        await fetch(
-          "/api/promo-codes/validate",
-          {
-            method:
-              "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body:
-              JSON.stringify({
-                code
-              })
-          }
-        );
-
-
-      const data =
-        await response
-          .json()
-          .catch(
-            () => ({})
-          );
-
-
-      if (
-        !response.ok ||
-        data?.ok !== true
-      ) {
-
-        setAppliedPromo(
-          null
-        );
-
-        setPromoMessageType(
-          "error"
-        );
-
-        setPromoMessage(
-          data?.error ||
-          "Промокод не подходит."
-        );
-
-        return;
-      }
-
-
-      const promo = {
-        code:
-          normalizePromoCode(
-            data?.promo?.code ||
-            code
-          ),
-
-        originalAmount:
-          Number(
-            data.originalAmount
-          ),
-
-        amount:
-          Number(
-            data.amount
-          ),
-
-        discountAmount:
-          Number(
-            data.discountAmount
-          )
-      };
-
-
-      setAppliedPromo(
-        promo
-      );
-
-      setPromoInput(
-        promo.code
-      );
-
-      setPromoMessageType(
-        "success"
-      );
-
-      setPromoMessage(
-        `Промокод ${promo.code} применён. Скидка ${formatAmount(
-          promo.discountAmount
-        )} ₽.`
-      );
-
-    }
-    catch {
-
-      setAppliedPromo(
-        null
-      );
-
-      setPromoMessageType(
-        "error"
-      );
-
-      setPromoMessage(
-        "Не удалось проверить промокод. Попробуйте ещё раз."
-      );
-
-    }
-    finally {
-
-      setIsPromoChecking(
-        false
-      );
-
-    }
-
-  }
 
 
   async function handleSubmit(event) {
@@ -784,31 +575,6 @@ export default function UrgentGenerationPage() {
   }
 
 
-  const baseAmount =
-    500;
-
-
-  const displayOriginalAmount =
-    Number.isFinite(
-      appliedPromo?.originalAmount
-    )
-      ? appliedPromo.originalAmount
-      : baseAmount;
-
-
-  const displayAmount =
-    Number.isFinite(
-      appliedPromo?.amount
-    )
-      ? appliedPromo.amount
-      : baseAmount;
-
-
-  const hasPromoDiscount =
-    displayAmount <
-    displayOriginalAmount;
-
-
   return (
     <div
       className={
@@ -1144,41 +910,10 @@ export default function UrgentGenerationPage() {
                   maxLength={40}
                   spellCheck={false}
                   onChange={
-                    (event) => {
-
-                      const value =
+                    (event) =>
+                      handlePromoInputChange(
                         event.target.value
-                          .toUpperCase();
-
-
-                      setPromoInput(
-                        value
-                      );
-
-
-                      if (
-                        appliedPromo &&
-                        normalizePromoCode(
-                          value
-                        ) !==
-                          appliedPromo.code
-                      ) {
-
-                        setAppliedPromo(
-                          null
-                        );
-
-                        setPromoMessage(
-                          ""
-                        );
-
-                        setPromoMessageType(
-                          ""
-                        );
-
-                      }
-
-                    }
+                      )
                   }
                   onKeyDown={
                     (event) => {
