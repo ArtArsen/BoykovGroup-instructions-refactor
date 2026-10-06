@@ -15,6 +15,9 @@ import InstructionArticleMeta
 import InstructionSections
     from "./InstructionSections.jsx";
 
+import InstructionTableOfContents
+    from "./InstructionTableOfContents.jsx";
+
 import useInstructionPage
     from "./hooks/useInstructionPage.js";
 
@@ -224,30 +227,11 @@ export default function InstructionPage() {
 
 
 
-                    <div className={styles.toc}>
-
-
-                        <h2>
-                            Содержание
-                        </h2>
-
-
-
-                        {instruction.sections.map(section => (
-
-                            <a
-                                key={section.number}
-                                href={`#section-${section.number}`}
-                            >
-
-                                Раздел {section.number}. {section.heading}
-
-                            </a>
-
-                        ))}
-
-
-                    </div>
+                    <InstructionTableOfContents
+                        sections={
+                            instruction.sections
+                        }
+                    />
 
 
 
