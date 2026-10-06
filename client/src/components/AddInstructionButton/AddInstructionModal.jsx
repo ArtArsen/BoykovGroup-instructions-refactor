@@ -29,7 +29,6 @@ import {
 } from "../../api/instructionsApi.js";
 
 import {
-    ACCEPTED_EXTENSIONS,
     MAX_FILE_SIZE,
     MAX_FILES,
     POLL_INTERVAL,
@@ -40,6 +39,7 @@ import {
 } from "./addInstructionBulkImportUtils.js";
 
 import AddInstructionBulkPanel from "./AddInstructionBulkPanel.jsx";
+import AddInstructionForm from "./AddInstructionForm.jsx";
 
 import styles from "./AddInstructionButton.module.css";
 
@@ -102,9 +102,6 @@ export default function AddInstructionModal({
 
     const [failedFiles, setFailedFiles] =
         useState([]);
-
-    const fileInputRef =
-        useRef(null);
 
     const pollingRunRef =
         useRef(0);
@@ -867,229 +864,47 @@ export default function AddInstructionModal({
                     bulkPhase === "idle"
                     ? (
 
-                        <>
-
-                            <div
-                                className={
-                                    styles.modeSwitch
-                                }
-                            >
-
-                                <button
-                                    type="button"
-
-                                    className={
-                                        mode === "file"
-                                            ? styles.modeBtnActive
-                                            : styles.modeBtn
-                                    }
-
-                                    onClick={
-                                        () =>
-                                            setMode("file")
-                                    }
-                                >
-                                    Файлы
-                                </button>
-
-
-                                <button
-                                    type="button"
-
-                                    className={
-                                        mode === "text"
-                                            ? styles.modeBtnActive
-                                            : styles.modeBtn
-                                    }
-
-                                    onClick={
-                                        () =>
-                                            setMode("text")
-                                    }
-                                >
-                                    Текст
-                                </button>
-
-                            </div>
-
-
-                            <form
-                                onSubmit={
-                                    handleSubmit
-                                }
-
-                                className={
-                                    styles.form
-                                }
-                            >
-
-                                {
-                                    mode === "file"
-                                    ? (
-
-                                        <label
-                                            className={
-                                                styles.field
-                                            }
-                                        >
-
-                                            <span
-                                                className={
-                                                    styles.label
-                                                }
-                                            >
-                                                Выберите документы
-                                            </span>
-
-
-                                            <input
-                                                ref={
-                                                    fileInputRef
-                                                }
-
-                                                className={
-                                                    styles.fileInput
-                                                }
-
-                                                type="file"
-
-                                                multiple
-
-                                                accept={
-                                                    ACCEPTED_EXTENSIONS
-                                                }
-
-                                                onChange={
-                                                    (e) => {
-
-                                                        setBulkError(
-                                                            null
-                                                        );
-
-                                                        setFiles(
-                                                            Array.from(
-                                                                e.target.files ||
-                                                                []
-                                                            )
-                                                        );
-
-                                                    }
-                                                }
-                                            />
-
-
-                                            {
-                                                files.length > 0 &&
-                                                (
-
-                                                    <div
-                                                        className={
-                                                            styles.fileHint
-                                                        }
-                                                    >
-                                                        Выбрано файлов:{" "}
-                                                        {files.length}
-                                                    </div>
-
-                                                )
-                                            }
-
-                                        </label>
-
-                                    )
-                                    : (
-
-                                        <label
-                                            className={
-                                                styles.field
-                                            }
-                                        >
-
-                                            <span
-                                                className={
-                                                    styles.label
-                                                }
-                                            >
-                                                Текст инструкции
-                                            </span>
-
-
-                                            <textarea
-                                                className={
-                                                    styles.textarea
-                                                }
-
-                                                value={
-                                                    manualText
-                                                }
-
-                                                onChange={
-                                                    (e) =>
-                                                        setManualText(
-                                                            e.target.value
-                                                        )
-                                                }
-
-                                                rows={8}
-                                            />
-
-                                        </label>
-
-                                    )
-                                }
-
-
-                                {
-                                    (
-                                        bulkError ||
-                                        uploadError
-                                    ) &&
-                                    (
-
-                                        <p
-                                            className={
-                                                styles.error
-                                            }
-                                        >
-                                            {
-                                                bulkError ||
-                                                uploadError
-                                            }
-                                        </p>
-
-                                    )
-                                }
-
-
-                                <button
-                                    type="submit"
-
-                                    className={
-                                        styles.submit
-                                    }
-
-                                    disabled={
-                                        isUploading ||
-                                        bulkBusy ||
-                                        !isReady
-                                    }
-                                >
-
-                                    {
-                                        isUploading
-                                            ? "Загрузка..."
-                                            : (
-                                                mode === "file"
-                                                    ? `Импортировать ${files.length || ""}`
-                                                    : "Добавить"
-                                            )
-                                    }
-
-                                </button>
-
-                            </form>
-
-                        </>
+                        <AddInstructionForm
+                            mode={
+                                mode
+                            }
+                            setMode={
+                                setMode
+                            }
+                            files={
+                                files
+                            }
+                            setFiles={
+                                setFiles
+                            }
+                            manualText={
+                                manualText
+                            }
+                            setManualText={
+                                setManualText
+                            }
+                            bulkError={
+                                bulkError
+                            }
+                            setBulkError={
+                                setBulkError
+                            }
+                            uploadError={
+                                uploadError
+                            }
+                            isUploading={
+                                isUploading
+                            }
+                            bulkBusy={
+                                bulkBusy
+                            }
+                            isReady={
+                                isReady
+                            }
+                            handleSubmit={
+                                handleSubmit
+                            }
+                        />
 
                     )
                     : (
