@@ -1,3 +1,4 @@
+import AdminPublicationCard from "./AdminPublicationCard.jsx";
 import styles from "../AdminPanel/AdminPanel.module.css";
 
 
@@ -64,134 +65,24 @@ export default function AdminPublicationList({
         publicationInbox.map(
           item => (
 
-            <div
-              className={
-                styles.publicationCard
-              }
+            <AdminPublicationCard
               key={
                 item.id
               }
-            >
-
-              <div
-                className={
-                  styles.publicationCardMain
-                }
-              >
-
-                <div
-                  className={
-                    styles.publicationMeta
-                  }
-                >
-                  {
-                    item.generatedAt
-                      ? new Date(
-                          item.generatedAt
-                        )
-                        .toLocaleString(
-                          "ru-RU"
-                        )
-                      : "Дата не указана"
-                  }
-                </div>
-
-                <h3
-                  className={
-                    styles.publicationProfession
-                  }
-                >
-                  {
-                    item.profession
-                  }
-                </h3>
-
-                <div
-                  className={
-                    styles.publicationOrderId
-                  }
-                >
-                  {
-                    item.id
-                  }
-                </div>
-
-              </div>
-
-
-              <div
-                className={
-                  styles.publicationActions
-                }
-              >
-
-                <button
-                  type="button"
-                  className={
-                    styles.publicationSecondaryButton
-                  }
-                  onClick={
-                    () => {
-
-                      onSelect({
-                        orderId:
-                          item.id,
-
-                        instruction:
-                          item.instruction
-                      });
-
-                    }
-                  }
-                >
-                  Просмотреть
-                </button>
-
-
-                <button
-                  type="button"
-                  className={
-                    styles.publicationApproveButton
-                  }
-                  disabled={
-                    publicationReviewBusy ===
-                      item.id
-                  }
-                  onClick={
-                    () =>
-                      reviewPublication(
-                        item.id,
-                        "approve"
-                      )
-                  }
-                >
-                  Опубликовать
-                </button>
-
-
-                <button
-                  type="button"
-                  className={
-                    styles.publicationRejectButton
-                  }
-                  disabled={
-                    publicationReviewBusy ===
-                      item.id
-                  }
-                  onClick={
-                    () =>
-                      reviewPublication(
-                        item.id,
-                        "reject"
-                      )
-                  }
-                >
-                  Отклонить
-                </button>
-
-              </div>
-
-            </div>
+              item={
+                item
+              }
+              busy={
+                publicationReviewBusy ===
+                  item.id
+              }
+              onSelect={
+                onSelect
+              }
+              reviewPublication={
+                reviewPublication
+              }
+            />
 
           )
         )
