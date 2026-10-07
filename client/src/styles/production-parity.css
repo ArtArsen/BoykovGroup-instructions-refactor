@@ -7271,24 +7271,6 @@ main input[placeholder*="поиск инструкций"]:focus {
 
 /*
  * ------------------------------------------------------------
- * SOURCE: remove-sorting-line-20260828-122448.css
- * ------------------------------------------------------------
- */
-
-/*
- * REMOVE SORTING SEPARATOR V1
- *
- * Убираем лишнюю горизонтальную линию
- * между сортировкой и карточками.
- */
-
-.boykovInstructionSort {
-  border-bottom: 0 !important;
-}
-
-
-/*
- * ------------------------------------------------------------
  * SOURCE: generation-cta-no-top-accent-20260828-122721.css
  * ------------------------------------------------------------
  */
@@ -7931,95 +7913,12 @@ main input[placeholder*="поиск инструкций"]:focus {
  */
 
 /*
- * ============================================================
- * CATALOG SEPARATORS FINAL FIX
- * ============================================================
- *
- * Убираем линии:
- *
- * Всего инструкций
- * ----------------  <- убрать
- * Сортировка
- */
-
-
-/*
- * Блок количества инструкций.
+ * Убираем разделитель под количеством инструкций.
  */
 
 ._resultsHead_znied_35 {
   border-bottom:
     0 !important;
-}
-
-
-/*
- * Именно эта граница оставалась
- * после предыдущего исправления.
- */
-
-.boykovInstructionSort {
-  border-top:
-    0 !important;
-
-  border-bottom:
-    0 !important;
-}
-
-
-/*
- * На случай вложенного элемента,
- * которому старые стили передали border.
- */
-
-#boykov-instruction-sort {
-  border-top:
-    0 !important;
-
-  border-bottom:
-    0 !important;
-}
-
-
-/*
- * ------------------------------------------------------------
- * SOURCE: hide-sorting-label-20260828-123618.css
- * ------------------------------------------------------------
- */
-
-/*
- * HIDE SORTING LABEL
- *
- * Оставляем только:
- *
- * Сначала новые   Популярные
- */
-
-.boykovInstructionSort__label {
-  display: none !important;
-}
-
-
-/*
- * После удаления label
- * прижимаем controls вправо.
- */
-
-.boykovInstructionSort {
-  justify-content: flex-end !important;
-}
-
-
-/*
- * Mobile — тоже без лишнего пустого места.
- */
-
-@media (max-width: 700px) {
-
-  .boykovInstructionSort {
-    justify-content: flex-end !important;
-  }
-
 }
 
 
