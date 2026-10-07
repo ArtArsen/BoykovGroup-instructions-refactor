@@ -2298,49 +2298,6 @@ li:has(.generationListCard) {
 /*
  * ============================================================
  * PRODUCTION SOURCE:
- * instruction-rollback-20260827-165415.css
- * ============================================================
- */
-
-
-.boykovRollbackButton {
-  display: block;
-  box-sizing: border-box;
-
-  width: 100%;
-
-  margin: 12px 0;
-
-  padding: 13px 18px;
-
-  border: 1px solid #c8ced8;
-  border-radius: 8px;
-
-  background: #fff;
-  color: #344054;
-
-  cursor: pointer;
-
-  font: inherit;
-  font-weight: 700;
-}
-
-
-.boykovRollbackButton:hover:not(:disabled) {
-  background: #f4f6f8;
-  border-color: #98a2b3;
-}
-
-
-.boykovRollbackButton:disabled {
-  cursor: default;
-  opacity: .55;
-}
-
-
-/*
- * ============================================================
- * PRODUCTION SOURCE:
  * instruction-view-counter-20260827-165934.css
  * ============================================================
  */
