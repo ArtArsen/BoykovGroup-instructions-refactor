@@ -1732,23 +1732,6 @@ table {
 
 
   /*
-   * Редактор инструкции.
-   */
-  .editorUnifiedSectionTextarea {
-    width: 100% !important;
-
-    min-height:
-      220px !important;
-
-    font-size:
-      16px !important;
-
-    line-height:
-      1.6 !important;
-  }
-
-
-  /*
    * TOP-10 администратора.
    */
   .boykovTop10 {
