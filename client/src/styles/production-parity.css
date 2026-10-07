@@ -7820,45 +7820,6 @@ input:focus {
 /*
  * ============================================================
  * PRODUCTION SOURCE:
- * generation-scope-copy-20260831-091111.css
- * ============================================================
- */
-
-/* GENERATION PROFESSION / WORK SCOPE HINT */
-
-.bg-generation-scope-hint {
-  margin-top: 10px;
-
-  font-size: 12px;
-  line-height: 1.55;
-
-  color: #70809a;
-}
-
-.bg-generation-scope-hint strong {
-  color: #1a2233;
-  font-weight: 600;
-}
-
-.bg-generation-scope-examples {
-  display: block;
-
-  margin-top: 4px;
-
-  color: #8793a6;
-}
-
-@media (max-width: 760px) {
-  .bg-generation-scope-hint {
-    margin-top: 8px;
-    font-size: 11px;
-  }
-}
-
-
-/*
- * ============================================================
- * PRODUCTION SOURCE:
  * promo-code-checkout-20260929.css
  * ============================================================
  */
