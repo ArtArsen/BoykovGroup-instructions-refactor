@@ -5824,9 +5824,7 @@ main textarea::placeholder {
  * ============================================================
  */
 
-main button:not(
-  .boykovInstructionSort__button
-) {
+main button {
 
   transition:
     color var(--bd-transition),
@@ -5873,128 +5871,6 @@ main button:hover {
 
   box-shadow:
     var(--bd-shadow-blue);
-}
-
-
-/*
- * ============================================================
- * 09. SORTING
- * ============================================================
- *
- * Убираем ощущение отдельного addon-widget.
- */
-
-.boykovInstructionSort {
-  margin:
-    0
-    0
-    18px;
-
-  padding:
-    12px 0;
-
-  border-top:
-    1px solid
-    var(--bd-border-soft);
-
-  border-bottom:
-    1px solid
-    var(--bd-border-soft);
-
-  background:
-    transparent;
-}
-
-
-.boykovInstructionSort__label {
-  color:
-    var(--bd-text-muted);
-
-  font-size:
-    11px;
-}
-
-
-.boykovInstructionSort__label::before {
-  background:
-    var(--bd-blue);
-}
-
-
-.boykovInstructionSort__buttons {
-  padding: 0;
-
-  gap: 4px;
-
-  border: 0;
-
-  background:
-    transparent;
-}
-
-
-.boykovInstructionSort__button {
-  min-height:
-    34px;
-
-  padding:
-    8px
-    11px;
-
-  border:
-    1px solid
-    transparent;
-
-  border-radius:
-    var(--bd-radius-sm);
-
-  color:
-    var(--bd-text-secondary);
-
-  background:
-    transparent;
-
-  box-shadow:
-    none;
-
-  font-size:
-    11px;
-}
-
-
-.boykovInstructionSort__button:hover {
-  border-color:
-    var(--bd-border-blue);
-
-  color:
-    var(--bd-blue-hover);
-
-  background:
-    var(--bd-blue-soft);
-
-  transform:
-    none;
-}
-
-
-.boykovInstructionSort__button--active {
-  border-color:
-    var(--bd-border-blue);
-
-  color:
-    var(--bd-blue-dark);
-
-  background:
-    var(--bd-surface);
-
-  box-shadow:
-    3px 3px 0
-    rgba(66, 120, 211, .09);
-}
-
-
-.boykovInstructionSort__button--active::after {
-  display: none;
 }
 
 
@@ -6295,10 +6171,6 @@ main [aria-busy="true"] {
   }
 
 
-  .boykovInstructionSort {
-    margin-bottom:
-      14px;
-  }
 }
 
 
