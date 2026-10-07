@@ -12,14 +12,14 @@
   margin:0 auto;
   padding:24px 0 26px;
   display:grid;
-  grid-template-columns:auto 1fr;
+  grid-template-columns:1fr;
   gap:28px 42px;
   align-items:center;
 }
 .boykovSiteFooter__links{
   display:flex;
   align-items:center;
-  justify-content:flex-end;
+  justify-content:center;
   flex-wrap:wrap;
   gap:9px 0;
 }
@@ -58,24 +58,6 @@
   .boykovSiteFooter__link:not(:last-child)::after{display:none}
 }
 /* ===== /BOYKOVDOCS SITE FOOTER ===== */
-
-/* ===== FOOTER WITHOUT BRAND ===== */
-
-.boykovSiteFooter__inner {
-  grid-template-columns: 1fr !important;
-}
-
-.boykovSiteFooter__links {
-  justify-content: center !important;
-}
-
-@media (max-width: 760px) {
-  .boykovSiteFooter__links {
-    justify-content: flex-start !important;
-  }
-}
-
-/* ===== /FOOTER WITHOUT BRAND ===== */
 
 
 /* SOURCE: footer-unified-20260930.css */
