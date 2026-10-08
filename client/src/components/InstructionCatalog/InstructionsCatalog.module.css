@@ -183,3 +183,34 @@
   }
 
 }
+
+
+/*
+ * ============================================================
+ * SPECIAL GENERATION CARD
+ * ============================================================
+ */
+
+.generationStandalone {
+  padding: 25px;
+  border: var(--border-ink);
+  border-color: var(--bd-border-blue) !important;
+  border-radius: var(--radius-sm);
+  background: var(--bd-surface-blue) !important;
+  box-shadow: var(--bd-shadow-blue) !important;
+  text-decoration: none;
+  counter-increment: none !important;
+  transition:
+    border-color var(--bd-transition),
+    box-shadow var(--bd-transition),
+    background-color var(--bd-transition);
+}
+
+.generationStandalone::after {
+  content: none !important;
+}
+
+.generationStandalone:hover {
+  border-color: var(--bd-border-blue-strong) !important;
+  box-shadow: var(--bd-shadow-blue-hover) !important;
+}

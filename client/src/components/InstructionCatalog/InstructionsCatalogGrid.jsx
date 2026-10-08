@@ -64,7 +64,10 @@ export default function InstructionsCatalogGrid({
 
 
       <div
-        className="generationCatalogCard generationCatalogStandalone"
+        className={[
+          "generationCatalogCard",
+          styles.generationStandalone
+        ].join(" ")}
       >
 
         <div

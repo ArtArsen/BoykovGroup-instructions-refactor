@@ -2938,41 +2938,6 @@ table {
 /*
  * ============================================================
  * PRODUCTION SOURCE:
- * generation-card-clean-20260828-095240.css
- * ============================================================
- */
-
-
-/*
- * SPECIAL GENERATION CARD
- *
- * Визуальные свойства скопированы из:
- * ._card_d2gaj_35
- *
- * Но карточка больше не участвует
- * в CSS-нумерации обычных инструкций.
- */
-
-.generationCatalogStandalone {
-padding:25px;border:var(--border-ink);border-radius:var(--radius-sm);text-decoration:none;background:var(--color-surface);transition:.2s
-
-  counter-increment: none !important;
-}
-
-
-/*
- * Никакой нумерации внутри специальной карточки.
- */
-.generationCatalogStandalone::after {
-  content: none !important;
-}
-
-/* ===== /SPECIAL GENERATION CARD ===== */
-
-
-/*
- * ============================================================
- * PRODUCTION SOURCE:
  * boykovdocs-design-foundation-20260828-115813.css
  * ============================================================
  */
@@ -3467,7 +3432,6 @@ main button:hover {
  */
 
 .generationListCard,
-.generationCatalogStandalone,
 .generationCatalogCard {
 
   transition:
@@ -3483,8 +3447,7 @@ main button:hover {
  * но остаётся частью дизайн-системы.
  */
 
-.generationListCard,
-.generationCatalogStandalone {
+.generationListCard {
 
   border-color:
     var(--bd-border-blue) !important;
@@ -3497,8 +3460,7 @@ main button:hover {
 }
 
 
-.generationListCard:hover,
-.generationCatalogStandalone:hover {
+.generationListCard:hover {
 
   border-color:
     var(--bd-border-blue-strong) !important;
