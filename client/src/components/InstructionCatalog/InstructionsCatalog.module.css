@@ -214,3 +214,87 @@
   border-color: var(--bd-border-blue-strong) !important;
   box-shadow: var(--bd-shadow-blue-hover) !important;
 }
+
+
+/*
+ * ============================================================
+ * CATALOG PAGINATION
+ * ============================================================
+ */
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 38px auto 12px;
+}
+
+.paginationPage,
+.paginationArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 11px;
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+  background: #fff;
+  color: #172033;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    border-color .15s ease,
+    background .15s ease,
+    transform .15s ease;
+}
+
+.paginationPage:hover,
+.paginationArrow:not(:disabled):hover {
+  transform: translateY(-1px);
+  border-color: #9eabba;
+  background: #f6f8fb;
+}
+
+.paginationPageActive {
+  border-color: #172033;
+  background: #172033;
+  color: #fff;
+}
+
+.paginationPageActive:hover {
+  background: #172033;
+  color: #fff;
+}
+
+.paginationArrow:disabled {
+  cursor: default;
+  opacity: .35;
+}
+
+.paginationDots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 42px;
+  color: #7a8494;
+}
+
+@media (max-width: 650px) {
+  .pagination {
+    gap: 5px;
+    margin-top: 28px;
+  }
+
+  .paginationPage,
+  .paginationArrow {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 9px;
+  }
+}

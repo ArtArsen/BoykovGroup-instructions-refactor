@@ -1,3 +1,7 @@
+import styles
+  from "./InstructionsCatalog.module.css";
+
+
 export default function InstructionsCatalogPagination({
 
   page,
@@ -18,13 +22,13 @@ export default function InstructionsCatalogPagination({
 
   return (
     <nav
-      className="catalogPagination"
+      className={styles.pagination}
       aria-label="Пагинация инструкций"
     >
 
       <button
         type="button"
-        className="catalogPaginationArrow"
+        className={styles.paginationArrow}
         disabled={
           page === 1
         }
@@ -54,11 +58,11 @@ export default function InstructionsCatalogPagination({
                     key={`page-${item}`}
                     type="button"
                     className={[
-                      "catalogPaginationPage",
+                      styles.paginationPage,
 
                       item ===
                         page
-                        ? "catalogPaginationPageActive"
+                        ? styles.paginationPageActive
                         : ""
                     ]
                       .filter(Boolean)
@@ -82,7 +86,7 @@ export default function InstructionsCatalogPagination({
               : (
                   <span
                     key={`dots-${item}-${index}`}
-                    className="catalogPaginationDots"
+                    className={styles.paginationDots}
                   >
                     …
                   </span>
@@ -95,7 +99,7 @@ export default function InstructionsCatalogPagination({
 
       <button
         type="button"
-        className="catalogPaginationArrow"
+        className={styles.paginationArrow}
         disabled={
           page ===
             totalPages
