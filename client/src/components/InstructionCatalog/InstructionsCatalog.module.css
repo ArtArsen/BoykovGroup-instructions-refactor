@@ -67,3 +67,119 @@
   color:var(--color-primary);
 
 }
+
+
+/*
+ * ============================================================
+ * CATALOG — HOME BUTTON
+ * ============================================================
+ */
+
+.homeButton {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  width:
+    fit-content;
+
+  min-height:
+    38px;
+
+  margin:
+    0
+    0
+    22px;
+
+  padding:
+    8px
+    13px;
+
+  color:
+    #172b45 !important;
+
+  background:
+    #ffffff;
+
+  border:
+    1.5px solid
+    #172b45;
+
+  border-radius:
+    8px;
+
+  box-shadow:
+    none;
+
+  text-decoration:
+    none !important;
+
+  font-size:
+    13px;
+
+  font-weight:
+    500;
+
+  line-height:
+    1;
+
+  transition:
+    color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+
+@media (hover: hover) {
+
+  .homeButton:hover {
+    color:
+      #2f6fd6 !important;
+
+    border-color:
+      #2f6fd6;
+
+    box-shadow:
+      3px 3px 0
+      #2f6fd6;
+  }
+
+}
+
+
+.homeButton:focus-visible {
+  outline:
+    none;
+
+  border-color:
+    #2f6fd6;
+
+  box-shadow:
+    3px 3px 0
+    #2f6fd6;
+}
+
+
+@media (max-width: 600px) {
+
+  .homeButton {
+    min-height:
+      36px;
+
+    margin-bottom:
+      18px;
+
+    padding:
+      8px
+      11px;
+
+    font-size:
+      12px;
+  }
+
+}

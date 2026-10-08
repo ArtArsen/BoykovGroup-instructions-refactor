@@ -91,7 +91,9 @@ export default function InstructionsCatalog() {
 
         <a
           id="boykovCatalogHomeButton"
-          className="boykovCatalogHomeButton"
+          className={
+            styles.homeButton
+          }
           href="/"
         >
           ← На главную
