@@ -211,12 +211,6 @@ body:has(.editorFullModal) {
    ============================================================ */
 
 .generationCatalogCard {
-  position: relative;
-  overflow: hidden;
-  display: flex !important;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
   border-color: rgba(46, 108, 205, .42) !important;
   background:
     linear-gradient(
@@ -226,17 +220,7 @@ body:has(.editorFullModal) {
     ) !important;
 }
 
-.generationCatalogCard::before {
-  content: "";
-  position: absolute;
-  top: -55px;
-  right: -45px;
-  width: 135px;
-  height: 135px;
-  border-radius: 50%;
-  background: rgba(55, 119, 214, .08);
-  pointer-events: none;
-}
+
 
 
 

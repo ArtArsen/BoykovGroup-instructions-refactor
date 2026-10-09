@@ -192,6 +192,12 @@
  */
 
 .generationStandalone {
+  position: relative;
+  overflow: hidden;
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   padding: 25px;
   border: var(--border-ink);
   border-color: var(--bd-border-blue) !important;
@@ -204,6 +210,18 @@
     border-color var(--bd-transition),
     box-shadow var(--bd-transition),
     background-color var(--bd-transition);
+}
+
+.generationStandalone::before {
+  content: "";
+  position: absolute;
+  top: -55px;
+  right: -45px;
+  width: 135px;
+  height: 135px;
+  border-radius: 50%;
+  background: rgba(55, 119, 214, .08);
+  pointer-events: none;
 }
 
 .generationStandalone::after {
