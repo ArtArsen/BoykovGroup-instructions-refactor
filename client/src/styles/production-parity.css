@@ -3764,7 +3764,7 @@ main [aria-busy="true"] {
 
 @media (hover: hover) {
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover {
+  .boykovCardSearchShadow:not(.generationListCard):hover {
     background:
       #ffffff !important;
 
@@ -3789,7 +3789,7 @@ main [aria-busy="true"] {
    * принудительно возвращаем тёмный.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover * {
+  .boykovCardSearchShadow:not(.generationListCard):hover * {
     color:
       #172b45 !important;
   }
@@ -3799,8 +3799,8 @@ main [aria-busy="true"] {
    * Ссылку и стрелку оставляем синими.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover a,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover a * {
+  .boykovCardSearchShadow:not(.generationListCard):hover a,
+  .boykovCardSearchShadow:not(.generationListCard):hover a * {
     color:
       #2f6fd6 !important;
   }
@@ -3815,7 +3815,7 @@ main [aria-busy="true"] {
 
 @media (hover: none) {
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover {
+  .boykovCardSearchShadow:not(.generationListCard):hover {
     box-shadow:
       none !important;
 
@@ -3868,7 +3868,7 @@ main [aria-busy="true"] {
    * Внешняя карточка.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover {
+  .boykovCardSearchShadow:not(.generationListCard):hover {
     background:
       #ffffff !important;
 
@@ -3890,8 +3890,8 @@ main [aria-busy="true"] {
    * со внутренних layout-слоёв.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover > *,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover > * > * {
+  .boykovCardSearchShadow:not(.generationListCard):hover > *,
+  .boykovCardSearchShadow:not(.generationListCard):hover > * > * {
     background-color:
       transparent !important;
 
@@ -3904,10 +3904,10 @@ main [aria-busy="true"] {
    * Если заливка сделана псевдоэлементом.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover::before,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover::after,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover > *::before,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover > *::after {
+  .boykovCardSearchShadow:not(.generationListCard):hover::before,
+  .boykovCardSearchShadow:not(.generationListCard):hover::after,
+  .boykovCardSearchShadow:not(.generationListCard):hover > *::before,
+  .boykovCardSearchShadow:not(.generationListCard):hover > *::after {
     background:
       transparent !important;
   }
@@ -3917,11 +3917,11 @@ main [aria-busy="true"] {
    * Основной текст.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover span,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover p,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover h2,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover h3 {
+  .boykovCardSearchShadow:not(.generationListCard):hover,
+  .boykovCardSearchShadow:not(.generationListCard):hover span,
+  .boykovCardSearchShadow:not(.generationListCard):hover p,
+  .boykovCardSearchShadow:not(.generationListCard):hover h2,
+  .boykovCardSearchShadow:not(.generationListCard):hover h3 {
     color:
       #172b45 !important;
   }
@@ -3931,8 +3931,8 @@ main [aria-busy="true"] {
    * Ссылка и стрелка.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover a,
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover a span {
+  .boykovCardSearchShadow:not(.generationListCard):hover a,
+  .boykovCardSearchShadow:not(.generationListCard):hover a span {
     color:
       #2f6fd6 !important;
   }
@@ -3942,7 +3942,7 @@ main [aria-busy="true"] {
    * Номер карточки делаем спокойнее.
    */
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover
+  .boykovCardSearchShadow:not(.generationListCard):hover
   [class*="index"] {
     color:
       #7c91ad !important;
@@ -3959,7 +3959,7 @@ main [aria-busy="true"] {
 
 @media (hover: none) {
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover {
+  .boykovCardSearchShadow:not(.generationListCard):hover {
     box-shadow:
       none !important;
 
@@ -5266,7 +5266,7 @@ main [aria-busy="true"] {
  * ТОЛЬКО у обычных карточек инструкций.
  */
 
-.boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard)
+.boykovCardSearchShadow:not(.generationListCard)
 [class*="_clickArea_"]::before {
 
   content: none !important;
@@ -5294,10 +5294,10 @@ main [aria-busy="true"] {
  * старое hover/focus правило.
  */
 
-.boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard)
+.boykovCardSearchShadow:not(.generationListCard)
 [class*="_clickArea_"]:hover::before,
 
-.boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard)
+.boykovCardSearchShadow:not(.generationListCard)
 [class*="_clickArea_"]:focus-visible::before {
 
   content: none !important;
@@ -5318,7 +5318,7 @@ main [aria-busy="true"] {
  * с задержкой после hover.
  */
 
-.boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard)
+.boykovCardSearchShadow:not(.generationListCard)
 [class*="_clickArea_"] {
 
   background:
@@ -5336,7 +5336,7 @@ main [aria-busy="true"] {
  * Заголовок остаётся тёмным постоянно.
  */
 
-.boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard)
+.boykovCardSearchShadow:not(.generationListCard)
 [class*="_title_"] {
 
   color:
@@ -5352,7 +5352,7 @@ main [aria-busy="true"] {
  * без белого промежуточного состояния.
  */
 
-.boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard)
+.boykovCardSearchShadow:not(.generationListCard)
 [class*="_index_"] {
 
   color:
@@ -5367,7 +5367,7 @@ main [aria-busy="true"] {
  * Стрелка.
  */
 
-.boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard)
+.boykovCardSearchShadow:not(.generationListCard)
 [class*="_arrow_"] {
 
   transition:
@@ -5383,7 +5383,7 @@ main [aria-busy="true"] {
 
 @media (hover: hover) {
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover {
+  .boykovCardSearchShadow:not(.generationListCard):hover {
 
     background:
       #ffffff !important;
@@ -5400,7 +5400,7 @@ main [aria-busy="true"] {
   }
 
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover
+  .boykovCardSearchShadow:not(.generationListCard):hover
   [class*="_clickArea_"] {
 
     background:
@@ -5411,7 +5411,7 @@ main [aria-busy="true"] {
   }
 
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover
+  .boykovCardSearchShadow:not(.generationListCard):hover
   [class*="_title_"] {
 
     color:
@@ -5419,7 +5419,7 @@ main [aria-busy="true"] {
   }
 
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover
+  .boykovCardSearchShadow:not(.generationListCard):hover
   [class*="_index_"] {
 
     color:
@@ -5427,7 +5427,7 @@ main [aria-busy="true"] {
   }
 
 
-  .boykovCardSearchShadow:not(.generationListCard):not(.generationCatalogCard):hover
+  .boykovCardSearchShadow:not(.generationListCard):hover
   [class*="_arrow_"] {
 
     color:
