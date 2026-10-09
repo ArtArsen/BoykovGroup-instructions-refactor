@@ -337,107 +337,11 @@ body:has(.editorFullModal) {
 }
 
 
-/* Пагинация */
-
-.realCatalogPagination {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  margin: 40px auto 18px;
-}
-
-.realPaginationPage,
-.realPaginationArrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 42px;
-  height: 42px;
-  padding: 0 11px;
-  border: 1px solid #d9dee7;
-  border-radius: 8px;
-  background: #fff;
-  color: #172033;
-  cursor: pointer;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  transition:
-    transform .15s ease,
-    border-color .15s ease,
-    background .15s ease;
-}
-
-.realPaginationPage:hover:not(:disabled),
-.realPaginationArrow:hover:not(:disabled) {
-  transform: translateY(-1px);
-  border-color: #9da9ba;
-  background: #f6f8fb;
-}
-
-.realPaginationPageActive {
-  border-color: #172033;
-  background: #172033;
-  color: #fff;
-}
-
-.realPaginationPageActive:hover:not(:disabled) {
-  background: #172033;
-}
-
-.realPaginationPage:disabled:not(.realPaginationPageActive),
-.realPaginationArrow:disabled {
-  cursor: default;
-  opacity: .38;
-}
-
-.realPaginationDots {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 42px;
-  color: #7b8595;
-}
-
-.realPaginationLoading {
-  margin: 12px 0;
-  text-align: center;
-  color: #687386;
-  font-size: 13px;
-}
-
-.realPaginationError {
-  margin: 16px 0;
-  color: #a12c2c;
-  text-align: center;
-}
-
-
 @media (max-width: 650px) {
-
-  .realCatalogPagination {
-    gap: 5px;
-    margin-top: 30px;
-  }
-
-  .realPaginationPage,
-  .realPaginationArrow {
-    min-width: 38px;
-    height: 38px;
-    padding: 0 9px;
-  }
-
   .generationListButton {
     width: 100%;
   }
 }
-
-/* ==========================================================
-   /REAL HOME PAGINATION
-   ========================================================== */
 
 /* ==========================================================
    GENERATION CARD — REFINED DESIGN
@@ -3317,39 +3221,6 @@ main button:hover {
 .generationListText {
   color:
     var(--bd-text-secondary);
-}
-
-
-/*
- * ============================================================
- * 11. PAGINATION
- * ============================================================
- */
-
-.realCatalogPagination {
-  margin-top:
-    var(--bd-space-4);
-
-  padding-top:
-    var(--bd-space-3);
-
-  border-top:
-    1px solid
-    var(--bd-border-soft);
-}
-
-
-.realCatalogPagination button,
-.realCatalogPagination a {
-
-  border-radius:
-    var(--bd-radius-sm);
-
-  transition:
-    color var(--bd-transition),
-    border-color var(--bd-transition),
-    background-color var(--bd-transition),
-    box-shadow var(--bd-transition);
 }
 
 

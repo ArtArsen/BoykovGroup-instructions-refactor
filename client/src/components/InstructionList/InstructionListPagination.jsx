@@ -1,3 +1,7 @@
+import styles
+  from "./InstructionListPagination.module.css";
+
+
 export default function InstructionListPagination({
 
   currentPage,
@@ -16,7 +20,7 @@ export default function InstructionListPagination({
         paginationError &&
         (
           <p
-            className="realPaginationError"
+            className={styles.error}
           >
             {paginationError}
           </p>
@@ -28,13 +32,13 @@ export default function InstructionListPagination({
         totalPages > 1 &&
         (
           <nav
-            className="realCatalogPagination"
+            className={styles.pagination}
             aria-label="Страницы каталога инструкций"
           >
 
             <button
               type="button"
-              className="realPaginationArrow"
+              className={styles.arrow}
               disabled={
                 currentPage === 1 ||
                 isPageLoading
@@ -68,11 +72,11 @@ export default function InstructionListPagination({
                             isPageLoading
                           }
                           className={[
-                            "realPaginationPage",
+                            styles.page,
 
                             item ===
                               currentPage
-                              ? "realPaginationPageActive"
+                              ? styles.active
                               : ""
                           ]
                             .filter(Boolean)
@@ -96,7 +100,7 @@ export default function InstructionListPagination({
                     : (
                         <span
                           key={`dots-${item}-${index}`}
-                          className="realPaginationDots"
+                          className={styles.dots}
                         >
                           …
                         </span>
@@ -109,7 +113,7 @@ export default function InstructionListPagination({
 
             <button
               type="button"
-              className="realPaginationArrow"
+              className={styles.arrow}
               disabled={
                 currentPage ===
                   totalPages ||
@@ -135,7 +139,7 @@ export default function InstructionListPagination({
         isPageLoading &&
         (
           <div
-            className="realPaginationLoading"
+            className={styles.loading}
           >
             Загрузка...
           </div>
