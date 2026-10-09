@@ -295,18 +295,6 @@ body:has(.editorFullModal) {
 }
 
 
-/* CATALOG STATUS */
-
-.catalogError {
-  margin: 20px 0;
-  color: #a22b2b;
-}
-
-.catalogLoading {
-  margin: 20px 0;
-}
-
-
 /* MOBILE */
 
 @media (max-width: 650px) {

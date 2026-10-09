@@ -118,7 +118,7 @@ export default function InstructionsCatalog() {
           loading &&
           (
             <p
-              className="catalogLoading"
+              className={styles.catalogLoading}
             >
               Загрузка...
             </p>
@@ -130,7 +130,7 @@ export default function InstructionsCatalog() {
           error &&
           (
             <p
-              className="catalogError"
+              className={styles.catalogError}
             >
               {error}
             </p>
