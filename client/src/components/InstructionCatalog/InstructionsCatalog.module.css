@@ -200,9 +200,14 @@
   justify-content: flex-start;
   padding: 25px;
   border: var(--border-ink);
-  border-color: var(--bd-border-blue) !important;
+  border-color: rgba(46, 108, 205, .42) !important;
   border-radius: var(--radius-sm);
-  background: var(--bd-surface-blue) !important;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(242, 247, 255, 1) 0%,
+      rgba(255, 255, 255, 1) 72%
+    ) !important;
   box-shadow: var(--bd-shadow-blue) !important;
   text-decoration: none;
   counter-increment: none !important;
