@@ -71,7 +71,7 @@ export default function InstructionsCatalogGrid({
       >
 
         <div
-          className="generationCatalogEyebrow"
+          className={styles.generationEyebrow}
         >
           Нужной инструкции нет?
         </div>
