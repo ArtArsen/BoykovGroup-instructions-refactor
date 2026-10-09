@@ -90,7 +90,7 @@ export default function InstructionsCatalogGrid({
 
         <Link
           to="/srochnaya-generaciya-instrukcii"
-          className="generationCatalogButton"
+          className={styles.generationButton}
         >
           Сгенерировать
         </Link>
