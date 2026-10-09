@@ -21,7 +21,7 @@ export default function InstructionGenerationCard({
     >
 
       <div
-        className={`${cardStyles.card} generationListCard boykovCardSearchShadow`}
+        className={`${cardStyles.card} generationListCard`}
       >
 
         <div
