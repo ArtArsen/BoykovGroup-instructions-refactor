@@ -334,3 +334,13 @@
   letter-spacing: .06em;
   text-transform: uppercase;
 }
+
+
+.generationText {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 22px;
+  color: var(--bd-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}

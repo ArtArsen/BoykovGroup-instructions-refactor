@@ -83,7 +83,7 @@ export default function InstructionsCatalogGrid({
         </h2>
 
         <p
-          className="generationCatalogText"
+          className={styles.generationText}
         >
           Сгенерируйте её!
         </p>

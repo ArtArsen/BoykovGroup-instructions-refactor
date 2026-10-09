@@ -242,14 +242,7 @@ body:has(.editorFullModal) {
 
 
 
-.generationCatalogText {
-  position: relative;
-  z-index: 1;
-  margin: 0 0 22px;
-  color: #596579;
-  font-size: 15px;
-  line-height: 1.5;
-}
+
 
 .generationCatalogButton {
   position: relative;
@@ -3375,8 +3368,7 @@ main button:hover {
 }
 
 
-.generationListText,
-.generationCatalogText {
+.generationListText {
   color:
     var(--bd-text-secondary);
 }
