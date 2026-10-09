@@ -5,6 +5,9 @@ import {
 import cardStyles
   from "../InstructionButton/InstructionButton.module.css";
 
+import styles
+  from "./InstructionGenerationCard.module.css";
+
 import RevealItem
   from "./InstructionListRevealItem.jsx";
 
@@ -21,33 +24,33 @@ export default function InstructionGenerationCard({
     >
 
       <div
-        className={`${cardStyles.card} generationListCard`}
+        className={`${cardStyles.card} ${styles.card}`}
       >
 
         <div
-          className={`${cardStyles.clickArea} generationListCardInner`}
+          className={`${cardStyles.clickArea} ${styles.inner}`}
         >
 
           <span
-            className={`${cardStyles.body} generationListBody`}
+            className={`${cardStyles.body} ${styles.body}`}
           >
 
             <span
-              className="generationListEyebrow"
+              className={styles.eyebrow}
             >
               [ своя инструкция ]
             </span>
 
 
             <span
-              className={`${cardStyles.title} generationListTitle`}
+              className={`${cardStyles.title} ${styles.title}`}
             >
               Не нашли нужную инструкцию?
             </span>
 
 
             <span
-              className="generationListText"
+              className={styles.text}
             >
               Создадим её за 2 минуты!
             </span>
@@ -55,7 +58,7 @@ export default function InstructionGenerationCard({
 
             <Link
               to="/srochnaya-generaciya-instrukcii"
-              className="generationListButton"
+              className={styles.button}
             >
               Сгенерировать
             </Link>
