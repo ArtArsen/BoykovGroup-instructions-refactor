@@ -250,11 +250,7 @@ body:has(.editorFullModal) {
   text-transform: uppercase;
 }
 
-.generationCatalogTitle {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 8px !important;
-}
+
 
 .generationCatalogText {
   position: relative;

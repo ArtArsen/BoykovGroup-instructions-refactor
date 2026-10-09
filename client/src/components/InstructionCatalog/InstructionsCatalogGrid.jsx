@@ -77,7 +77,7 @@ export default function InstructionsCatalogGrid({
         </div>
 
         <h2
-          className="generationCatalogTitle"
+          className={styles.generationTitle}
         >
           Не нашли нужную инструкцию?
         </h2>

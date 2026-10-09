@@ -314,3 +314,10 @@
 .catalogLoading {
   margin: 20px 0;
 }
+
+
+.generationTitle {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px !important;
+}
